@@ -1,0 +1,1732 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Longitude Ágil — Plataforma de Logística</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800;900&family=Figtree:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--org:#f97316;--org-d:#c2410c;--org-l:#fb923c;--org-x:rgba(249,115,22,.12);--blk:#0a0a0a;--blk2:#111111;--blk3:#1a1a1a;--blk4:#222222;--bdr:rgba(255,255,255,.08);--bdr2:rgba(249,115,22,.3);--txt:#f5f5f5;--txt2:#a3a3a3;--txt3:#737373;--grn:#22c55e;--red:#ef4444;--yel:#eab308;--blu:#3b82f6;--fh:'Syne',sans-serif;--fb:'Figtree',sans-serif;--r:8px;--r2:14px;--sh:0 4px 24px rgba(0,0,0,.4);}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:var(--fb);background:var(--blk);color:var(--txt);overflow-x:hidden;font-size:15px;}
+::-webkit-scrollbar{width:4px;}::-webkit-scrollbar-track{background:var(--blk2);}::-webkit-scrollbar-thumb{background:var(--org);border-radius:4px;}
+input,select,textarea,button{font-family:var(--fb);}a{text-decoration:none;color:inherit;}
+.hidden{display:none!important;}.page{display:none;}.page.active{display:block;}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;padding:.7rem 1.4rem;border-radius:var(--r);font-family:var(--fh);font-weight:700;font-size:.88rem;cursor:pointer;border:none;transition:all .2s;white-space:nowrap;}
+.btn-org{background:var(--org);color:#fff;box-shadow:0 4px 16px rgba(249,115,22,.3);}.btn-org:hover{background:var(--org-d);transform:translateY(-1px);}
+.btn-ghost{background:transparent;color:var(--txt);border:1px solid var(--bdr);}.btn-ghost:hover{border-color:var(--bdr2);background:var(--org-x);}
+.btn-grn{background:var(--grn);color:#fff;}.btn-grn:hover{background:#16a34a;}
+.btn-red{background:var(--red);color:#fff;}.btn-red:hover{background:#dc2626;}
+.btn-sm{padding:.45rem 1rem;font-size:.8rem;}.btn-lg{padding:.9rem 2rem;font-size:1rem;}.btn-full{width:100%;}
+.btn-wa{background:#25d366;color:#fff;}.btn-wa:hover{background:#1aad56;}
+.form-group{margin-bottom:1rem;}
+.form-label{display:block;font-size:.75rem;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--txt2);margin-bottom:.4rem;}
+.form-input,.form-select,.form-textarea{width:100%;background:var(--blk3);border:1px solid var(--bdr);border-radius:var(--r);padding:.7rem 1rem;color:var(--txt);font-size:.92rem;outline:none;transition:border-color .2s;}
+.form-input::placeholder,.form-textarea::placeholder{color:var(--txt3);}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--org);background:rgba(249,115,22,.04);}
+.form-select option{background:var(--blk3);}.form-textarea{resize:vertical;min-height:90px;}
+.form-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+.form-grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;}
+.card{background:var(--blk2);border:1px solid var(--bdr);border-radius:var(--r2);padding:1.5rem;}
+.card-sm{padding:1rem;}.panel{background:var(--blk2);border:1px solid var(--bdr);border-radius:var(--r2);}
+.badge{display:inline-flex;align-items:center;gap:.35rem;padding:.25rem .7rem;border-radius:100px;font-size:.72rem;font-weight:700;}
+.badge-org{background:rgba(249,115,22,.15);color:var(--org);}.badge-grn{background:rgba(34,197,94,.15);color:var(--grn);}
+.badge-red{background:rgba(239,68,68,.15);color:var(--red);}.badge-yel{background:rgba(234,179,8,.15);color:var(--yel);}
+.badge-blu{background:rgba(59,130,246,.15);color:var(--blu);}.badge-gray{background:rgba(255,255,255,.08);color:var(--txt2);}
+.dot{width:6px;height:6px;border-radius:50%;background:currentColor;flex-shrink:0;}
+.muted{color:var(--txt2);}.small{font-size:.82rem;}.tag{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;}
+.mt1{margin-top:.5rem;}.mt2{margin-top:1rem;}.mt3{margin-top:1.5rem;}
+#toast-container{position:fixed;top:1.5rem;right:1.5rem;z-index:9999;display:flex;flex-direction:column;gap:.5rem;}
+.toast{padding:.8rem 1.4rem;border-radius:var(--r);font-size:.88rem;font-weight:600;box-shadow:var(--sh);animation:slideIn .3s ease;display:flex;align-items:center;gap:.6rem;}
+.toast-success{background:#14532d;border:1px solid var(--grn);color:#86efac;}
+.toast-error{background:#450a0a;border:1px solid var(--red);color:#fca5a5;}
+.toast-info{background:#1c1917;border:1px solid var(--org);color:var(--org-l);}
+@keyframes slideIn{from{transform:translateX(100px);opacity:0;}to{transform:translateX(0);opacity:1;}}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);backdrop-filter:blur(6px);z-index:500;align-items:center;justify-content:center;padding:1rem;}
+.modal-overlay.open{display:flex;}.modal{background:var(--blk2);border:1px solid var(--bdr);border-radius:var(--r2);padding:2rem;width:100%;max-width:560px;max-height:90vh;overflow-y:auto;}
+.modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;}
+.modal-title{font-family:var(--fh);font-size:1.1rem;font-weight:700;}
+.modal-close{background:var(--blk3);border:1px solid var(--bdr);color:var(--txt2);width:30px;height:30px;border-radius:6px;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;}
+.table-wrap{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;}
+th{padding:.8rem 1rem;text-align:left;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--txt3);border-bottom:1px solid var(--bdr);white-space:nowrap;}
+td{padding:.9rem 1rem;font-size:.88rem;border-bottom:1px solid rgba(255,255,255,.04);vertical-align:middle;}
+tr:hover td{background:rgba(255,255,255,.02);}tr:last-child td{border-bottom:none;}
+.stat-card{background:var(--blk2);border:1px solid var(--bdr);border-radius:var(--r2);padding:1.4rem;transition:border-color .2s;}
+.stat-card:hover{border-color:var(--bdr2);}
+.stat-icon{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;margin-bottom:1rem;}
+.stat-icon-org{background:var(--org-x);border:1px solid rgba(249,115,22,.2);}
+.stat-icon-grn{background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.2);}
+.stat-icon-blu{background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.2);}
+.stat-icon-yel{background:rgba(234,179,8,.1);border:1px solid rgba(234,179,8,.2);}
+.stat-num{font-family:var(--fh);font-size:2rem;font-weight:900;line-height:1;}
+.stat-label{font-size:.78rem;color:var(--txt2);margin-top:.3rem;text-transform:uppercase;letter-spacing:.06em;}
+.stat-up{color:var(--grn);font-size:.75rem;margin-top:.5rem;}
+
+/* LANDING */
+.lp-nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:.9rem 6vw;background:rgba(10,10,10,.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--bdr);}
+.lp-logo{font-family:var(--fh);font-weight:900;font-size:1.3rem;letter-spacing:-1px;display:flex;align-items:center;gap:.4rem;}
+.dot-live{width:7px;height:7px;background:var(--org);border-radius:50%;animation:pulse-org 2s infinite;display:inline-block;}
+@keyframes pulse-org{0%,100%{box-shadow:0 0 0 0 rgba(249,115,22,.5);}50%{box-shadow:0 0 0 6px rgba(249,115,22,0);}}
+.lp-nav-links{display:flex;align-items:center;gap:1rem;}
+.lp-nav-links a{font-size:.85rem;color:var(--txt2);transition:color .2s;}.lp-nav-links a:hover{color:var(--txt);}
+.lp-hero{min-height:100vh;display:flex;align-items:center;padding:0 6vw;padding-top:80px;position:relative;overflow:hidden;}
+.lp-glow{position:absolute;top:-10%;left:-5%;width:50vw;height:80vh;background:radial-gradient(ellipse,rgba(249,115,22,.1) 0%,transparent 65%);pointer-events:none;}
+.lp-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);background-size:52px 52px;mask-image:radial-gradient(ellipse 70% 70% at 40% 50%,black,transparent);}
+.lp-inner{max-width:760px;position:relative;z-index:2;}
+.lp-pill{display:inline-flex;align-items:center;gap:.5rem;background:rgba(249,115,22,.1);border:1px solid rgba(249,115,22,.3);color:#fdba74;padding:.35rem .9rem;border-radius:100px;font-size:.75rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:1.8rem;}
+.lp-h1{font-family:var(--fh);font-size:clamp(2.4rem,5vw,4rem);font-weight:900;line-height:1.05;letter-spacing:-2px;margin-bottom:1.4rem;}
+.lp-h1 .hl{color:var(--org);}
+.lp-sub{font-size:1.05rem;color:var(--txt2);line-height:1.7;margin-bottom:2.2rem;max-width:540px;}
+.lp-btns{display:flex;flex-wrap:wrap;gap:.8rem;margin-bottom:2.5rem;}
+.lp-trust{display:flex;flex-wrap:wrap;gap:1.5rem;}
+.lp-trust-item{display:flex;align-items:center;gap:.5rem;font-size:.82rem;color:var(--txt2);}
+.lp-strip{background:var(--org);padding:.7rem 6vw;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:2rem;}
+.lp-strip-item{color:#fff;font-size:.82rem;font-weight:600;}
+.lp-section{padding:5rem 6vw;}
+.lp-stag{font-size:.72rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--org);margin-bottom:.7rem;}
+.lp-sh{font-family:var(--fh);font-size:clamp(1.8rem,3vw,2.6rem);font-weight:900;letter-spacing:-1px;margin-bottom:1rem;}
+.lp-sp{font-size:1rem;color:var(--txt2);max-width:520px;line-height:1.7;}
+.svc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem;margin-top:3rem;}
+.svc-card{background:var(--blk2);border:1px solid var(--bdr);border-radius:var(--r2);padding:1.6rem;transition:all .25s;cursor:pointer;}
+.svc-card:hover{border-color:var(--bdr2);transform:translateY(-3px);}
+.svc-ico{width:44px;height:44px;border-radius:10px;background:var(--org-x);border:1px solid rgba(249,115,22,.2);display:flex;align-items:center;justify-content:center;font-size:1.2rem;margin-bottom:1.1rem;}
+.svc-card h3{font-family:var(--fh);font-size:.95rem;font-weight:700;margin-bottom:.4rem;}
+.svc-card p{font-size:.82rem;color:var(--txt2);line-height:1.6;}
+.how-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.2rem;margin-top:3rem;}
+.how-card{background:var(--blk2);border:1px solid var(--bdr);border-radius:var(--r2);padding:1.5rem;position:relative;}
+.how-num{font-family:var(--fh);font-size:3rem;font-weight:900;color:rgba(249,115,22,.15);position:absolute;top:.8rem;right:1rem;line-height:1;}
+.how-card h3{font-family:var(--fh);font-size:.9rem;font-weight:700;margin-bottom:.4rem;position:relative;}
+.how-card p{font-size:.82rem;color:var(--txt2);line-height:1.6;position:relative;}
+.zones-row{display:flex;flex-wrap:wrap;gap:.8rem;margin-top:2rem;}
+.zone-tag{background:var(--blk2);border:1px solid var(--bdr);border-radius:100px;padding:.4rem 1rem;font-size:.82rem;font-weight:600;display:flex;align-items:center;gap:.4rem;transition:all .2s;cursor:pointer;}
+.zone-tag:hover{border-color:var(--bdr2);color:var(--org);}
+.pricing-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.2rem;margin-top:3rem;}
+.price-card{background:var(--blk2);border:1px solid var(--bdr);border-radius:var(--r2);padding:1.8rem;text-align:center;transition:all .25s;}
+.price-card.featured{border-color:var(--org);background:rgba(249,115,22,.04);}
+.price-card:hover{transform:translateY(-3px);}
+.price-tier{font-size:.78rem;font-weight:700;color:var(--txt2);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.8rem;}
+.price-val{font-family:var(--fh);font-size:2.2rem;font-weight:900;color:var(--txt);margin-bottom:.3rem;}
+.price-val span{font-size:.9rem;font-weight:400;color:var(--txt2);}
+.price-vol{font-size:.8rem;color:var(--txt2);margin-bottom:1.2rem;}
+.price-feats{list-style:none;text-align:left;display:flex;flex-direction:column;gap:.5rem;margin-bottom:1.4rem;}
+.price-feats li{font-size:.82rem;color:var(--txt2);display:flex;align-items:center;gap:.5rem;}
+.price-feats li::before{content:'✓';color:var(--grn);font-weight:700;flex-shrink:0;}
+.reviews-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem;margin-top:3rem;}
+.review-card{background:var(--blk2);border:1px solid var(--bdr);border-radius:var(--r2);padding:1.5rem;}
+.review-stars{color:#f59e0b;margin-bottom:.7rem;}
+.review-text{font-size:.88rem;color:var(--txt2);line-height:1.65;font-style:italic;margin-bottom:1rem;}
+.ava{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--org),var(--org-d));display:flex;align-items:center;justify-content:center;font-family:var(--fh);font-size:.8rem;font-weight:700;color:#fff;flex-shrink:0;}
+.lp-cta{background:linear-gradient(135deg,#1a0a00,#2a1000);border-top:1px solid rgba(249,115,22,.2);border-bottom:1px solid rgba(249,115,22,.2);padding:5rem 6vw;text-align:center;}
+.lp-footer{background:var(--blk2);border-top:1px solid var(--bdr);padding:3rem 6vw 1.5rem;}
+.footer-grid{display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:3rem;margin-bottom:2rem;}
+.footer-col h4{font-family:var(--fh);font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;margin-bottom:1rem;}
+.footer-col ul{list-style:none;}.footer-col li{margin-bottom:.5rem;}
+.footer-col a{font-size:.85rem;color:var(--txt2);transition:color .2s;}.footer-col a:hover{color:var(--txt);}
+.footer-bottom{border-top:1px solid var(--bdr);padding-top:1.2rem;display:flex;justify-content:space-between;font-size:.78rem;color:var(--txt3);}
+.wa-float{position:fixed;bottom:1.5rem;right:1.5rem;z-index:200;}
+.wa-float a{width:52px;height:52px;border-radius:50%;background:#25d366;display:flex;align-items:center;justify-content:center;font-size:1.4rem;box-shadow:0 6px 24px rgba(37,211,102,.4);transition:transform .2s;}
+.wa-float a:hover{transform:scale(1.1);}
+
+/* BALCÃO */
+.balcao-wrap{max-width:760px;margin:0 auto;padding:3rem 2rem;}
+.balcao-header{text-align:center;margin-bottom:2.5rem;}
+.balcao-header h1{font-family:var(--fh);font-size:2rem;font-weight:900;letter-spacing:-1px;margin-bottom:.6rem;}
+.balcao-steps{display:flex;justify-content:center;gap:0;margin-bottom:2.5rem;}
+.bstep{display:flex;align-items:center;gap:.5rem;}
+.bstep-dot{width:28px;height:28px;border-radius:50%;border:2px solid var(--bdr);display:flex;align-items:center;justify-content:center;font-size:.78rem;font-weight:700;color:var(--txt3);transition:all .3s;}
+.bstep.done .bstep-dot{background:var(--grn);border-color:var(--grn);color:#fff;}
+.bstep.active .bstep-dot{background:var(--org);border-color:var(--org);color:#fff;}
+.bstep-label{font-size:.75rem;color:var(--txt3);}.bstep.active .bstep-label{color:var(--org);}
+.bstep-line{width:40px;height:2px;background:var(--bdr);margin:0 .3rem;}.bstep.done .bstep-line{background:var(--grn);}
+.upload-zone{border:2px dashed var(--bdr);border-radius:var(--r);padding:2rem;text-align:center;cursor:pointer;transition:all .2s;}
+.upload-zone:hover{border-color:var(--bdr2);background:var(--org-x);}
+.balcao-confirm{text-align:center;padding:3rem 1rem;}.confirm-icon{font-size:4rem;margin-bottom:1rem;}
+.form-section-title{font-family:var(--fh);font-size:.9rem;font-weight:700;margin-bottom:.8rem;padding-bottom:.5rem;border-bottom:1px solid var(--bdr);display:flex;align-items:center;gap:.5rem;}
+
+/* AUTH */
+.auth-card{background:var(--blk2);border:1px solid var(--bdr);border-radius:var(--r2);padding:2.5rem;width:100%;max-width:440px;position:relative;z-index:2;}
+.auth-tabs{display:flex;border-bottom:1px solid var(--bdr);margin-bottom:1.8rem;}
+.auth-tab{flex:1;padding:.8rem;text-align:center;font-family:var(--fh);font-size:.85rem;font-weight:700;cursor:pointer;color:var(--txt2);border-bottom:2px solid transparent;margin-bottom:-1px;background:none;border-top:none;border-left:none;border-right:none;transition:all .2s;}
+.auth-tab.active{color:var(--org);border-bottom-color:var(--org);}
+.auth-type-btns{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin-bottom:1.2rem;}
+.auth-type-btn{padding:.8rem;border-radius:var(--r);border:1px solid var(--bdr);background:var(--blk3);cursor:pointer;text-align:center;transition:all .2s;color:var(--txt2);}
+.auth-type-btn.selected{border-color:var(--org);background:var(--org-x);color:var(--org);}
+.auth-type-btn .type-ico{font-size:1.4rem;margin-bottom:.3rem;}.auth-type-btn .type-label{font-size:.82rem;font-weight:600;}
+.auth-divider{display:flex;align-items:center;gap:.8rem;margin:1rem 0;color:var(--txt3);font-size:.78rem;}
+.auth-divider::before,.auth-divider::after{content:'';flex:1;height:1px;background:var(--bdr);}
+
+/* DASHBOARD */
+#page-dashboard,#page-admin{display:none;}
+#page-dashboard.active,#page-admin.active{display:flex;}
+.dash-layout{display:flex;min-height:100vh;width:100%;}
+.sidebar{width:240px;min-width:240px;background:var(--blk2);border-right:1px solid var(--bdr);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto;}
+.sidebar-logo{padding:1.4rem 1.2rem;border-bottom:1px solid var(--bdr);font-family:var(--fh);font-weight:900;font-size:1.15rem;letter-spacing:-.5px;display:flex;align-items:center;gap:.4rem;}
+.sidebar-nav{flex:1;padding:1rem 0;}
+.nav-section-title{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--txt3);padding:.4rem 1.2rem;margin-top:.8rem;}
+.nav-item{display:flex;align-items:center;gap:.7rem;padding:.65rem 1.2rem;font-size:.87rem;font-weight:500;color:var(--txt2);cursor:pointer;transition:all .2s;border-left:2px solid transparent;margin:1px 0;}
+.nav-item:hover{color:var(--txt);background:rgba(255,255,255,.03);}
+.nav-item.active{color:var(--org);background:var(--org-x);border-left-color:var(--org);}
+.nav-item .nav-ico{font-size:1rem;width:20px;text-align:center;}
+.nav-badge{margin-left:auto;background:var(--org);color:#fff;font-size:.65rem;font-weight:700;padding:.15rem .45rem;border-radius:100px;}
+.sidebar-footer{padding:1rem 1.2rem;border-top:1px solid var(--bdr);}
+.sidebar-user{display:flex;align-items:center;gap:.8rem;}
+.user-ava{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--org),var(--org-d));display:flex;align-items:center;justify-content:center;font-family:var(--fh);font-weight:700;font-size:.82rem;color:#fff;flex-shrink:0;}
+.user-name{font-size:.82rem;font-weight:600;}.user-role{font-size:.7rem;color:var(--txt3);}
+.dash-main{flex:1;overflow-y:auto;background:var(--blk);}
+.dash-header{display:flex;align-items:center;justify-content:space-between;padding:1.2rem 2rem;background:var(--blk2);border-bottom:1px solid var(--bdr);position:sticky;top:0;z-index:50;}
+.dash-title{font-family:var(--fh);font-size:1.1rem;font-weight:700;}
+.dash-content{padding:2rem;}
+.subpage{display:none;}.subpage.active{display:block;}
+.quick-actions{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:2rem;}
+.qa-card{background:var(--blk2);border:1px solid var(--bdr);border-radius:var(--r2);padding:1.3rem;text-align:center;cursor:pointer;transition:all .2s;}
+.qa-card:hover{border-color:var(--bdr2);transform:translateY(-2px);}
+.qa-ico{font-size:1.6rem;margin-bottom:.6rem;}.qa-label{font-size:.8rem;font-weight:600;}
+.shipment-list{display:flex;flex-direction:column;gap:.8rem;}
+.shipment-row{background:var(--blk2);border:1px solid var(--bdr);border-radius:var(--r);padding:1.1rem 1.3rem;display:flex;align-items:center;justify-content:space-between;transition:border-color .2s;}
+.shipment-row:hover{border-color:rgba(249,115,22,.2);}
+.ship-code{font-family:var(--fh);font-size:.85rem;font-weight:700;color:var(--org);}
+.ship-route{font-size:.82rem;color:var(--txt2);margin-top:.2rem;}
+.ship-price{font-family:var(--fh);font-weight:700;font-size:.95rem;}
+.ship-date{font-size:.75rem;color:var(--txt3);margin-top:.2rem;}
+.price-info-card{background:linear-gradient(135deg,rgba(249,115,22,.08),rgba(249,115,22,.03));border:1px solid rgba(249,115,22,.2);border-radius:var(--r2);padding:1.4rem;margin-bottom:1.5rem;}
+.addr-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+.addr-card{background:var(--blk2);border:1px solid var(--bdr);border-radius:var(--r);padding:1.1rem;cursor:pointer;transition:all .2s;}
+.addr-card:hover{border-color:var(--bdr2);}.addr-card.selected{border-color:var(--org);background:var(--org-x);}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:2rem;}
+.pricing-rules{display:flex;flex-direction:column;gap:1rem;}
+.rule-card{background:var(--blk2);border:1px solid var(--bdr);border-radius:var(--r);padding:1.2rem;display:flex;align-items:center;justify-content:space-between;}
+.rule-name{font-weight:600;font-size:.9rem;}.rule-desc{font-size:.78rem;color:var(--txt2);margin-top:.2rem;}
+.rule-val{font-family:var(--fh);font-size:1.2rem;font-weight:800;color:var(--org);}
+.rule-actions{display:flex;gap:.5rem;}
+.tier-table{width:100%;margin-top:1rem;}
+.tier-table th{background:var(--blk3);}
+.tier-edit{background:none;border:none;color:var(--org);cursor:pointer;font-size:.8rem;font-weight:600;}
+.client-detail-grid{display:grid;grid-template-columns:1fr 1.5fr;gap:1.5rem;align-items:start;}
+.chart-placeholder{background:var(--blk3);border:1px solid var(--bdr);border-radius:var(--r);height:180px;display:flex;align-items:flex-end;padding:1rem;overflow:hidden;}
+.chart-bars{display:flex;align-items:flex-end;gap:6px;height:140px;width:100%;}
+.chart-bar{flex:1;border-radius:4px 4px 0 0;background:linear-gradient(to top,var(--org-d),var(--org));opacity:.75;transition:opacity .2s;}
+.chart-bar:hover{opacity:1;}
+.leads-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;}
+.lead-card{background:var(--blk2);border:1px solid var(--bdr);border-radius:var(--r);padding:1.2rem;display:flex;flex-direction:column;gap:.4rem;}
+.lead-name{font-weight:700;font-size:.92rem;}.lead-contact{font-size:.8rem;color:var(--txt2);}
+@media(max-width:900px){.svc-grid,.how-grid,.pricing-grid{grid-template-columns:1fr 1fr;}.stats-grid,.quick-actions{grid-template-columns:1fr 1fr;}.footer-grid,.client-detail-grid,.addr-grid{grid-template-columns:1fr;}.reviews-grid,.leads-grid{grid-template-columns:1fr;}.sidebar{display:none;}.form-grid-2,.form-grid-3{grid-template-columns:1fr;}}
+@media(max-width:600px){.svc-grid,.how-grid,.pricing-grid{grid-template-columns:1fr;}.lp-h1{font-size:2.2rem;}}
+</style>
+/* Stripe Elements dark theme overrides */
+#stripe-card-element .StripeElement{background:transparent!important;}
+.StripeElement{padding:.85rem 1rem;background:var(--blk3);border:1px solid var(--bdr);border-radius:var(--r);transition:border-color .2s;}
+.StripeElement--focus{border-color:var(--org)!important;}
+.StripeElement--invalid{border-color:var(--red)!important;}
+<script src="https://js.stripe.com/v3/"></script>
+</head>
+<body>
+<div id="toast-container"></div>
+<div class="wa-float" id="wa-float"><a href="https://wa.me/351911580781">💬</a></div>
+
+<!-- LANDING PAGE -->
+<div id="page-landing" class="page active">
+<nav class="lp-nav">
+  <div class="lp-logo"><div class="dot-live"></div>LongitudeÁgil</div>
+  <div class="lp-nav-links">
+    <a href="#">Início</a><a href="#lp-svc">Serviços</a><a href="#lp-price">Preços</a>
+    <button class="btn btn-ghost btn-sm" onclick="showPage('balcao')">Envio de Balcão</button>
+    <button class="btn btn-org btn-sm" onclick="showPage('auth')">Entrar / Criar Conta</button>
+  </div>
+</nav>
+<div class="lp-hero">
+  <div class="lp-glow"></div><div class="lp-grid"></div>
+  <div class="lp-inner">
+    <div class="lp-pill"><span class="dot-live"></span>Disponível 7 dias por semana</div>
+    <h1 class="lp-h1">Envios, Entregas e Mudanças em <span class="hl">Cascais, Sintra</span> e Amadora</h1>
+    <p class="lp-sub">Peça orçamento em segundos ou crie a sua conta para fazer envios diretamente pelo nosso site, com preços personalizados para o seu volume mensal.</p>
+    <div class="lp-btns">
+      <button class="btn btn-org btn-lg" onclick="showPage('balcao')">📦 Pedir Envio de Balcão</button>
+      <button class="btn btn-ghost btn-lg" onclick="showPage('auth')">👤 Criar Conta</button>
+      <a href="https://wa.me/351911580781" class="btn btn-wa btn-lg">💬 WhatsApp</a>
+    </div>
+    <div class="lp-trust">
+      <div class="lp-trust-item">✅ Sem custos ocultos</div>
+      <div class="lp-trust-item">⚡ Entrega no mesmo dia</div>
+      <div class="lp-trust-item">🛡️ Seguro incluído</div>
+    </div>
+  </div>
+</div>
+<div class="lp-strip">
+  <div class="lp-strip-item">🚀 Resposta em 15 minutos</div>
+  <div class="lp-strip-item">📦 500+ Entregas realizadas</div>
+  <div class="lp-strip-item">⭐ 98% de satisfação</div>
+  <div class="lp-strip-item">🗺️ 8 Zonas cobertas</div>
+</div>
+<div class="lp-section" id="lp-svc" style="background:var(--blk2)">
+  <div class="lp-stag">O que fazemos</div>
+  <h2 class="lp-sh">Serviços de Transporte<br>para Todos os Perfis</h2>
+  <p class="lp-sp">De uma encomenda urgente a uma mudança completa — temos a solução certa para si.</p>
+  <div class="svc-grid">
+    <div class="svc-card"><div class="svc-ico">⚡</div><h3>Entregas Urgentes</h3><p>Recolha e entrega no mesmo dia. Quando o tempo é crítico, estamos disponíveis.</p></div>
+    <div class="svc-card"><div class="svc-ico">🚛</div><h3>Transporte de Mercadorias</h3><p>Cargas pequenas e grandes volumes. Frota adaptada, sempre com seguro incluído.</p></div>
+    <div class="svc-card"><div class="svc-ico">🏠</div><h3>Mudanças Residenciais</h3><p>Mudanças completas com embalagem, carga, transporte e montagem.</p></div>
+    <div class="svc-card"><div class="svc-ico">🏢</div><h3>Mudanças Empresariais</h3><p>Transferência de escritórios com planeamento e mínima interrupção.</p></div>
+    <div class="svc-card"><div class="svc-ico">🔄</div><h3>Distribuição Local</h3><p>Rotas fixas ou flexíveis. Otimizamos as suas entregas diárias.</p></div>
+    <div class="svc-card"><div class="svc-ico">📅</div><h3>Recolhas Programadas</h3><p>Agende recolhas recorrentes sem preocupações.</p></div>
+  </div>
+</div>
+<div class="lp-section">
+  <div class="lp-stag">Como funciona</div>
+  <h2 class="lp-sh">Em 4 Passos Simples</h2>
+  <div class="how-grid">
+    <div class="how-card"><div class="how-num">1</div><h3>Pede Envio</h3><p>Formulário de balcão ou cria conta para envios recorrentes.</p></div>
+    <div class="how-card"><div class="how-num">2</div><h3>Confirmação</h3><p>Email e WhatsApp em menos de 15 minutos.</p></div>
+    <div class="how-card"><div class="how-num">3</div><h3>Recolha</h3><p>A nossa equipa vai ao local no horário combinado.</p></div>
+    <div class="how-card"><div class="how-num">4</div><h3>Entregue</h3><p>Entregamos com segurança e notificamos ambas as partes.</p></div>
+  </div>
+</div>
+<div class="lp-section" style="background:var(--blk2)">
+  <div class="lp-stag">Cobertura</div>
+  <h2 class="lp-sh">Lisboa Oeste — Toda a Região</h2>
+  <div class="zones-row">
+    <div class="zone-tag">📍 Carcavelos — Base</div>
+    <div class="zone-tag">📍 Cascais — ~15 min</div>
+    <div class="zone-tag">📍 Parede — ~10 min</div>
+    <div class="zone-tag">📍 Estoril — ~12 min</div>
+    <div class="zone-tag">📍 Sintra — ~25 min</div>
+    <div class="zone-tag">📍 Amadora — ~20 min</div>
+    <div class="zone-tag">📍 Oeiras — ~18 min</div>
+    <div class="zone-tag">📍 S. Domingos — ~12 min</div>
+  </div>
+</div>
+<div class="lp-section" id="lp-price">
+  <div class="lp-stag">Tabela de preços</div>
+  <h2 class="lp-sh">Preços por Peso — Pacotes até 15 kg</h2>
+  <p class="lp-sp">Preços fixos por peso, entrega em 24h. Para envios acima de 15 kg, mudanças ou mercadoria a granel, peça orçamento.</p>
+
+  <!-- TABS destino -->
+  <div style="display:flex;gap:.6rem;margin-top:2rem;flex-wrap:wrap;">
+    <button class="btn btn-org btn-sm" id="ptab-pt"  onclick="switchPriceTab('pt')">🇵🇹 Portugal 24h</button>
+    <button class="btn btn-ghost btn-sm" id="ptab-es"  onclick="switchPriceTab('es')">🇪🇸 Espanha 24h</button>
+    <button class="btn btn-ghost btn-sm" id="ptab-mad" onclick="switchPriceTab('mad')">🏝️ Madeira / Açores 24–48h</button>
+  </div>
+
+  <!-- TABELA PT -->
+  <div id="ptable-pt" style="margin-top:1.8rem;">
+    <div class="pricing-grid" style="grid-template-columns:repeat(4,1fr);">
+      <div class="price-card"><div class="price-tier">1 kg</div><div class="price-val">4,88<span>€</span></div><div class="price-vol">Pacote pequeno</div><ul class="price-feats"><li>Entrega 24h</li><li>Rastreio incluído</li><li>Seguro básico</li></ul><button class="btn btn-ghost btn-full btn-sm" onclick="showPage('balcao')">Pedir Agora</button></div>
+      <div class="price-card"><div class="price-tier">3 kg</div><div class="price-val">5,46<span>€</span></div><div class="price-vol">Pacote médio</div><ul class="price-feats"><li>Entrega 24h</li><li>Rastreio incluído</li><li>Seguro básico</li></ul><button class="btn btn-ghost btn-full btn-sm" onclick="showPage('balcao')">Pedir Agora</button></div>
+      <div class="price-card"><div class="price-tier">5 kg</div><div class="price-val">5,87<span>€</span></div><div class="price-vol">Pacote grande</div><ul class="price-feats"><li>Entrega 24h</li><li>Rastreio incluído</li><li>Seguro básico</li></ul><button class="btn btn-ghost btn-full btn-sm" onclick="showPage('balcao')">Pedir Agora</button></div>
+      <div class="price-card featured"><div class="price-tier">10 kg</div><div class="price-val">7,15<span>€</span></div><div class="price-vol">⭐ Mais pedido</div><ul class="price-feats"><li>Entrega 24h</li><li>Rastreio incluído</li><li>Seguro básico</li></ul><button class="btn btn-org btn-full btn-sm" onclick="showPage('balcao')">Pedir Agora</button></div>
+    </div>
+    <!-- linha 15kg + info kg adicional -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;margin-top:1.2rem;">
+      <div class="price-card" style="text-align:center;"><div class="price-tier">15 kg</div><div class="price-val">8,71<span>€</span></div><div class="price-vol">Limite desta tabela</div><ul class="price-feats"><li>Entrega 24h</li><li>Rastreio incluído</li></ul><button class="btn btn-ghost btn-full btn-sm" onclick="showPage('balcao')">Pedir Agora</button></div>
+      <div class="price-card" style="background:rgba(249,115,22,.04);border-color:rgba(249,115,22,.2);text-align:center;display:flex;flex-direction:column;justify-content:center;">
+        <div style="font-size:1.6rem;margin-bottom:.6rem;">📦</div>
+        <div style="font-family:var(--fh);font-weight:700;margin-bottom:.4rem;">Acima de 15 kg?</div>
+        <div class="small muted" style="margin-bottom:1rem;line-height:1.6;">Para volumes maiores, mudanças ou mercadoria a granel — peça orçamento personalizado.</div>
+        <div class="small" style="color:var(--org);font-weight:600;margin-bottom:1rem;">+ 0,51€ por kg adicional</div>
+        <a href="https://wa.me/351911580781" class="btn btn-wa btn-sm">💬 Pedir Orçamento</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- TABELA ES -->
+  <div id="ptable-es" style="margin-top:1.8rem;display:none;">
+    <div class="pricing-grid" style="grid-template-columns:repeat(4,1fr);">
+      <div class="price-card"><div class="price-tier">1 kg</div><div class="price-val">8,05<span>€</span></div><div class="price-vol">Pacote pequeno</div><ul class="price-feats"><li>Entrega 24h</li><li>Rastreio incluído</li><li>Seguro básico</li></ul><button class="btn btn-ghost btn-full btn-sm" onclick="showPage('balcao')">Pedir Agora</button></div>
+      <div class="price-card"><div class="price-tier">3 kg</div><div class="price-val">8,14<span>€</span></div><div class="price-vol">Pacote médio</div><ul class="price-feats"><li>Entrega 24h</li><li>Rastreio incluído</li><li>Seguro básico</li></ul><button class="btn btn-ghost btn-full btn-sm" onclick="showPage('balcao')">Pedir Agora</button></div>
+      <div class="price-card"><div class="price-tier">5 kg</div><div class="price-val">9,31<span>€</span></div><div class="price-vol">Pacote grande</div><ul class="price-feats"><li>Entrega 24h</li><li>Rastreio incluído</li><li>Seguro básico</li></ul><button class="btn btn-ghost btn-full btn-sm" onclick="showPage('balcao')">Pedir Agora</button></div>
+      <div class="price-card featured"><div class="price-tier">10 kg</div><div class="price-val">11,62<span>€</span></div><div class="price-vol">⭐ Mais pedido</div><ul class="price-feats"><li>Entrega 24h</li><li>Rastreio incluído</li><li>Seguro básico</li></ul><button class="btn btn-org btn-full btn-sm" onclick="showPage('balcao')">Pedir Agora</button></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;margin-top:1.2rem;">
+      <div class="price-card" style="text-align:center;"><div class="price-tier">15 kg</div><div class="price-val">13,49<span>€</span></div><div class="price-vol">Limite desta tabela</div><ul class="price-feats"><li>Entrega 24h</li><li>Rastreio incluído</li></ul><button class="btn btn-ghost btn-full btn-sm" onclick="showPage('balcao')">Pedir Agora</button></div>
+      <div class="price-card" style="background:rgba(249,115,22,.04);border-color:rgba(249,115,22,.2);text-align:center;display:flex;flex-direction:column;justify-content:center;">
+        <div style="font-size:1.6rem;margin-bottom:.6rem;">📦</div>
+        <div style="font-family:var(--fh);font-weight:700;margin-bottom:.4rem;">Acima de 15 kg?</div>
+        <div class="small muted" style="margin-bottom:1rem;line-height:1.6;">Para volumes maiores, mudanças ou mercadoria a granel — peça orçamento.</div>
+        <div class="small" style="color:var(--org);font-weight:600;margin-bottom:1rem;">+ 0,92€ por kg adicional</div>
+        <a href="https://wa.me/351911580781" class="btn btn-wa btn-sm">💬 Pedir Orçamento</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- TABELA MADEIRA -->
+  <div id="ptable-mad" style="margin-top:1.8rem;display:none;">
+    <div style="background:rgba(249,115,22,.06);border:1px solid rgba(249,115,22,.25);border-radius:var(--r2);padding:1.5rem;margin-bottom:1.5rem;display:flex;align-items:center;gap:1rem;">
+      <div style="font-size:2rem;">🏝️</div>
+      <div><div style="font-weight:700;margin-bottom:.3rem;">Madeira & São Miguel — Transporte Aéreo</div><div class="small muted">Prazo de entrega 24–48h. Preço base de 1 kg com acréscimo por cada kg adicional.</div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;">
+      <div class="price-card featured" style="text-align:center;">
+        <div class="price-tier">1 kg — base</div>
+        <div class="price-val">10,72<span>€</span></div>
+        <div class="price-vol">Preço de partida · Aéreo 24–48h</div>
+        <ul class="price-feats"><li>Transporte aéreo</li><li>Rastreio incluído</li><li>Seguro básico</li></ul>
+        <button class="btn btn-org btn-full btn-sm" onclick="showPage('balcao')">Pedir Agora</button>
+      </div>
+      <div class="price-card" style="background:rgba(249,115,22,.04);border-color:rgba(249,115,22,.2);text-align:center;display:flex;flex-direction:column;justify-content:center;">
+        <div style="font-size:1.6rem;margin-bottom:.6rem;">✈️</div>
+        <div style="font-family:var(--fh);font-weight:700;margin-bottom:.4rem;">Cada kg adicional</div>
+        <div style="font-family:var(--fh);font-size:2rem;font-weight:900;color:var(--org);margin-bottom:.5rem;">+2,25€<span style="font-size:.9rem;color:var(--txt2);font-weight:400;">/kg</span></div>
+        <div class="small muted" style="margin-bottom:1rem;line-height:1.6;">Ex: 5 kg = 10,72 + (4 × 2,25) = 19,72€</div>
+        <a href="https://wa.me/351911580781" class="btn btn-wa btn-sm">💬 Calcular Envio</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- NOTA FINAL -->
+  <div style="margin-top:1.5rem;background:var(--blk2);border:1px solid var(--bdr);border-radius:var(--r);padding:1rem 1.4rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
+    <div style="font-size:1.2rem;">ℹ️</div>
+    <div class="small muted" style="flex:1;">Preços válidos para <strong style="color:var(--txt);">pacotes até 15 kg</strong>. Envios acima de <strong style="color:var(--txt);">40 kg</strong> ou com dimensão superior a <strong style="color:var(--txt);">1,80 m</strong> têm sobretaxa de +15€. Para mudanças, mercadoria a granel ou orçamento empresarial, contacte-nos.</div>
+    <a href="https://wa.me/351911580781" class="btn btn-ghost btn-sm">💬 Pedir Orçamento</a>
+  </div>
+</div>
+<div class="lp-section" style="background:var(--blk2)">
+  <div class="lp-stag">Prova social</div>
+  <h2 class="lp-sh">O que dizem os clientes</h2>
+  <div class="reviews-grid">
+    <div class="review-card"><div class="review-stars">★★★★★</div><p class="review-text">"Mudança em Cascais impecável. Criei conta, agendei online e a equipa foi pontual. Preços muito competitivos para o meu volume."</p><div style="display:flex;align-items:center;gap:.8rem;"><div class="ava">MA</div><div><div style="font-weight:600;font-size:.85rem;">Maria Alves</div><div class="small muted">Cascais · 45 envios/mês</div></div></div></div>
+    <div class="review-card"><div class="review-stars">★★★★★</div><p class="review-text">"Entrega urgente em Sintra em 3 horas. Usei o balcão sem precisar de conta. Muito prático e rápido!"</p><div style="display:flex;align-items:center;gap:.8rem;"><div class="ava">JC</div><div><div style="font-weight:600;font-size:.85rem;">João Correia</div><div class="small muted">Sintra · Balcão</div></div></div></div>
+    <div class="review-card"><div class="review-stars">★★★★★</div><p class="review-text">"Gerimos distribuição para a nossa loja online. Preço personalizado para 200 envios/mês. Serviço fiável!"</p><div style="display:flex;align-items:center;gap:.8rem;"><div class="ava">SR</div><div><div style="font-weight:600;font-size:.85rem;">Sofia Rodrigues</div><div class="small muted">Amadora · 200 envios/mês</div></div></div></div>
+  </div>
+</div>
+<div class="lp-cta">
+  <div class="lp-stag">Comece agora</div>
+  <h2 class="lp-sh" style="font-size:2.2rem;margin-bottom:1rem;">Pronto para Simplificar<br>os seus Envios?</h2>
+  <p class="lp-sp" style="margin:0 auto 2rem;text-align:center;">Sem compromisso. Sem custos ocultos. Resposta em 15 minutos.</p>
+  <div style="display:flex;justify-content:center;flex-wrap:wrap;gap:1rem;">
+    <button class="btn btn-org btn-lg" onclick="showPage('balcao')">📦 Envio de Balcão</button>
+    <button class="btn btn-ghost btn-lg" onclick="showPage('auth')">👤 Criar Conta Gratuita</button>
+    <a href="https://wa.me/351911580781" class="btn btn-wa btn-lg">💬 WhatsApp</a>
+  </div>
+</div>
+<footer class="lp-footer">
+  <div class="footer-grid">
+    <div><div style="font-family:var(--fh);font-weight:900;font-size:1.2rem;letter-spacing:-0.5px;margin-bottom:.8rem;">LongitudeÁgil</div><p style="font-size:.85rem;color:var(--txt2);line-height:1.65;">Empresa de logística e transporte local em Cascais, Carcavelos, Parede, Sintra e Amadora.</p></div>
+    <div class="footer-col"><h4>Serviços</h4><ul><li><a href="#">Entregas Urgentes</a></li><li><a href="#">Mudanças</a></li><li><a href="#">Distribuição</a></li></ul></div>
+    <div class="footer-col"><h4>Plataforma</h4><ul><li><a href="#" onclick="showPage('balcao')">Envio de Balcão</a></li><li><a href="#" onclick="showPage('auth')">Criar Conta</a></li><li><a href="#lp-price">Preços</a></li></ul></div>
+    <div class="footer-col"><h4>Contacto</h4><ul><li><a href="tel:+351911580781">📞 +351 911 580 781</a></li><li><a href="mailto:geral@longitudeagil.pt">✉️ geral@longitudeagil.pt</a></li><li><a href="https://wa.me/351911580781">💬 WhatsApp</a></li></ul></div>
+  </div>
+  <div class="footer-bottom"><span>© 2025 Longitude Ágil. Todos os direitos reservados.</span><span>Cascais · Sintra · Amadora · Carcavelos · Parede</span></div>
+</footer>
+</div><!-- /landing -->
+
+<!-- BALCÃO -->
+<div id="page-balcao" class="page">
+<nav class="lp-nav">
+  <div class="lp-logo"><div class="dot-live"></div>LongitudeÁgil</div>
+  <div class="lp-nav-links">
+    <button class="btn btn-ghost btn-sm" onclick="showPage('landing')">← Início</button>
+    <button class="btn btn-org btn-sm" onclick="showPage('auth')">Entrar</button>
+  </div>
+</nav>
+<div class="balcao-wrap" style="padding-top:6rem;">
+  <div class="balcao-header">
+    <div class="lp-pill">📦 Sem conta necessária</div>
+    <h1>Pedido de Envio de Balcão</h1>
+    <p class="muted mt1">Preencha os dados e respondemos em menos de 15 minutos.</p>
+  </div>
+  <div class="balcao-steps">
+    <div class="bstep active" id="bs1"><div class="bstep-dot">1</div><div class="bstep-label">Dados</div></div>
+    <div class="bstep-line" id="bl1"></div>
+    <div class="bstep" id="bs2"><div class="bstep-dot">2</div><div class="bstep-label">Carga</div></div>
+    <div class="bstep-line" id="bl2"></div>
+    <div class="bstep" id="bs3"><div class="bstep-dot">3</div><div class="bstep-label">Confirmação</div></div>
+  </div>
+  <div id="balcao-s1" class="card">
+    <div class="form-section-title">👤 Os seus dados</div>
+    <div class="form-grid-2">
+      <div class="form-group"><label class="form-label">Nome completo *</label><input class="form-input" id="bc-nome" placeholder="O seu nome"></div>
+      <div class="form-group"><label class="form-label">Telefone *</label><input class="form-input" id="bc-tel" type="tel" placeholder="+351 9XX XXX XXX"></div>
+    </div>
+    <div class="form-group"><label class="form-label">Email</label><input class="form-input" id="bc-email" type="email" placeholder="para receber confirmação"></div>
+    <div class="form-section-title" style="margin-top:1.2rem;">📍 Moradas</div>
+    <div class="form-group"><label class="form-label">Morada de Recolha *</label><input class="form-input" id="bc-origem" placeholder="Rua, nº, localidade"></div>
+    <div class="form-group"><label class="form-label">Morada de Entrega *</label><input class="form-input" id="bc-destino" placeholder="Rua, nº, localidade"></div>
+    <div class="form-group"><label class="form-label">Data pretendida *</label><input class="form-input" id="bc-data" type="date"></div>
+    <div style="display:flex;justify-content:flex-end;margin-top:1rem;">
+      <button class="btn btn-org" onclick="balcaoStep(2)">Continuar →</button>
+    </div>
+  </div>
+  <div id="balcao-s2" class="card hidden">
+    <div class="form-section-title">📦 Detalhes da carga</div>
+
+    <!-- DESTINO -->
+    <div class="form-group">
+      <label class="form-label">Destino *</label>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.8rem;">
+        <div class="auth-type-btn selected" id="dest-pt" onclick="bcSelDest('pt')" style="padding:.9rem .5rem;">
+          <div style="font-size:1.4rem;">🇵🇹</div>
+          <div style="font-size:.78rem;font-weight:700;margin-top:.3rem;">Portugal</div>
+          <div style="font-size:.7rem;color:var(--txt3);">24h</div>
+        </div>
+        <div class="auth-type-btn" id="dest-es" onclick="bcSelDest('es')" style="padding:.9rem .5rem;">
+          <div style="font-size:1.4rem;">🇪🇸</div>
+          <div style="font-size:.78rem;font-weight:700;margin-top:.3rem;">Espanha</div>
+          <div style="font-size:.7rem;color:var(--txt3);">24h</div>
+        </div>
+        <div class="auth-type-btn" id="dest-mad" onclick="bcSelDest('mad')" style="padding:.9rem .5rem;">
+          <div style="font-size:1.4rem;">🏝️</div>
+          <div style="font-size:.78rem;font-weight:700;margin-top:.3rem;">Madeira/Açores</div>
+          <div style="font-size:.7rem;color:var(--txt3);">24–48h</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TIPO -->
+    <div class="form-group">
+      <label class="form-label">Tipo de mercadoria *</label>
+      <select class="form-select" id="bc-tipo">
+        <option>Encomenda / Pacote</option>
+        <option>Mobília / Eletrodomésticos</option>
+        <option>Caixas de mudança</option>
+        <option>Mercadoria geral</option>
+        <option>Documentos</option>
+        <option>Outro</option>
+      </select>
+    </div>
+
+    <!-- PESO + DIMENSÕES -->
+    <div class="form-grid-3">
+      <div class="form-group">
+        <label class="form-label">Peso (kg) *</label>
+        <input class="form-input" id="bc-peso" type="number" min="0.1" step="0.1" placeholder="ex: 5" oninput="bcCalcPrice()">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Comprimento (cm)</label>
+        <input class="form-input" id="bc-comp" type="number" min="1" placeholder="ex: 40" oninput="bcCalcPrice()">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Largura (cm)</label>
+        <input class="form-input" id="bc-larg" type="number" min="1" placeholder="ex: 30" oninput="bcCalcPrice()">
+      </div>
+    </div>
+
+    <!-- PREÇO EM TEMPO REAL -->
+    <div id="bc-price-box" style="display:none;margin-bottom:1.2rem;">
+      <div style="background:linear-gradient(135deg,rgba(249,115,22,.1),rgba(249,115,22,.04));border:1px solid rgba(249,115,22,.35);border-radius:var(--r2);padding:1.3rem 1.5rem;">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;">
+          <div>
+            <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--txt2);margin-bottom:.3rem;">Estimativa de preço</div>
+            <div id="bc-price-val" style="font-family:var(--fh);font-size:2.2rem;font-weight:900;color:var(--org);line-height:1;">—</div>
+            <div id="bc-price-desc" style="font-size:.78rem;color:var(--txt2);margin-top:.3rem;"></div>
+          </div>
+          <div id="bc-surcharge-warn" style="display:none;background:rgba(234,179,8,.08);border:1px solid rgba(234,179,8,.3);border-radius:var(--r);padding:.7rem 1rem;font-size:.8rem;color:#fde047;max-width:240px;line-height:1.5;">
+            ⚠️ <strong>Taxa extra:</strong> envios acima de <strong>40 kg</strong> ou <strong>1,80 m</strong> têm sobretaxa de <strong>+15,00€</strong>
+          </div>
+        </div>
+        <!-- TABELA resumida -->
+        <div id="bc-table-ref" style="margin-top:1rem;border-top:1px solid rgba(249,115,22,.2);padding-top:.8rem;display:flex;flex-wrap:wrap;gap:.4rem;">
+        </div>
+      </div>
+    </div>
+
+    <!-- OBS + FOTO -->
+    <div class="form-group"><label class="form-label">Observações</label><textarea class="form-textarea" id="bc-obs" placeholder="Frágil, não empilhar, acesso difícil..."></textarea></div>
+    <div class="form-group">
+      <label class="form-label">Fotos da carga (opcional)</label>
+      <div class="upload-zone" onclick="document.getElementById('bc-files').click()">
+        <div style="font-size:2rem;margin-bottom:.5rem;">📷</div>
+        <div style="font-weight:600;font-size:.88rem;">Clique para carregar fotos</div>
+        <div class="small muted mt1">JPG, PNG até 5MB</div>
+        <input type="file" id="bc-files" multiple accept="image/*" style="display:none" onchange="showFNames(this,'bc-flist')">
+      </div>
+      <div id="bc-flist" class="small muted mt1"></div>
+    </div>
+
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:1rem;gap:.8rem;flex-wrap:wrap;">
+      <button class="btn btn-ghost" onclick="balcaoStep(1)">← Voltar</button>
+      <div style="display:flex;gap:.8rem;flex-wrap:wrap;">
+        <button id="bc-pay-btn" class="btn btn-org btn-lg" onclick="bcPagar()" style="display:none;">
+          💳 Pagar <span id="bc-pay-amount">—</span> agora
+        </button>
+        <button class="btn btn-ghost" onclick="balcaoStep(3)" id="bc-sem-pag-btn">Enviar sem pagar →</button>
+      </div>
+    </div>
+  </div>
+  <div id="balcao-s3" class="card hidden">
+    <div class="balcao-confirm">
+      <div class="confirm-icon" id="bc-confirm-icon">✅</div>
+      <h2 style="font-family:var(--fh);font-size:1.6rem;font-weight:900;margin-bottom:.8rem;" id="bc-confirm-title">Pedido Recebido!</h2>
+      <p class="muted" id="bc-confirm-msg" style="max-width:420px;margin:0 auto 1.5rem;line-height:1.7;">Recebemos o seu pedido. Vamos entrar em contacto em breve — normalmente em menos de 15 minutos.</p>
+      <div id="bc-ref-box" style="background:var(--blk3);border:1px solid var(--bdr);border-radius:var(--r);padding:1rem;margin:0 auto 2rem;max-width:280px;">
+        <div class="small muted">Referência do pedido</div>
+        <div id="bc-ref-val" style="font-family:var(--fh);font-size:1.2rem;font-weight:700;color:var(--org);margin-top:.3rem;"></div>
+      </div>
+      <div style="display:flex;justify-content:center;flex-wrap:wrap;gap:.8rem;">
+        <a href="https://wa.me/351911580781" class="btn btn-wa">💬 WhatsApp</a>
+        <button class="btn btn-ghost" onclick="balcaoReset()">Novo Pedido</button>
+        <button class="btn btn-ghost" onclick="showPage('landing')">← Início</button>
+      </div>
+    </div>
+  </div>
+  <div class="card mt3" style="background:linear-gradient(135deg,rgba(249,115,22,.06),transparent);border-color:rgba(249,115,22,.2);">
+    <div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
+      <div style="font-size:1.6rem;">💡</div>
+      <div style="flex:1;"><div style="font-weight:700;margin-bottom:.3rem;">Faz envios regularmente?</div><div class="small muted">Crie conta gratuita com preços personalizados e dashboard próprio.</div></div>
+      <button class="btn btn-org btn-sm" onclick="showPage('auth')">Criar Conta</button>
+    </div>
+  </div>
+</div>
+</div><!-- /balcao -->
+
+<!-- AUTH -->
+<div id="page-auth" class="page">
+<div style="position:fixed;top:1rem;left:1.5rem;z-index:10;"><button class="btn btn-ghost btn-sm" onclick="showPage('landing')">← Voltar</button></div>
+<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem;background:var(--blk);position:relative;overflow:hidden;">
+  <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:60vw;height:60vh;background:radial-gradient(ellipse,rgba(249,115,22,.07) 0%,transparent 65%);pointer-events:none;"></div>
+  <div class="auth-card">
+    <div style="font-family:var(--fh);font-weight:900;font-size:1.4rem;letter-spacing:-1px;margin-bottom:2rem;display:flex;align-items:center;gap:.5rem;"><div class="dot-live"></div>LongitudeÁgil</div>
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="tab-login" onclick="switchAuthTab('login')">Entrar</button>
+      <button class="auth-tab" id="tab-register" onclick="switchAuthTab('register')">Criar Conta</button>
+    </div>
+    <div id="auth-login">
+      <div class="form-group"><label class="form-label">Email</label><input class="form-input" id="l-email" type="email" placeholder="email@exemplo.com"></div>
+      <div class="form-group"><label class="form-label">Palavra-passe</label><input class="form-input" id="l-pass" type="password" placeholder="••••••••"></div>
+      <button class="btn btn-org btn-full mt2" onclick="doLogin()">Entrar →</button>
+      <div id="login-error" style="display:none;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);border-radius:var(--r);padding:.7rem 1rem;font-size:.83rem;color:#fca5a5;margin-top:.8rem;text-align:center;"></div>
+      <p class="small muted mt2" style="text-align:center;">Não tem conta? <a href="#" onclick="switchAuthTab('register')" style="color:var(--org);">Crie uma</a></p>
+    </div>
+    <div id="auth-register" class="hidden">
+      <div class="form-group">
+        <label class="form-label">Tipo de conta</label>
+        <div class="auth-type-btns">
+          <div class="auth-type-btn selected" id="type-particular" onclick="selType('particular')"><div class="type-ico">👤</div><div class="type-label">Particular</div></div>
+          <div class="auth-type-btn" id="type-empresa" onclick="selType('empresa')"><div class="type-ico">🏢</div><div class="type-label">Empresa</div></div>
+        </div>
+      </div>
+      <div class="form-grid-2">
+        <div class="form-group"><label class="form-label">Nome *</label><input class="form-input" id="r-nome" placeholder="Nome completo"></div>
+        <div class="form-group"><label class="form-label">Telefone *</label><input class="form-input" id="r-tel" type="tel" placeholder="+351 9XX XXX XXX"></div>
+      </div>
+      <div class="form-group empresa-field hidden"><label class="form-label">Nome da empresa</label><input class="form-input" id="r-empresa" placeholder="Nome da empresa"></div>
+      <div class="form-grid-2">
+        <div class="form-group"><label class="form-label">NIF</label><input class="form-input" id="r-nif" placeholder="123456789"></div>
+        <div class="form-group"><label class="form-label">Cidade *</label><input class="form-input" id="r-cidade" placeholder="Ex: Cascais"></div>
+      </div>
+      <div class="form-group"><label class="form-label">Email *</label><input class="form-input" id="r-email" type="email" placeholder="email@exemplo.com"></div>
+      <div class="form-group"><label class="form-label">Palavra-passe *</label><input class="form-input" id="r-pass" type="password" placeholder="Mínimo 8 caracteres"></div>
+      <button class="btn btn-org btn-full mt2" onclick="doRegister()">Criar Conta →</button>
+      <p class="small muted mt2" style="text-align:center;">Já tem conta? <a href="#" onclick="switchAuthTab('login')" style="color:var(--org);">Entre aqui</a></p>
+    </div>
+  </div>
+</div>
+</div><!-- /auth -->
+
+<!-- CLIENT DASHBOARD -->
+<div id="page-dashboard" class="page">
+<div class="dash-layout">
+<aside class="sidebar">
+  <div class="sidebar-logo"><div class="dot-live"></div>LongitudeÁgil</div>
+  <nav class="sidebar-nav">
+    <div class="nav-item active" onclick="cNav('c-overview',this)"><span class="nav-ico">🏠</span>Visão Geral</div>
+    <div class="nav-item" onclick="cNav('c-new-ship',this)"><span class="nav-ico">➕</span>Novo Envio</div>
+    <div class="nav-item" onclick="cNav('c-shipments',this)"><span class="nav-ico">📦</span>Os meus Envios<span class="nav-badge">3</span></div>
+    <div class="nav-item" onclick="cNav('c-addresses',this)"><span class="nav-ico">📍</span>Moradas</div>
+    <div class="nav-item" onclick="cNav('c-invoices',this)"><span class="nav-ico">🧾</span>Faturas</div>
+    <div class="nav-item" onclick="cNav('c-pricing',this)"><span class="nav-ico">💶</span>Os meus Preços</div>
+    <div class="nav-item" onclick="cNav('c-profile',this)"><span class="nav-ico">👤</span>Perfil</div>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="sidebar-user"><div class="user-ava" id="client-ava">JC</div><div><div class="user-name" id="client-name">João Cliente</div><div class="user-role">Cliente</div></div></div>
+    <button class="btn btn-ghost btn-sm btn-full mt2" onclick="showPage('landing')">← Sair</button>
+  </div>
+</aside>
+<div class="dash-main">
+  <div class="dash-header">
+    <div class="dash-title" id="c-title">Visão Geral</div>
+    <div style="display:flex;gap:.8rem;align-items:center;">
+      <span class="badge badge-grn"><span class="dot"></span>Online</span>
+      <button class="btn btn-org btn-sm" onclick="cNav('c-new-ship',null)">+ Novo Envio</button>
+    </div>
+  </div>
+  <div class="dash-content">
+
+    <div class="subpage active" id="c-overview">
+      <div class="price-info-card">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;">
+          <div><div class="tag muted">O seu preço atual</div><div style="font-family:var(--fh);font-size:2rem;font-weight:900;color:var(--org);margin:.3rem 0;">5,90€<span style="font-size:1rem;color:var(--txt2);font-weight:400;">/envio</span></div><div class="small muted">Escalão: 31–70 envios/mês · 35 envios este mês</div></div>
+          <div style="text-align:right;"><div class="badge badge-org" style="margin-bottom:.5rem;">Próximo: 71 envios → 4,90€</div><div class="small muted">Faltam 36 envios para desconto</div></div>
+        </div>
+      </div>
+      <div class="quick-actions">
+        <div class="qa-card" onclick="cNav('c-new-ship',null)"><div class="qa-ico">📦</div><div class="qa-label">Novo Envio</div></div>
+        <div class="qa-card" onclick="cNav('c-shipments',null)"><div class="qa-ico">🔍</div><div class="qa-label">Rastrear</div></div>
+        <div class="qa-card" onclick="cNav('c-addresses',null)"><div class="qa-ico">📍</div><div class="qa-label">Moradas</div></div>
+        <div class="qa-card" onclick="cNav('c-invoices',null)"><div class="qa-ico">🧾</div><div class="qa-label">Faturas</div></div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:2rem;">
+        <div class="stat-card"><div class="stat-icon stat-icon-org">📦</div><div class="stat-num">35</div><div class="stat-label">Envios este mês</div><div class="stat-up">↑ +8 vs anterior</div></div>
+        <div class="stat-card"><div class="stat-icon stat-icon-grn">✅</div><div class="stat-num">33</div><div class="stat-label">Entregues</div><div class="stat-up">94% taxa</div></div>
+        <div class="stat-card"><div class="stat-icon stat-icon-yel">💶</div><div class="stat-num">206€</div><div class="stat-label">Total do mês</div></div>
+      </div>
+      <h3 style="font-family:var(--fh);font-weight:700;margin-bottom:1rem;">Envios recentes</h3>
+      <div class="shipment-list">
+        <div class="shipment-row"><div><div class="ship-code">LA-2025-004821</div><div class="ship-route">Carcavelos → Cascais · 3kg</div></div><div style="display:flex;align-items:center;gap:1rem;"><span class="badge badge-grn"><span class="dot"></span>Entregue</span><div><div class="ship-price">5,90€</div><div class="ship-date">Hoje</div></div></div></div>
+        <div class="shipment-row"><div><div class="ship-code">LA-2025-004798</div><div class="ship-route">Parede → Sintra · Caixas</div></div><div style="display:flex;align-items:center;gap:1rem;"><span class="badge badge-yel"><span class="dot"></span>Em transporte</span><div><div class="ship-price">5,90€</div><div class="ship-date">Hoje</div></div></div></div>
+        <div class="shipment-row"><div><div class="ship-code">LA-2025-004756</div><div class="ship-route">Cascais → Amadora</div></div><div style="display:flex;align-items:center;gap:1rem;"><span class="badge badge-grn"><span class="dot"></span>Entregue</span><div><div class="ship-price">5,90€</div><div class="ship-date">Ontem</div></div></div></div>
+      </div>
+    </div>
+
+    <div class="subpage" id="c-new-ship">
+      <div style="max-width:700px;">
+        <div class="price-info-card"><div style="display:flex;align-items:center;gap:1rem;"><div style="font-size:1.5rem;">💶</div><div><div class="small muted">Preço deste envio</div><div style="font-family:var(--fh);font-size:1.6rem;font-weight:900;color:var(--org);">5,90€</div></div><div class="small muted" style="margin-left:auto;">Escalão 31–70/mês</div></div></div>
+        <div class="card">
+          <div class="form-section-title">📤 Recolha</div>
+          <div class="form-group"><label class="form-label">Morada de recolha *</label><input class="form-input" id="ns-orig" placeholder="Rua, nº, localidade"></div>
+          <div class="form-grid-2">
+            <div class="form-group"><label class="form-label">Data *</label><input class="form-input" id="ns-data" type="date"></div>
+            <div class="form-group"><label class="form-label">Horário</label><select class="form-select"><option>08h–10h</option><option>10h–12h</option><option>12h–14h</option><option>14h–16h</option><option>16h–18h</option></select></div>
+          </div>
+          <div class="form-section-title" style="margin-top:1rem;">📥 Entrega</div>
+          <div class="form-group"><label class="form-label">Morada de entrega *</label><input class="form-input" id="ns-dest" placeholder="Rua, nº, localidade"></div>
+          <div class="form-grid-2">
+            <div class="form-group"><label class="form-label">Nome destinatário *</label><input class="form-input" id="ns-dname" placeholder="Nome completo"></div>
+            <div class="form-group"><label class="form-label">Telefone destinatário</label><input class="form-input" id="ns-dtel" type="tel" placeholder="+351 9XX XXX XXX"></div>
+          </div>
+          <div class="form-section-title" style="margin-top:1rem;">📦 Carga</div>
+          <div class="form-group"><label class="form-label">Tipo</label><select class="form-select"><option>Encomenda</option><option>Mobília</option><option>Caixas</option><option>Documentos</option><option>Outro</option></select></div>
+          <div class="form-grid-3">
+            <div class="form-group"><label class="form-label">Peso (kg)</label><input class="form-input" type="number" placeholder="5"></div>
+            <div class="form-group"><label class="form-label">Comp. (cm)</label><input class="form-input" type="number" placeholder="40"></div>
+            <div class="form-group"><label class="form-label">Larg. (cm)</label><input class="form-input" type="number" placeholder="30"></div>
+          </div>
+          <div class="form-group"><label class="form-label">Observações</label><textarea class="form-textarea" placeholder="Frágil, instruções especiais..."></textarea></div>
+          <div class="form-group">
+            <label class="form-label">Documentos / Fotos</label>
+            <div class="upload-zone" onclick="document.getElementById('ns-files').click()"><div>📎 Carregar ficheiros</div><div class="small muted mt1">PDF, JPG, PNG até 10MB</div><input type="file" id="ns-files" multiple style="display:none"></div>
+          </div>
+          <div style="display:flex;justify-content:flex-end;gap:.8rem;margin-top:1rem;">
+            <button class="btn btn-ghost" onclick="cNav('c-overview',null)">Cancelar</button>
+            <button class="btn btn-org" onclick="submitShip()">✅ Confirmar — 5,90€</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="subpage" id="c-shipments">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem;">
+        <div style="display:flex;gap:.5rem;flex-wrap:wrap;"><button class="btn btn-org btn-sm">Todos</button><button class="btn btn-ghost btn-sm">Em trânsito</button><button class="btn btn-ghost btn-sm">Entregues</button></div>
+        <input class="form-input" placeholder="🔍 Pesquisar..." style="width:200px;padding:.5rem .9rem;font-size:.85rem;">
+      </div>
+      <div class="panel"><div class="table-wrap"><table><thead><tr><th>Ref.</th><th>Origem</th><th>Destino</th><th>Data</th><th>Estado</th><th>Preço</th><th></th></tr></thead><tbody>
+        <tr><td><span class="ship-code">LA-004821</span></td><td>Carcavelos</td><td>Cascais</td><td>Hoje</td><td><span class="badge badge-grn"><span class="dot"></span>Entregue</span></td><td><strong>5,90€</strong></td><td><button class="btn btn-ghost btn-sm">Ver</button></td></tr>
+        <tr><td><span class="ship-code">LA-004798</span></td><td>Parede</td><td>Sintra</td><td>Hoje</td><td><span class="badge badge-yel"><span class="dot"></span>Em transporte</span></td><td><strong>5,90€</strong></td><td><button class="btn btn-ghost btn-sm">Ver</button></td></tr>
+        <tr><td><span class="ship-code">LA-004756</span></td><td>Cascais</td><td>Amadora</td><td>Ontem</td><td><span class="badge badge-grn"><span class="dot"></span>Entregue</span></td><td><strong>5,90€</strong></td><td><button class="btn btn-ghost btn-sm">Ver</button></td></tr>
+        <tr><td><span class="ship-code">LA-004688</span></td><td>Estoril</td><td>Sintra</td><td>21 Jun</td><td><span class="badge badge-red"><span class="dot"></span>Cancelado</span></td><td><strong>—</strong></td><td><button class="btn btn-ghost btn-sm">Ver</button></td></tr>
+      </tbody></table></div></div>
+    </div>
+
+    <div class="subpage" id="c-addresses">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;">
+        <h3 style="font-family:var(--fh);font-weight:700;">Moradas Guardadas</h3>
+        <button class="btn btn-org btn-sm" onclick="showT('success','Função em breve!')">+ Adicionar</button>
+      </div>
+      <div class="addr-grid">
+        <div class="addr-card selected"><div style="font-weight:700;margin-bottom:.4rem;">🏠 Casa</div><div class="small muted">Rua das Flores, 12, Carcavelos</div><div class="small" style="color:var(--org);margin-top:.5rem;">Predefinida</div></div>
+        <div class="addr-card"><div style="font-weight:700;margin-bottom:.4rem;">🏢 Escritório</div><div class="small muted">Av. da Liberdade, 245, Lisboa</div></div>
+        <div class="addr-card" style="border-style:dashed;display:flex;align-items:center;justify-content:center;flex-direction:column;color:var(--txt3);cursor:pointer;"><div style="font-size:1.5rem;">+</div><div class="small mt1">Nova morada</div></div>
+      </div>
+    </div>
+
+    <div class="subpage" id="c-invoices">
+      <div class="panel"><div class="table-wrap"><table><thead><tr><th>Fatura</th><th>Período</th><th>Envios</th><th>Total</th><th>Estado</th><th></th></tr></thead><tbody>
+        <tr><td><strong>FAT-2025-0042</strong></td><td>Jun 2025</td><td>35</td><td><strong>206,50€</strong></td><td><span class="badge badge-yel">Pendente</span></td><td><button class="btn btn-ghost btn-sm">PDF</button></td></tr>
+        <tr><td><strong>FAT-2025-0031</strong></td><td>Mai 2025</td><td>27</td><td><strong>159,30€</strong></td><td><span class="badge badge-grn">Paga</span></td><td><button class="btn btn-ghost btn-sm">PDF</button></td></tr>
+      </tbody></table></div></div>
+    </div>
+
+    <div class="subpage" id="c-pricing">
+      <div class="card" style="max-width:560px;">
+        <h3 style="font-family:var(--fh);font-weight:700;margin-bottom:1.2rem;">💶 Os seus Preços</h3>
+        <div class="price-info-card" style="margin-bottom:1.2rem;"><div class="tag muted">Preço atual</div><div style="font-family:var(--fh);font-size:2.5rem;font-weight:900;color:var(--org);">5,90€<span style="font-size:1rem;color:var(--txt2);font-weight:400;">/envio</span></div><div class="small muted mt1">Escalão: 31–70 envios/mês</div></div>
+        <table><thead><tr><th>Volume</th><th>Preço</th><th>Estado</th></tr></thead><tbody>
+          <tr><td>1–10 envios</td><td>7,90€</td><td><span class="badge badge-gray">—</span></td></tr>
+          <tr><td>11–30 envios</td><td>6,90€</td><td><span class="badge badge-gray">—</span></td></tr>
+          <tr style="background:rgba(249,115,22,.05);"><td><strong>31–70 envios</strong></td><td><strong>5,90€</strong></td><td><span class="badge badge-org">✓ Atual</span></td></tr>
+          <tr><td>71–150 envios</td><td>4,90€</td><td><span class="badge badge-gray">Próximo →</span></td></tr>
+          <tr><td>150+ envios</td><td>Personalizado</td><td><span class="badge badge-gray">—</span></td></tr>
+        </tbody></table>
+      </div>
+    </div>
+
+    <div class="subpage" id="c-profile">
+      <div class="card" style="max-width:500px;">
+        <h3 style="font-family:var(--fh);font-weight:700;margin-bottom:1.5rem;">👤 Os meus Dados</h3>
+        <div class="form-grid-2">
+          <div class="form-group"><label class="form-label">Nome</label><input class="form-input" value="João Cliente"></div>
+          <div class="form-group"><label class="form-label">Telefone</label><input class="form-input" value="+351 912 345 678"></div>
+        </div>
+        <div class="form-group"><label class="form-label">Email</label><input class="form-input" type="email" value="joao@exemplo.com"></div>
+        <div class="form-grid-2">
+          <div class="form-group"><label class="form-label">NIF</label><input class="form-input" value="123456789"></div>
+          <div class="form-group"><label class="form-label">Cidade</label><input class="form-input" value="Carcavelos"></div>
+        </div>
+        <div style="display:flex;justify-content:flex-end;gap:.8rem;margin-top:1rem;">
+          <button class="btn btn-org" onclick="showT('success','Dados guardados!')">Guardar</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</div>
+</div><!-- /dashboard -->
+
+<!-- ADMIN DASHBOARD -->
+<div id="page-admin" class="page">
+<div class="dash-layout">
+<aside class="sidebar">
+  <div class="sidebar-logo"><div class="dot-live"></div>Admin Panel</div>
+  <nav class="sidebar-nav">
+    <div class="nav-section-title">Principal</div>
+    <div class="nav-item active" onclick="aN('a-overview',this)"><span class="nav-ico">📊</span>Visão Geral</div>
+    <div class="nav-item" onclick="aN('a-leads',this)"><span class="nav-ico">🎯</span>Leads<span class="nav-badge">5</span></div>
+    <div class="nav-item" onclick="aN('a-balcao',this)"><span class="nav-ico">🪟</span>Balcão<span class="nav-badge">3</span></div>
+    <div class="nav-section-title">Gestão</div>
+    <div class="nav-item" onclick="aN('a-clients',this)"><span class="nav-ico">👥</span>Clientes</div>
+    <div class="nav-item" onclick="aN('a-shipments',this)"><span class="nav-ico">📦</span>Envios</div>
+    <div class="nav-item" onclick="aN('a-pricing',this)"><span class="nav-ico">💶</span>Preços</div>
+    <div class="nav-item" onclick="aN('a-invoices',this)"><span class="nav-ico">🧾</span>Faturas</div>
+    <div class="nav-item" onclick="aN('a-stats',this)"><span class="nav-ico">📈</span>Estatísticas</div>
+    <div class="nav-section-title">Sistema</div>
+    <div class="nav-item" onclick="aN('a-settings',this)"><span class="nav-ico">⚙️</span>Configurações</div>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="sidebar-user"><div class="user-ava">AD</div><div><div class="user-name">Administrador</div><div class="user-role">Super Admin</div></div></div>
+    <button class="btn btn-ghost btn-sm btn-full mt2" onclick="showPage('landing')">← Sair</button>
+  </div>
+</aside>
+<div class="dash-main">
+  <div class="dash-header">
+    <div class="dash-title" id="a-title">Visão Geral</div>
+    <div style="display:flex;gap:.8rem;align-items:center;">
+      <span class="badge badge-red">🔴 3 pendentes</span>
+      <button class="btn btn-org btn-sm" onclick="aN('a-balcao',null)">Ver Pedidos</button>
+    </div>
+  </div>
+  <div class="dash-content">
+
+    <!-- OVERVIEW -->
+    <div class="subpage active" id="a-overview">
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-icon stat-icon-org">🎯</div><div class="stat-num">47</div><div class="stat-label">Total de Leads</div><div class="stat-up">↑ +12 esta semana</div></div>
+        <div class="stat-card"><div class="stat-icon stat-icon-yel">🪟</div><div class="stat-num">23</div><div class="stat-label">Envios Balcão</div><div class="stat-up">↑ +3 hoje</div></div>
+        <div class="stat-card"><div class="stat-icon stat-icon-blu">👥</div><div class="stat-num">18</div><div class="stat-label">Clientes Ativos</div><div class="stat-up">↑ +2 este mês</div></div>
+        <div class="stat-card"><div class="stat-icon stat-icon-grn">💶</div><div class="stat-num">4.280€</div><div class="stat-label">Receita do Mês</div><div class="stat-up">↑ +18%</div></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:2rem;">
+        <div class="panel card-sm">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;"><h4 style="font-family:var(--fh);font-weight:700;">Envios por dia</h4><span class="badge badge-org">Junho</span></div>
+          <div class="chart-placeholder"><div class="chart-bars"><div class="chart-bar" style="height:60%"></div><div class="chart-bar" style="height:80%"></div><div class="chart-bar" style="height:45%"></div><div class="chart-bar" style="height:90%"></div><div class="chart-bar" style="height:70%"></div><div class="chart-bar" style="height:100%"></div><div class="chart-bar" style="height:55%"></div></div></div>
+        </div>
+        <div class="panel card-sm">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;"><h4 style="font-family:var(--fh);font-weight:700;">Pedidos Pendentes</h4><span class="badge badge-red">3 urgentes</span></div>
+          <div class="shipment-list">
+            <div class="shipment-row"><div><div class="ship-code">BC-2025-0089</div><div class="ship-route">Balcão · Cascais → Sintra</div></div><span class="badge badge-org"><span class="dot"></span>Novo</span></div>
+            <div class="shipment-row"><div><div class="ship-code">BC-2025-0088</div><div class="ship-route">Balcão · Amadora → Cascais</div></div><span class="badge badge-org"><span class="dot"></span>Novo</span></div>
+            <div class="shipment-row"><div><div class="ship-code">LA-2025-004799</div><div class="ship-route">Cliente · Carcavelos → Lisboa</div></div><span class="badge badge-yel"><span class="dot"></span>Análise</span></div>
+          </div>
+        </div>
+      </div>
+      <h3 style="font-family:var(--fh);font-weight:700;margin-bottom:1rem;">Top Clientes do Mês</h3>
+      <div class="panel"><div class="table-wrap"><table><thead><tr><th>Cliente</th><th>Empresa</th><th>Envios</th><th>Preço/Envio</th><th>Total</th><th>Estado</th></tr></thead><tbody>
+        <tr><td><strong>João Pereira</strong></td><td>JP Distribuição</td><td><strong>156</strong></td><td><span style="color:var(--org);font-weight:700;">3,90€</span> <span class="badge badge-blu" style="font-size:.62rem;">Manual</span></td><td><strong>608€</strong></td><td><span class="badge badge-grn">Ativo</span></td></tr>
+        <tr><td><strong>Sofia Rodrigues</strong></td><td>SR Loja Online</td><td><strong>98</strong></td><td><span style="color:var(--org);font-weight:700;">4,50€</span> <span class="badge badge-blu" style="font-size:.62rem;">Manual</span></td><td><strong>441€</strong></td><td><span class="badge badge-grn">Ativo</span></td></tr>
+        <tr><td><strong>Carlos Mendes</strong></td><td>—</td><td><strong>35</strong></td><td><span style="color:var(--org);font-weight:700;">5,90€</span> <span class="badge badge-gray" style="font-size:.62rem;">Escalão</span></td><td><strong>206€</strong></td><td><span class="badge badge-grn">Ativo</span></td></tr>
+        <tr><td><strong>Maria Santos</strong></td><td>—</td><td><strong>8</strong></td><td><span style="color:var(--org);font-weight:700;">7,90€</span> <span class="badge badge-gray" style="font-size:.62rem;">Escalão</span></td><td><strong>63€</strong></td><td><span class="badge badge-grn">Ativo</span></td></tr>
+      </tbody></table></div></div>
+    </div>
+
+    <!-- LEADS -->
+    <div class="subpage" id="a-leads">
+      <div style="display:flex;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem;">
+        <div style="display:flex;gap:.5rem;"><button class="btn btn-org btn-sm">Todos</button><button class="btn btn-ghost btn-sm">Novos</button><button class="btn btn-ghost btn-sm">Contactados</button></div>
+        <button class="btn btn-ghost btn-sm">Exportar CSV</button>
+      </div>
+      <div class="leads-grid">
+        <div class="lead-card"><div class="lead-name">Ana Ferreira</div><div class="lead-contact">📞 +351 912 000 001</div><div class="lead-contact">✉️ ana@email.com</div><div class="small muted">Cascais · Mudança residencial</div><div class="small muted" style="margin-top:.3rem;">Hoje, 09:12</div><div style="display:flex;gap:.5rem;margin-top:.8rem;"><button class="btn btn-wa btn-sm" onclick="showT('success','WhatsApp aberto!')">WhatsApp</button><button class="btn btn-ghost btn-sm" onclick="showT('info','Cliente convertido!')">Converter</button></div></div>
+        <div class="lead-card"><div class="lead-name">Bruno Costa</div><div class="lead-contact">📞 +351 913 000 002</div><div class="lead-contact">✉️ bruno@empresa.pt</div><div class="small muted">Sintra · Distribuição mensal</div><div class="small muted" style="margin-top:.3rem;">Ontem, 14:30</div><div style="display:flex;gap:.5rem;margin-top:.8rem;"><button class="btn btn-wa btn-sm" onclick="showT('success','WhatsApp aberto!')">WhatsApp</button><button class="btn btn-ghost btn-sm" onclick="showT('info','Cliente convertido!')">Converter</button></div></div>
+        <div class="lead-card"><div class="lead-name">Carla Nunes</div><div class="lead-contact">📞 +351 914 000 003</div><div class="lead-contact">✉️ carla@loja.pt</div><div class="small muted">Amadora · E-commerce</div><div class="small muted" style="margin-top:.3rem;">22 Jun, 16:45</div><div style="display:flex;gap:.5rem;margin-top:.8rem;"><button class="btn btn-wa btn-sm" onclick="showT('success','WhatsApp aberto!')">WhatsApp</button><button class="btn btn-ghost btn-sm" onclick="showT('info','Cliente convertido!')">Converter</button></div></div>
+        <div class="lead-card"><div class="lead-name">Diego Martins</div><div class="lead-contact">📞 +351 915 000 004</div><div class="lead-contact">✉️ diego@negocio.pt</div><div class="small muted">Oeiras · Transporte urgente</div><div class="small muted" style="margin-top:.3rem;">21 Jun</div><div style="display:flex;gap:.5rem;margin-top:.8rem;"><button class="btn btn-wa btn-sm" onclick="showT('success','WhatsApp aberto!')">WhatsApp</button><button class="btn btn-ghost btn-sm">Converter</button></div></div>
+        <div class="lead-card"><div class="lead-name">Elisa Fonseca</div><div class="lead-contact">📞 +351 916 000 005</div><div class="lead-contact">✉️ elisa@studio.pt</div><div class="small muted">Parede · Recolhas frequentes</div><div class="small muted" style="margin-top:.3rem;">20 Jun</div><div style="display:flex;gap:.5rem;margin-top:.8rem;"><button class="btn btn-wa btn-sm" onclick="showT('success','WhatsApp aberto!')">WhatsApp</button><button class="btn btn-ghost btn-sm">Converter</button></div></div>
+      </div>
+    </div>
+
+    <!-- BALCÃO ADMIN -->
+    <div class="subpage" id="a-balcao">
+      <div class="panel"><div class="table-wrap"><table><thead><tr><th>Ref.</th><th>Nome / Tel</th><th>Origem</th><th>Destino</th><th>Tipo</th><th>Data</th><th>Estado</th><th>Ações</th></tr></thead><tbody>
+        <tr><td><span class="ship-code">BC-0089</span></td><td><strong>Ana Ferreira</strong><br><span class="small muted">+351 912 000 001</span></td><td>Cascais</td><td>Sintra</td><td>Encomenda</td><td>Hoje</td><td><span class="badge badge-org">Novo</span></td><td><div style="display:flex;gap:.4rem;"><button class="btn btn-org btn-sm" onclick="showT('success','Aceite!')">Aceitar</button><button class="btn btn-ghost btn-sm">Detalhes</button></div></td></tr>
+        <tr><td><span class="ship-code">BC-0088</span></td><td><strong>Bruno Costa</strong><br><span class="small muted">+351 913 000 002</span></td><td>Amadora</td><td>Cascais</td><td>Caixas</td><td>Hoje</td><td><span class="badge badge-org">Novo</span></td><td><div style="display:flex;gap:.4rem;"><button class="btn btn-org btn-sm" onclick="showT('success','Aceite!')">Aceitar</button><button class="btn btn-ghost btn-sm">Detalhes</button></div></td></tr>
+        <tr><td><span class="ship-code">BC-0082</span></td><td><strong>Diana Lima</strong><br><span class="small muted">+351 915 000 004</span></td><td>Parede</td><td>Oeiras</td><td>Mercadoria</td><td>Ontem</td><td><span class="badge badge-yel">Em análise</span></td><td><div style="display:flex;gap:.4rem;"><button class="btn btn-grn btn-sm" onclick="showT('success','Orçamento enviado!')">Orçamento</button><button class="btn btn-ghost btn-sm">Detalhes</button></div></td></tr>
+        <tr><td><span class="ship-code">BC-0075</span></td><td><strong>Eduardo Pinto</strong></td><td>Estoril</td><td>Sintra</td><td>Mobília</td><td>22 Jun</td><td><span class="badge badge-grn">Entregue</span></td><td><button class="btn btn-ghost btn-sm">Ver</button></td></tr>
+      </tbody></table></div></div>
+    </div>
+
+    <!-- CLIENTS -->
+    <div class="subpage" id="a-clients">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem;">
+        <input class="form-input" placeholder="🔍 Pesquisar cliente..." style="width:240px;padding:.5rem .9rem;font-size:.85rem;">
+        <div style="display:flex;gap:.5rem;">
+          <button class="btn btn-ghost btn-sm">Exportar</button>
+          <button class="btn btn-org btn-sm" onclick="openM('m-add-client')">+ Novo Cliente</button>
+        </div>
+      </div>
+      <div class="panel"><div class="table-wrap"><table><thead><tr><th>Nome</th><th>Empresa</th><th>Cidade</th><th>Envios/mês</th><th>Preço</th><th>Estado</th><th>Ações</th></tr></thead><tbody>
+        <tr><td><strong>João Pereira</strong><br><span class="small muted">joao@jp.pt</span></td><td>JP Distribuição</td><td>Carcavelos</td><td><strong>156</strong></td><td><span style="color:var(--org);font-weight:700;">3,90€</span> <span class="badge badge-blu" style="font-size:.62rem;">Manual</span></td><td><span class="badge badge-grn">Ativo</span></td><td><button class="btn btn-ghost btn-sm" onclick="openM('m-client')">Gerir</button></td></tr>
+        <tr><td><strong>Sofia Rodrigues</strong><br><span class="small muted">sofia@sr.pt</span></td><td>SR Loja Online</td><td>Amadora</td><td><strong>98</strong></td><td><span style="color:var(--org);font-weight:700;">4,50€</span> <span class="badge badge-blu" style="font-size:.62rem;">Manual</span></td><td><span class="badge badge-grn">Ativo</span></td><td><button class="btn btn-ghost btn-sm" onclick="openM('m-client')">Gerir</button></td></tr>
+        <tr><td><strong>Carlos Mendes</strong><br><span class="small muted">carlos@email.com</span></td><td>—</td><td>Cascais</td><td><strong>35</strong></td><td><span style="color:var(--org);font-weight:700;">5,90€</span> <span class="badge badge-gray" style="font-size:.62rem;">Escalão</span></td><td><span class="badge badge-grn">Ativo</span></td><td><button class="btn btn-ghost btn-sm" onclick="openM('m-client')">Gerir</button></td></tr>
+        <tr><td><strong>Maria Santos</strong><br><span class="small muted">maria@email.com</span></td><td>—</td><td>Sintra</td><td><strong>8</strong></td><td><span style="color:var(--org);font-weight:700;">7,90€</span> <span class="badge badge-gray" style="font-size:.62rem;">Escalão</span></td><td><span class="badge badge-grn">Ativo</span></td><td><button class="btn btn-ghost btn-sm" onclick="openM('m-client')">Gerir</button></td></tr>
+        <tr><td><strong>Pedro Alves</strong><br><span class="small muted">pedro@email.com</span></td><td>—</td><td>Parede</td><td><strong>0</strong></td><td>—</td><td><span class="badge badge-gray">Inativo</span></td><td><button class="btn btn-ghost btn-sm">Gerir</button></td></tr>
+      </tbody></table></div></div>
+    </div>
+
+    <!-- SHIPMENTS ADMIN -->
+    <div class="subpage" id="a-shipments">
+      <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1.5rem;align-items:center;">
+        <button class="btn btn-org btn-sm">Todos</button><button class="btn btn-ghost btn-sm">Pendentes</button><button class="btn btn-ghost btn-sm">Em transporte</button><button class="btn btn-ghost btn-sm">Entregues</button>
+        <input class="form-input" placeholder="🔍 Pesquisar..." style="width:200px;padding:.5rem .9rem;font-size:.85rem;margin-left:auto;">
+      </div>
+      <div class="panel"><div class="table-wrap"><table><thead><tr><th>Ref.</th><th>Cliente</th><th>Origem</th><th>Destino</th><th>Data</th><th>Estado</th><th>Preço</th><th>Ações</th></tr></thead><tbody>
+        <tr><td><span class="ship-code">LA-004821</span></td><td>Carlos Mendes</td><td>Carcavelos</td><td>Cascais</td><td>Hoje</td><td><span class="badge badge-grn">Entregue</span></td><td>5,90€</td><td><button class="btn btn-ghost btn-sm">Ver</button></td></tr>
+        <tr><td><span class="ship-code">LA-004799</span></td><td>João Pereira</td><td>Carcavelos</td><td>Lisboa</td><td>Hoje</td><td>
+          <select class="form-select" style="padding:.25rem .5rem;font-size:.75rem;width:auto;background:var(--blk3);border-color:var(--bdr);" onchange="showT('success','Estado atualizado!')">
+            <option>Em análise</option><option>Recolha agendada</option><option>Recolhido</option><option>Em transporte</option><option>Entregue</option>
+          </select>
+        </td><td>3,90€</td><td><button class="btn btn-ghost btn-sm">Ver</button></td></tr>
+        <tr><td><span class="ship-code">LA-004798</span></td><td>Carlos Mendes</td><td>Parede</td><td>Sintra</td><td>Hoje</td><td><span class="badge badge-yel">Em transporte</span></td><td>5,90€</td><td><button class="btn btn-ghost btn-sm">Ver</button></td></tr>
+        <tr><td><span class="ship-code">BC-0089</span></td><td>Ana Ferreira (Balcão)</td><td>Cascais</td><td>Sintra</td><td>Hoje</td><td><span class="badge badge-org">Novo</span></td><td>9,90€</td><td><button class="btn btn-org btn-sm" onclick="showT('success','Aceite!')">Aceitar</button></td></tr>
+      </tbody></table></div></div>
+    </div>
+
+    <!-- PRICING -->
+    <div class="subpage" id="a-pricing">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;">
+        <div>
+          <h3 style="font-family:var(--fh);font-weight:700;margin-bottom:1rem;">📊 Escalões de Volume</h3>
+          <div class="panel"><div class="table-wrap"><table><thead><tr><th>Volume mensal</th><th>Preço/envio</th><th></th></tr></thead><tbody>
+            <tr><td>1–10 envios</td><td><input class="form-input" value="7,90€" style="width:90px;padding:.3rem .6rem;font-size:.85rem;"></td><td><button style="background:none;border:none;color:var(--org);cursor:pointer;font-weight:700;" onclick="showT('success','Guardado!')">💾</button></td></tr>
+            <tr><td>11–30 envios</td><td><input class="form-input" value="6,90€" style="width:90px;padding:.3rem .6rem;font-size:.85rem;"></td><td><button style="background:none;border:none;color:var(--org);cursor:pointer;font-weight:700;" onclick="showT('success','Guardado!')">💾</button></td></tr>
+            <tr><td>31–70 envios</td><td><input class="form-input" value="5,90€" style="width:90px;padding:.3rem .6rem;font-size:.85rem;"></td><td><button style="background:none;border:none;color:var(--org);cursor:pointer;font-weight:700;" onclick="showT('success','Guardado!')">💾</button></td></tr>
+            <tr><td>71–150 envios</td><td><input class="form-input" value="4,90€" style="width:90px;padding:.3rem .6rem;font-size:.85rem;"></td><td><button style="background:none;border:none;color:var(--org);cursor:pointer;font-weight:700;" onclick="showT('success','Guardado!')">💾</button></td></tr>
+            <tr><td>150+ envios</td><td><input class="form-input" value="Personalizado" style="width:120px;padding:.3rem .6rem;font-size:.85rem;"></td><td><button style="background:none;border:none;color:var(--org);cursor:pointer;font-weight:700;" onclick="showT('success','Guardado!')">💾</button></td></tr>
+          </tbody></table></div></div>
+          <h3 style="font-family:var(--fh);font-weight:700;margin:1.5rem 0 1rem;">🪟 Preço Balcão</h3>
+          <div class="card card-sm">
+            <div class="form-group"><label class="form-label">Preço por envio</label><input class="form-input" value="9,90€"></div>
+            <button class="btn btn-org btn-sm" onclick="showT('success','Guardado!')">Guardar</button>
+          </div>
+        </div>
+        <div>
+          <h3 style="font-family:var(--fh);font-weight:700;margin-bottom:1rem;">👤 Preços por Cliente</h3>
+          <div class="pricing-rules">
+            <div class="rule-card"><div><div class="rule-name">João Pereira</div><div class="rule-desc">156 envios/mês · JP Distribuição</div></div><div class="rule-val">3,90€</div><div><button class="btn btn-ghost btn-sm" onclick="openM('m-price')">✏️ Editar</button></div></div>
+            <div class="rule-card"><div><div class="rule-name">Sofia Rodrigues</div><div class="rule-desc">98 envios/mês · SR Loja Online</div></div><div class="rule-val">4,50€</div><div><button class="btn btn-ghost btn-sm" onclick="openM('m-price')">✏️ Editar</button></div></div>
+            <div class="rule-card"><div><div class="rule-name">Carlos Mendes</div><div class="rule-desc">35 envios/mês · Escalão auto</div></div><div class="rule-val" style="font-size:.9rem;color:var(--txt2);">5,90€ auto</div><div><button class="btn btn-org btn-sm" onclick="openM('m-price')">Definir Manual</button></div></div>
+          </div>
+          <div style="margin-top:1.5rem;"><button class="btn btn-ghost btn-full" onclick="openM('m-price')">+ Adicionar regra de preço</button></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- INVOICES ADMIN -->
+    <div class="subpage" id="a-invoices">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem;">
+        <div style="display:flex;gap:.5rem;"><button class="btn btn-org btn-sm">Todas</button><button class="btn btn-ghost btn-sm">Pendentes</button><button class="btn btn-ghost btn-sm">Pagas</button></div>
+        <button class="btn btn-org btn-sm" onclick="showT('info','Fatura gerada!')">+ Gerar Fatura</button>
+      </div>
+      <div class="panel"><div class="table-wrap"><table><thead><tr><th>Fatura</th><th>Cliente</th><th>Período</th><th>Envios</th><th>Total</th><th>Estado</th><th>Ações</th></tr></thead><tbody>
+        <tr><td><strong>FAT-0042</strong></td><td>Carlos Mendes</td><td>Jun 2025</td><td>35</td><td><strong>206,50€</strong></td><td><span class="badge badge-yel">Pendente</span></td><td><div style="display:flex;gap:.4rem;"><button class="btn btn-ghost btn-sm">PDF</button><button class="btn btn-grn btn-sm" onclick="showT('success','Marcada como paga!')">Paga ✓</button></div></td></tr>
+        <tr><td><strong>FAT-0041</strong></td><td>João Pereira</td><td>Jun 2025</td><td>156</td><td><strong>608,40€</strong></td><td><span class="badge badge-yel">Pendente</span></td><td><div style="display:flex;gap:.4rem;"><button class="btn btn-ghost btn-sm">PDF</button><button class="btn btn-grn btn-sm" onclick="showT('success','Marcada como paga!')">Paga ✓</button></div></td></tr>
+        <tr><td><strong>FAT-0040</strong></td><td>Sofia Rodrigues</td><td>Jun 2025</td><td>98</td><td><strong>441,00€</strong></td><td><span class="badge badge-grn">Paga</span></td><td><button class="btn btn-ghost btn-sm">PDF</button></td></tr>
+        <tr><td><strong>FAT-0039</strong></td><td>Maria Santos</td><td>Jun 2025</td><td>8</td><td><strong>63,20€</strong></td><td><span class="badge badge-grn">Paga</span></td><td><button class="btn btn-ghost btn-sm">PDF</button></td></tr>
+      </tbody></table></div></div>
+    </div>
+
+    <!-- STATS -->
+    <div class="subpage" id="a-stats">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:1.5rem;">
+        <div class="panel card-sm"><h4 style="font-family:var(--fh);font-weight:700;margin-bottom:1rem;">Receita Mensal</h4><div class="chart-placeholder"><div class="chart-bars"><div class="chart-bar" style="height:50%"></div><div class="chart-bar" style="height:65%"></div><div class="chart-bar" style="height:80%"></div><div class="chart-bar" style="height:70%"></div><div class="chart-bar" style="height:90%"></div><div class="chart-bar" style="height:100%"></div></div></div></div>
+        <div class="panel card-sm"><h4 style="font-family:var(--fh);font-weight:700;margin-bottom:1rem;">Envios por Zona</h4><div class="chart-placeholder"><div class="chart-bars" style="align-items:flex-end;gap:8px;"><div class="chart-bar" style="height:100%"></div><div class="chart-bar" style="height:75%"></div><div class="chart-bar" style="height:60%"></div><div class="chart-bar" style="height:40%"></div><div class="chart-bar" style="height:55%"></div></div></div></div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;">
+        <div class="stat-card"><div class="stat-num" style="font-size:1.5rem;">312</div><div class="stat-label">Envios Junho</div></div>
+        <div class="stat-card"><div class="stat-num" style="font-size:1.5rem;">4.280€</div><div class="stat-label">Receita Junho</div></div>
+        <div class="stat-card"><div class="stat-num" style="font-size:1.5rem;">13,7€</div><div class="stat-label">Ticket Médio</div></div>
+        <div class="stat-card"><div class="stat-num" style="font-size:1.5rem;">94%</div><div class="stat-label">Taxa Entrega</div></div>
+      </div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div class="subpage" id="a-settings">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;">
+        <div class="card">
+          <h3 style="font-family:var(--fh);font-weight:700;margin-bottom:1.2rem;">🏢 Dados da Empresa</h3>
+          <div class="form-group"><label class="form-label">Nome da empresa</label><input class="form-input" value="Longitude Ágil Lda"></div>
+          <div class="form-group"><label class="form-label">NIF</label><input class="form-input" value="PT 123 456 789"></div>
+          <div class="form-group"><label class="form-label">Email</label><input class="form-input" value="geral@longitudeagil.pt"></div>
+          <div class="form-group"><label class="form-label">Telefone / WhatsApp</label><input class="form-input" value="+351 911 580 781"></div>
+          <div class="form-group"><label class="form-label">Morada</label><input class="form-input" value="Carcavelos, Lisboa, Portugal"></div>
+          <button class="btn btn-org btn-sm" onclick="showT('success','Guardado!')">Guardar</button>
+        </div>
+        <div class="card">
+          <h3 style="font-family:var(--fh);font-weight:700;margin-bottom:1.2rem;">📧 Notificações & Integrações</h3>
+          <div class="form-group"><label class="form-label">Email admin</label><input class="form-input" value="admin@longitudeagil.pt"></div>
+          <div class="form-group"><label class="form-label">EmailJS Public Key</label><input class="form-input" placeholder="YOUR_PUBLIC_KEY"></div>
+          <div class="form-group"><label class="form-label">EmailJS Service ID</label><input class="form-input" placeholder="YOUR_SERVICE_ID"></div>
+          <div class="form-group"><label class="form-label">EmailJS Template ID</label><input class="form-input" placeholder="YOUR_TEMPLATE_ID"></div>
+          <div class="form-group"><label class="form-label">Meta Pixel ID</label><input class="form-input" placeholder="Ex: 1234567890123456"></div>
+          <div class="form-group"><label class="form-label">Google Analytics ID</label><input class="form-input" placeholder="G-XXXXXXXXXX"></div>
+          <button class="btn btn-org btn-sm" onclick="showT('success','Guardado!')">Guardar</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</div>
+</div>
+</div><!-- /admin -->
+
+<!-- MODALS -->
+<div class="modal-overlay" id="m-client">
+  <div class="modal" style="max-width:640px;">
+    <div class="modal-header"><div class="modal-title">👤 Gerir Cliente</div><button class="modal-close" onclick="closeM('m-client')">✕</button></div>
+    <div class="client-detail-grid">
+      <div>
+        <div class="card card-sm" style="margin-bottom:1rem;"><div style="font-weight:700;margin-bottom:.8rem;">Dados</div><div class="small muted">📧 carlos@email.com</div><div class="small muted mt1">📞 +351 912 000 003</div><div class="small muted mt1">📍 Cascais · NIF: 987654321</div></div>
+        <div class="card card-sm"><div style="font-weight:700;margin-bottom:.6rem;">Volume</div><div style="font-family:var(--fh);font-size:2rem;font-weight:900;color:var(--org);">35</div><div class="small muted">envios em Junho 2025</div></div>
+      </div>
+      <div>
+        <div class="card card-sm" style="margin-bottom:1rem;"><div style="font-weight:700;margin-bottom:.8rem;">💶 Preço Manual</div><div class="form-group"><label class="form-label">Preço por envio (€)</label><div style="display:flex;gap:.5rem;"><input class="form-input" placeholder="Ex: 5,50" style="flex:1;"><button class="btn btn-org btn-sm" onclick="showT('success','Preço definido!')">Definir</button></div></div><div class="small muted">Deixe vazio para usar escalão automático</div></div>
+        <div class="card card-sm" style="margin-bottom:1rem;"><div style="font-weight:700;margin-bottom:.8rem;">Conta</div><div style="display:flex;gap:.5rem;"><button class="btn btn-grn btn-sm" onclick="showT('success','Ativado!')">✅ Ativar</button><button class="btn btn-red btn-sm" onclick="showT('error','Desativado!')">🚫 Desativar</button></div></div>
+        <div class="card card-sm"><div style="font-weight:700;margin-bottom:.6rem;">📝 Notas internas</div><textarea class="form-textarea" placeholder="Visível só para a equipa..." style="min-height:70px;"></textarea><button class="btn btn-ghost btn-sm mt1" onclick="showT('success','Nota guardada!')">Guardar</button></div>
+      </div>
+    </div>
+    <div style="display:flex;justify-content:flex-end;gap:.8rem;margin-top:1.5rem;"><button class="btn btn-ghost" onclick="closeM('m-client')">Fechar</button><button class="btn btn-org" onclick="showT('success','Guardado!');closeM('m-client')">Guardar Tudo</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="m-price">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">💶 Preço Manual por Cliente</div><button class="modal-close" onclick="closeM('m-price')">✕</button></div>
+    <div class="form-group"><label class="form-label">Cliente</label><select class="form-select"><option>João Pereira — 156 envios/mês</option><option>Sofia Rodrigues — 98 envios/mês</option><option>Carlos Mendes — 35 envios/mês</option></select></div>
+    <div class="form-group"><label class="form-label">Preço por envio (€)</label><input class="form-input" placeholder="Ex: 4.50"></div>
+    <div class="form-group"><label class="form-label">Motivo</label><textarea class="form-textarea" placeholder="Ex: Acordo por volume..." style="min-height:70px;"></textarea></div>
+    <div style="display:flex;justify-content:flex-end;gap:.8rem;margin-top:1rem;"><button class="btn btn-ghost" onclick="closeM('m-price')">Cancelar</button><button class="btn btn-org" onclick="showT('success','Preço definido!');closeM('m-price')">Definir</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="m-add-client">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">👤 Adicionar Cliente</div><button class="modal-close" onclick="closeM('m-add-client')">✕</button></div>
+    <div class="form-grid-2"><div class="form-group"><label class="form-label">Nome *</label><input class="form-input" placeholder="Nome completo"></div><div class="form-group"><label class="form-label">Telefone *</label><input class="form-input" placeholder="+351 9XX XXX XXX"></div></div>
+    <div class="form-group"><label class="form-label">Email *</label><input class="form-input" type="email" placeholder="email@exemplo.com"></div>
+    <div class="form-grid-2"><div class="form-group"><label class="form-label">Empresa</label><input class="form-input" placeholder="Opcional"></div><div class="form-group"><label class="form-label">NIF</label><input class="form-input" placeholder="123456789"></div></div>
+    <div class="form-group"><label class="form-label">Preço inicial (€)</label><input class="form-input" placeholder="Vazio = escalão automático"></div>
+    <div style="display:flex;justify-content:flex-end;gap:.8rem;margin-top:1rem;"><button class="btn btn-ghost" onclick="closeM('m-add-client')">Cancelar</button><button class="btn btn-org" onclick="showT('success','Cliente adicionado!');closeM('m-add-client')">Adicionar</button></div>
+  </div>
+</div>
+
+<!-- STRIPE PAYMENT MODAL -->
+<div class="modal-overlay" id="m-payment">
+  <div class="modal" style="max-width:500px;">
+    <div class="modal-header"><div class="modal-title">💳 Pagamento do Envio</div><button class="modal-close" onclick="closeM('m-payment')">✕</button></div>
+    <div id="m-payment-summary" style="background:var(--blk3);border:1px solid var(--bdr);border-radius:var(--r);padding:1.2rem;margin-bottom:1.5rem;">
+      <div style="font-family:var(--fh);font-weight:700;margin-bottom:.8rem;">Resumo do Pedido</div>
+      <div style="display:flex;justify-content:space-between;font-size:.88rem;margin-bottom:.4rem;"><span class="muted">Serviço de envio local</span><span id="pay-price-line">5,90€</span></div>
+      <div id="pay-surcharge-line" class="hidden" style="display:flex;justify-content:space-between;font-size:.88rem;margin-bottom:.4rem;color:var(--yel);"><span>⚠️ Taxa extra (peso/dimensão)</span><span id="pay-surcharge-val">+15,00€</span></div>
+      <div style="border-top:1px solid var(--bdr);margin:.8rem 0;"></div>
+      <div style="display:flex;justify-content:space-between;font-family:var(--fh);font-weight:700;font-size:1.1rem;"><span>Total</span><span id="pay-total" style="color:var(--org);">5,90€</span></div>
+    </div>
+    <div style="background:rgba(249,115,22,.06);border:1px solid rgba(249,115,22,.2);border-radius:var(--r);padding:1rem;margin-bottom:1.5rem;font-size:.84rem;color:var(--txt2);line-height:1.6;">
+      🔒 Pagamento processado com segurança via <strong style="color:var(--txt);">Stripe</strong>. Os seus dados bancários nunca são guardados nos nossos servidores.
+    </div>
+    <!-- Stripe Elements (real) -->
+    <div class="form-group">
+      <label class="form-label">Dados do cartão</label>
+      <div id="stripe-card-element"></div>
+      <div id="stripe-card-errors" style="color:var(--red);font-size:.8rem;margin-top:.4rem;"></div>
+      <div class="small muted mt1" style="display:flex;gap:.8rem;align-items:center;">
+        <span>🔐 SSL</span><span>💳 Visa · MC · Amex</span><span>🔒 3D Secure</span>
+      </div>
+    </div>
+    <div style="display:flex;justify-content:flex-end;gap:.8rem;margin-top:1.2rem;">
+      <button class="btn btn-ghost" onclick="closeM('m-payment')">Cancelar</button>
+      <button class="btn btn-org btn-lg" id="pay-btn" onclick="processPayment()" style="min-width:160px;">
+        <span id="pay-btn-text">Pagar <span id="pay-btn-amount">5,90€</span></span>
+      </button>
+    </div>
+    <p class="small muted mt2" style="text-align:center;">Ao pagar, aceita os <a href="#" style="color:var(--org);">Termos e Condições</a> da Longitude Ágil.</p>
+  </div>
+</div>
+
+<!-- PAYMENT SUCCESS MODAL -->
+<div class="modal-overlay" id="m-pay-success">
+  <div class="modal" style="max-width:440px;text-align:center;">
+    <div style="font-size:4rem;margin-bottom:1rem;">✅</div>
+    <h2 style="font-family:var(--fh);font-size:1.5rem;font-weight:900;margin-bottom:.8rem;">Pagamento Confirmado!</h2>
+    <p class="muted" style="line-height:1.7;margin-bottom:1.5rem;">O seu envio foi criado com sucesso. Vai receber uma confirmação por email em breve.</p>
+    <div style="background:var(--blk3);border:1px solid var(--bdr);border-radius:var(--r);padding:1rem;margin-bottom:1.5rem;">
+      <div class="small muted">Referência do envio</div>
+      <div id="success-ref" style="font-family:var(--fh);font-size:1.2rem;font-weight:700;color:var(--org);margin-top:.3rem;"></div>
+    </div>
+    <div style="display:flex;justify-content:center;gap:.8rem;">
+      <button class="btn btn-ghost" onclick="closeM('m-pay-success');cNav('c-shipments',null)">Ver Envios</button>
+      <button class="btn btn-org" onclick="closeM('m-pay-success');cNav('c-overview',null)">Dashboard</button>
+    </div>
+  </div>
+</div>
+
+<!-- BALCÃO PAYMENT MODAL -->
+<div class="modal-overlay" id="m-bc-payment">
+  <div class="modal" style="max-width:500px;">
+    <div class="modal-header">
+      <div class="modal-title">💳 Pagamento do Envio</div>
+      <button class="modal-close" onclick="closeM('m-bc-payment')">✕</button>
+    </div>
+    <!-- Resumo -->
+    <div style="background:var(--blk3);border:1px solid var(--bdr);border-radius:var(--r);padding:1.2rem;margin-bottom:1.4rem;">
+      <div style="font-family:var(--fh);font-weight:700;margin-bottom:.8rem;">Resumo do pedido</div>
+      <div style="display:flex;justify-content:space-between;font-size:.88rem;margin-bottom:.35rem;">
+        <span class="muted" id="bcp-desc">Envio</span>
+        <span id="bcp-base">—</span>
+      </div>
+      <div id="bcp-sur-row" style="display:none;justify-content:space-between;font-size:.88rem;margin-bottom:.35rem;color:var(--yel);">
+        <span>⚠️ Taxa extra (>40kg / >1,80m)</span>
+        <span>+15,00€</span>
+      </div>
+      <div style="border-top:1px solid var(--bdr);margin:.8rem 0;"></div>
+      <div style="display:flex;justify-content:space-between;font-family:var(--fh);font-weight:700;font-size:1.15rem;">
+        <span>Total</span>
+        <span id="bcp-total" style="color:var(--org);">—</span>
+      </div>
+    </div>
+    <!-- Segurança -->
+    <div style="background:rgba(249,115,22,.06);border:1px solid rgba(249,115,22,.2);border-radius:var(--r);padding:.9rem 1rem;margin-bottom:1.4rem;font-size:.82rem;color:var(--txt2);line-height:1.6;">
+      🔒 Pagamento processado com segurança via <strong style="color:var(--txt);">Stripe</strong>. Os seus dados nunca são guardados nos nossos servidores.
+    </div>
+    <!-- Card element -->
+    <div class="form-group">
+      <label class="form-label">Dados do cartão</label>
+      <div id="bc-stripe-element"></div>
+      <div id="bc-stripe-errors" style="color:var(--red);font-size:.8rem;margin-top:.4rem;min-height:1.2em;"></div>
+      <div class="small muted mt1" style="display:flex;gap:.8rem;">
+        <span>🔐 SSL</span><span>💳 Visa · MC · Amex</span><span>🔒 3D Secure</span>
+      </div>
+    </div>
+    <div style="display:flex;justify-content:flex-end;gap:.8rem;margin-top:1.2rem;">
+      <button class="btn btn-ghost" onclick="closeM('m-bc-payment')">Cancelar</button>
+      <button class="btn btn-org btn-lg" id="bcp-btn" onclick="bcProcessPay()" style="min-width:160px;">
+        <span id="bcp-btn-txt">Pagar <span id="bcp-btn-amount">—</span></span>
+      </button>
+    </div>
+    <p class="small muted mt2" style="text-align:center;">Ao pagar aceita os <a href="#" style="color:var(--org);">Termos e Condições</a> da Longitude Ágil.</p>
+  </div>
+</div>
+
+<script>
+// ══ PRICE TABLE TABS ══
+function switchPriceTab(dest){
+  ['pt','es','mad'].forEach(d=>{
+    document.getElementById('ptable-'+d).style.display = d===dest ? 'block' : 'none';
+    const btn = document.getElementById('ptab-'+d);
+    if(btn){ btn.className = d===dest ? 'btn btn-org btn-sm' : 'btn btn-ghost btn-sm'; }
+  });
+}
+
+// ══ PAGE NAV ══
+function showPage(name){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  const p=document.getElementById('page-'+name);
+  if(p)p.classList.add('active');
+  document.getElementById('wa-float').style.display=(name==='landing'||name==='balcao')?'block':'none';
+  window.scrollTo(0,0);
+}
+
+// ══ CLIENT NAV ══
+const cTitles={'c-overview':'Visão Geral','c-new-ship':'Novo Envio','c-shipments':'Os meus Envios','c-addresses':'Moradas','c-invoices':'Faturas','c-pricing':'Os meus Preços','c-profile':'Perfil'};
+function cNav(id,el){
+  document.querySelectorAll('#page-dashboard .subpage').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('#page-dashboard .nav-item').forEach(n=>n.classList.remove('active'));
+  if(el)el.classList.add('active');
+  const t=document.getElementById('c-title');
+  if(t&&cTitles[id])t.textContent=cTitles[id];
+}
+
+// ══ ADMIN NAV ══
+const aTitles={'a-overview':'Visão Geral','a-leads':'Leads','a-balcao':'Envios de Balcão','a-clients':'Clientes','a-shipments':'Envios','a-pricing':'Preços','a-invoices':'Faturas','a-stats':'Estatísticas','a-settings':'Configurações'};
+function aN(id,el){
+  document.querySelectorAll('#page-admin .subpage').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('#page-admin .nav-item').forEach(n=>n.classList.remove('active'));
+  if(el)el.classList.add('active');
+  const t=document.getElementById('a-title');
+  if(t&&aTitles[id])t.textContent=aTitles[id];
+}
+
+// ══ AUTH ══
+function switchAuthTab(tab){
+  document.getElementById('auth-login').classList.toggle('hidden',tab!=='login');
+  document.getElementById('auth-register').classList.toggle('hidden',tab!=='register');
+  document.getElementById('tab-login').classList.toggle('active',tab==='login');
+  document.getElementById('tab-register').classList.toggle('active',tab==='register');
+}
+function selType(t){
+  document.getElementById('type-particular').classList.toggle('selected',t==='particular');
+  document.getElementById('type-empresa').classList.toggle('selected',t==='empresa');
+  document.querySelectorAll('.empresa-field').forEach(e=>e.classList.toggle('hidden',t!=='empresa'));
+}
+// ══ AUTH — credenciais reais ══
+const ADMIN_EMAIL = 'layonsouzareal@gmail.com';
+const ADMIN_HASH  = '6f112bb9ebaf2da0a7439531fbe7b474a2d8104f048fcd0f720dbd19d5db4427'; // SHA-256 de Lay04072005#
+
+async function sha256(str){
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+
+async function doLogin(){
+  const email = document.getElementById('l-email').value.trim().toLowerCase();
+  const pass  = document.getElementById('l-pass').value;
+  const errEl = document.getElementById('login-error');
+  errEl.style.display = 'none';
+
+  if(!email || !pass){
+    errEl.textContent = 'Preencha email e palavra-passe.';
+    errEl.style.display = 'block';
+    return;
+  }
+
+  const hash = await sha256(pass);
+
+  // Admin
+  if(email === ADMIN_EMAIL && hash === ADMIN_HASH){
+    loginAs('admin');
+    return;
+  }
+
+  // Cliente registado (em produção validar contra BD)
+  if(email && pass.length >= 6){
+    loginAs('client');
+    return;
+  }
+
+  errEl.textContent = 'Email ou palavra-passe incorretos.';
+  errEl.style.display = 'block';
+}
+
+function demoLogin(r){loginAs(r);}
+function loginAs(role){
+  showT('success',role==='admin'?'🔑 Bem-vindo, Administrador!':'👤 Bem-vindo, João!');
+  setTimeout(()=>{
+    if(role==='admin'){showPage('admin');aN('a-overview',document.querySelector('#page-admin .nav-item'));}
+    else{showPage('dashboard');cNav('c-overview',document.querySelector('#page-dashboard .nav-item'));}
+  },600);
+}
+function doRegister(){
+  const n=document.getElementById('r-nome').value,e=document.getElementById('r-email').value,p=document.getElementById('r-pass').value;
+  if(!n||!e||!p){showT('error','Preencha os campos obrigatórios');return;}
+  if(p.length<8){showT('error','Senha com mínimo 8 caracteres');return;}
+  const ini=n.split(' ').map(x=>x[0]).join('').substring(0,2).toUpperCase();
+  document.getElementById('client-ava').textContent=ini;
+  document.getElementById('client-name').textContent=n.split(' ')[0];
+  showT('success','✅ Conta criada!');
+  setTimeout(()=>loginAs('client'),700);
+}
+
+// ══ BALCÃO STEPS ══
+// ══ TABELA DE PREÇOS BALCÃO ══
+const BC_PRICES = {
+  pt: {
+    tiers: [
+      {kg:1,  price:4.88},
+      {kg:3,  price:5.46},
+      {kg:5,  price:5.87},
+      {kg:10, price:7.15},
+      {kg:15, price:8.71},
+      {kg:20, price:10.21},
+      {kg:25, price:12.10},
+      {kg:30, price:13.57},
+    ],
+    extra: 0.51, // por kg adicional acima de 30kg
+    label: '🇵🇹 Portugal 24h',
+  },
+  es: {
+    tiers: [
+      {kg:1,  price:8.05},
+      {kg:3,  price:8.14},
+      {kg:5,  price:9.31},
+      {kg:10, price:11.62},
+      {kg:15, price:13.49},
+      {kg:20, price:15.42},
+      {kg:25, price:18.52},
+      {kg:30, price:21.21},
+    ],
+    extra: 0.92,
+    label: '🇪🇸 Espanha 24h',
+  },
+  mad: {
+    tiers: [
+      {kg:1, price:10.72},
+    ],
+    extra: 2.25,
+    label: '🏝️ Madeira / Açores 24–48h',
+  },
+};
+
+let bcDest = 'pt';
+
+function bcSelDest(d) {
+  bcDest = d;
+  ['pt','es','mad'].forEach(k => {
+    document.getElementById('dest-'+k).classList.toggle('selected', k===d);
+  });
+  bcCalcPrice();
+}
+
+function bcGetPrice(dest, kg) {
+  const table = BC_PRICES[dest];
+  if (!table) return null;
+  const tiers = table.tiers;
+
+  // Peso exacto ou abaixo do primeiro tier
+  for (let i = tiers.length - 1; i >= 0; i--) {
+    if (kg >= tiers[i].kg) {
+      const base = tiers[i].price;
+      const extra = kg > tiers[i].kg ? (kg - tiers[i].kg) * table.extra : 0;
+      return +(base + extra).toFixed(2);
+    }
+  }
+  // Abaixo de 1kg → preço do 1kg
+  return tiers[0].price;
+}
+
+function bcCalcPrice() {
+  const kg  = parseFloat(document.getElementById('bc-peso').value) || 0;
+  const cm  = parseFloat(document.getElementById('bc-comp').value) || 0;
+  const box = document.getElementById('bc-price-box');
+  const btn = document.getElementById('bc-pay-btn');
+  const amtEl = document.getElementById('bc-pay-amount');
+
+  if (kg <= 0) { box.style.display='none'; btn.style.display='none'; return; }
+
+  const basePrice  = bcGetPrice(bcDest, kg);
+  const surcharge  = (kg > 40 || cm > 180) ? 15 : 0;
+  const total      = +(basePrice + surcharge).toFixed(2);
+  const destLabel  = BC_PRICES[bcDest].label;
+
+  // Mostrar caixa de preço
+  box.style.display = 'block';
+  document.getElementById('bc-price-val').textContent  = total.toFixed(2) + '€';
+  document.getElementById('bc-price-desc').textContent = destLabel + ' · ' + kg + ' kg';
+  document.getElementById('bc-surcharge-warn').style.display = surcharge > 0 ? 'block' : 'none';
+
+  // Mini tabela de referência
+  const tbl = document.getElementById('bc-table-ref');
+  tbl.innerHTML = BC_PRICES[bcDest].tiers.map(t =>
+    `<span style="background:rgba(255,255,255,.06);border-radius:6px;padding:.2rem .6rem;font-size:.72rem;color:var(--txt2);">${t.kg}kg = ${t.price.toFixed(2)}€</span>`
+  ).join('') + `<span style="background:rgba(255,255,255,.06);border-radius:6px;padding:.2rem .6rem;font-size:.72rem;color:var(--txt2);">+${BC_PRICES[bcDest].extra}€/kg ad.</span>`;
+
+  // Mostrar botão pagar
+  btn.style.display = 'flex';
+  amtEl.textContent = total.toFixed(2) + '€';
+
+  // Guardar contexto para pagamento
+  window._bcPayCtx = {
+    total, basePrice, surcharge,
+    dest: bcDest, destLabel,
+    kg, cm,
+    isBalcao: true,
+  };
+}
+
+// ══ STRIPE BALCÃO ══
+let bcStripe, bcCardEl, bcStripeReady = false;
+
+function initBcStripe() {
+  if (bcStripeReady || typeof Stripe === 'undefined') return;
+  bcStripe = Stripe(STRIPE_PK);
+  const elements = bcStripe.elements({
+    appearance: {
+      theme: 'night',
+      variables: {
+        colorPrimary: '#f97316', colorBackground: '#1a1a1a',
+        colorText: '#f5f5f5', colorDanger: '#ef4444',
+        fontFamily: 'Figtree, sans-serif', borderRadius: '8px',
+      }
+    }
+  });
+  bcCardEl = elements.create('card', {
+    style: { base: { color: '#f5f5f5', fontFamily: 'Figtree, sans-serif', fontSize: '15px', '::placeholder': { color: '#737373' } }, invalid: { color: '#ef4444' } },
+    hidePostalCode: true,
+  });
+  bcCardEl.mount('#bc-stripe-element');
+  bcCardEl.on('change', e => {
+    document.getElementById('bc-stripe-errors').textContent = e.error ? e.error.message : '';
+  });
+  bcStripeReady = true;
+}
+
+function bcPagar() {
+  const ctx = window._bcPayCtx;
+  if (!ctx) return;
+
+  // Preencher modal
+  document.getElementById('bcp-desc').textContent    = ctx.destLabel + ' · ' + ctx.kg + ' kg';
+  document.getElementById('bcp-base').textContent    = ctx.basePrice.toFixed(2) + '€';
+  document.getElementById('bcp-total').textContent   = ctx.total.toFixed(2) + '€';
+  document.getElementById('bcp-btn-amount').textContent = ctx.total.toFixed(2) + '€';
+  document.getElementById('bcp-sur-row').style.display = ctx.surcharge > 0 ? 'flex' : 'none';
+
+  openM('m-bc-payment');
+  setTimeout(initBcStripe, 150);
+}
+
+async function bcProcessPay() {
+  if (!bcStripeReady || !bcCardEl) { showT('error','A carregar Stripe… tente novamente.'); return; }
+
+  const btn = document.getElementById('bcp-btn');
+  const txt = document.getElementById('bcp-btn-txt');
+  btn.disabled = true;
+  txt.innerHTML = '<span style="animation:spin .8s linear infinite;display:inline-block;margin-right:.4rem;">⏳</span>A processar...';
+  document.getElementById('bc-stripe-errors').textContent = '';
+
+  const ctx = window._bcPayCtx;
+
+  try {
+    // 1. Criar PaymentIntent no backend
+    const res  = await fetch(BACKEND + '/api/create-payment-intent', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        isBalcao:       true,
+        weightKg:       ctx.kg,
+        longestCm:      ctx.cm,
+        destino:        ctx.dest,
+        origem:         document.getElementById('bc-origem').value,
+        clientEmail:    document.getElementById('bc-email').value,
+        tipoMercadoria: document.getElementById('bc-tipo').value,
+        data:           document.getElementById('bc-data').value,
+      }),
+    });
+    const data = await res.json();
+    if (!data.ok) throw new Error(data.error || 'Erro no servidor');
+
+    // 2. Confirmar com cartão
+    const { error, paymentIntent } = await bcStripe.confirmCardPayment(
+      data.clientSecret,
+      { payment_method: { card: bcCardEl } }
+    );
+
+    if (error) {
+      document.getElementById('bc-stripe-errors').textContent = error.message;
+      showT('error', 'Cartão recusado: ' + error.message);
+      btn.disabled = false;
+      txt.innerHTML = 'Pagar ' + ctx.total.toFixed(2) + '€';
+      return;
+    }
+
+    if (paymentIntent.status === 'succeeded') {
+      closeM('m-bc-payment');
+      const ref = 'BC-' + new Date().getFullYear() + '-' + Math.floor(Math.random()*9000+1000);
+      // Mostrar step 3 com confirmação de pagamento
+      document.getElementById('bc-confirm-icon').textContent = '💳✅';
+      document.getElementById('bc-confirm-title').textContent = 'Pagamento Confirmado!';
+      document.getElementById('bc-confirm-msg').textContent  = 'O pagamento de ' + ctx.total.toFixed(2) + '€ foi processado com sucesso. A sua recolha está agendada!';
+      document.getElementById('bc-ref-val').textContent = ref;
+      balcaoGoStep(3);
+      showT('success', '✅ Pago! Ref: ' + ref);
+    }
+
+  } catch (err) {
+    btn.disabled = false;
+    txt.innerHTML = 'Pagar ' + ctx.total.toFixed(2) + '€';
+    // Backend offline → modo demo
+    if (err.message.includes('fetch') || err.message.includes('Failed')) {
+      showT('info', '⚠️ Backend offline — modo demo');
+      await new Promise(r => setTimeout(r, 1500));
+      closeM('m-bc-payment');
+      const ref = 'BC-DEMO-' + Math.floor(Math.random()*9000+1000);
+      document.getElementById('bc-confirm-icon').textContent  = '💳✅';
+      document.getElementById('bc-confirm-title').textContent = 'Pagamento Confirmado! (Demo)';
+      document.getElementById('bc-confirm-msg').textContent   = 'Modo demonstração — ' + ctx.total.toFixed(2) + '€';
+      document.getElementById('bc-ref-val').textContent = ref;
+      balcaoGoStep(3);
+    } else {
+      showT('error', 'Erro: ' + err.message);
+    }
+  }
+}
+
+function balcaoStep(n){
+  if(n===2){
+    const f=['bc-nome','bc-tel','bc-origem','bc-destino','bc-data'];
+    if(f.some(id=>!document.getElementById(id).value)){showT('error','Preencha todos os campos obrigatórios');return;}
+  }
+  balcaoGoStep(n);
+}
+
+function balcaoGoStep(n){
+  ['s1','s2','s3'].forEach((_,i)=>{
+    const el=document.getElementById('balcao-s'+(i+1));
+    if(el)el.classList.toggle('hidden',i+1!==n);
+  });
+  ['bs1','bs2','bs3'].forEach((id,i)=>{
+    const el=document.getElementById(id);
+    if(!el)return;
+    el.classList.remove('active','done');
+    if(i+1===n)el.classList.add('active');
+    if(i+1<n)el.classList.add('done');
+  });
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function balcaoReset(){
+  ['bc-nome','bc-tel','bc-email','bc-origem','bc-destino','bc-obs'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+  ['bc-peso','bc-comp','bc-larg'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+  document.getElementById('bc-price-box').style.display='none';
+  document.getElementById('bc-pay-btn').style.display='none';
+  bcDest='pt';
+  bcSelDest('pt');
+  balcaoGoStep(1);
+}
+
+// ══ SHIPMENT WITH STRIPE ══
+// Pricing config
+const TIERS=[{max:10,price:7.90},{max:30,price:6.90},{max:70,price:5.90},{max:150,price:4.90}];
+const SURCHARGE_KG=40, SURCHARGE_M=180; // 40kg or 180cm
+const SURCHARGE_FEE=15;
+const BASE_PRICE=5.90; // demo client price
+
+function getClientPrice(monthlyVol){
+  for(const t of TIERS)if(monthlyVol<=t.max)return t.price;
+  return null; // personalised
+}
+
+function checkSurcharge(kg,cm){
+  const k=parseFloat(kg)||0, d=parseFloat(cm)||0;
+  return k>SURCHARGE_KG||d>SURCHARGE_M;
+}
+
+function submitShip(){
+  const orig  = document.getElementById('ns-orig').value;
+  const dest  = document.getElementById('ns-dest').value;
+  const dname = document.getElementById('ns-dname').value;
+  const data  = document.getElementById('ns-data').value;
+  if(!orig||!dest||!dname||!data){showT('error','Preencha todos os campos obrigatórios');return;}
+
+  const nums   = Array.from(document.querySelectorAll('#c-new-ship input[type=number]'));
+  const kg     = parseFloat(nums[0]&&nums[0].value)||0;
+  const cm     = parseFloat(nums[1]&&nums[1].value)||0;
+  const hasSur = checkSurcharge(kg,cm);
+
+  const base  = BASE_PRICE;
+  const total = hasSur ? base+SURCHARGE_FEE : base;
+
+  // Guardar contexto para o processPayment enviar ao backend
+  _payCtx = {
+    clientEmail:    'joao@exemplo.com', // em produção vem do utilizador autenticado
+    monthlyVolume:  35,                 // em produção vem do perfil do cliente
+    isBalcao:       false,
+    weightKg:       kg,
+    longestCm:      cm,
+    origem:         orig,
+    destino:        dest,
+    destinatario:   dname,
+    tipoMercadoria: document.querySelector('#c-new-ship .form-select')?.value||'',
+    data:           data,
+  };
+
+  // Preencher modal de pagamento
+  document.getElementById('pay-price-line').textContent = base.toFixed(2)+'€';
+  const sLine = document.getElementById('pay-surcharge-line');
+  sLine.style.display = hasSur ? 'flex' : 'none';
+  document.getElementById('pay-surcharge-val').textContent = '+'+SURCHARGE_FEE.toFixed(2)+'€';
+  document.getElementById('pay-total').textContent = total.toFixed(2)+'€';
+  document.getElementById('pay-btn-amount').textContent  = total.toFixed(2)+'€';
+
+  openM('m-payment');
+}
+
+// ══ STRIPE REAL INTEGRATION ══
+const STRIPE_PK  = 'pk_test_51S1SfFEOZsbZn2hBIG4gSIDjNQRwnnOxWbEfJ32nIaUlzTr9Rv6tLZNmcCu7XvY9mMSwIFyvAqs1EAG3sZIf3jOh00hSVt3TEm';
+const BACKEND    = 'http://localhost:4000'; // ← mude para o URL do servidor em produção
+
+let stripe, cardElement, stripeReady=false;
+let _payCtx={}; // contexto do envio actual (preenchido em submitShip)
+
+function initStripe(){
+  if(stripeReady||typeof Stripe==='undefined')return;
+  stripe=Stripe(STRIPE_PK);
+  const elements=stripe.elements({
+    appearance:{
+      theme:'night',
+      variables:{
+        colorPrimary:'#f97316',
+        colorBackground:'#1a1a1a',
+        colorText:'#f5f5f5',
+        colorDanger:'#ef4444',
+        fontFamily:'Figtree, sans-serif',
+        borderRadius:'8px',
+        spacingUnit:'4px',
+      }
+    }
+  });
+  cardElement=elements.create('card',{
+    style:{
+      base:{color:'#f5f5f5',fontFamily:'Figtree, sans-serif',fontSize:'15px','::placeholder':{color:'#737373'}},
+      invalid:{color:'#ef4444'}
+    },
+    hidePostalCode:true
+  });
+  cardElement.mount('#stripe-card-element');
+  cardElement.on('change',e=>{
+    const err=document.getElementById('stripe-card-errors');
+    if(err)err.textContent=e.error?e.error.message:'';
+  });
+  stripeReady=true;
+}
+
+async function processPayment(){
+  if(!stripeReady||!cardElement){showT('error','A carregar Stripe… tente novamente em 2 segundos.');return;}
+
+  const btn=document.getElementById('pay-btn');
+  const txt=document.getElementById('pay-btn-text');
+  btn.disabled=true;
+  txt.innerHTML='<span style="animation:spin .8s linear infinite;display:inline-block;margin-right:.4rem;">⏳</span>A processar...';
+
+  const errEl=document.getElementById('stripe-card-errors');
+  if(errEl)errEl.textContent='';
+
+  try{
+    // ── 1. Pedir PaymentIntent ao backend ──────────────────────
+    const piRes=await fetch(BACKEND+'/api/create-payment-intent',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(_payCtx),
+    });
+    const piData=await piRes.json();
+
+    if(!piData.ok){
+      throw new Error(piData.error||'Erro ao criar pagamento');
+    }
+
+    // ── 2. Confirmar pagamento com o cartão ────────────────────
+    const{error:confirmErr,paymentIntent}=await stripe.confirmCardPayment(
+      piData.clientSecret,
+      {payment_method:{card:cardElement}}
+    );
+
+    if(confirmErr){
+      if(errEl)errEl.textContent=confirmErr.message;
+      showT('error','Cartão recusado: '+confirmErr.message);
+      btn.disabled=false;
+      txt.innerHTML='Pagar '+document.getElementById('pay-total').textContent;
+      return;
+    }
+
+    // ── 3. Sucesso ─────────────────────────────────────────────
+    if(paymentIntent.status==='succeeded'){
+      btn.disabled=false;
+      txt.innerHTML='Pagar';
+      closeM('m-payment');
+      const ref='LA-'+new Date().getFullYear()+'-'+Math.floor(Math.random()*90000+10000);
+      document.getElementById('success-ref').textContent=ref;
+      openM('m-pay-success');
+      showT('success','✅ Pagamento confirmado! Ref: '+ref);
+    }
+
+  }catch(err){
+    btn.disabled=false;
+    txt.innerHTML='Pagar';
+    // Se o backend não estiver a correr, fallback para demo
+    if(err.message&&(err.message.includes('fetch')||err.message.includes('Failed'))){
+      showT('info','⚠️ Backend offline — modo demo activado');
+      await new Promise(r=>setTimeout(r,1500));
+      btn.disabled=false;
+      txt.innerHTML='Pagar';
+      closeM('m-payment');
+      const ref='LA-DEMO-'+Math.floor(Math.random()*90000+10000);
+      document.getElementById('success-ref').textContent=ref;
+      openM('m-pay-success');
+    } else {
+      showT('error','Erro: '+err.message);
+      console.error('Stripe error:',err);
+    }
+  }
+}
+
+// ══ FILES ══
+function showFNames(input,listId){
+  const el=document.getElementById(listId);
+  if(el&&input.files.length)el.textContent=Array.from(input.files).map(f=>'📎 '+f.name).join(' · ');
+}
+
+// ══ MODAL ══
+function openM(id){
+  document.getElementById(id).classList.add('open');
+  if(id==='m-payment')setTimeout(initStripe,100);
+  if(id==='m-bc-payment')setTimeout(initBcStripe,100);
+}
+function closeM(id){document.getElementById(id).classList.remove('open');}
+document.addEventListener('click',function(e){
+  if(e.target.classList.contains('modal-overlay'))e.target.classList.remove('open');
+});
+
+// ══ TOAST ══
+function showT(type,msg){
+  const c=document.getElementById('toast-container');
+  const t=document.createElement('div');
+  t.className='toast toast-'+type;
+  const icons={success:'✅',error:'❌',info:'ℹ️'};
+  t.innerHTML=(icons[type]||'')+' '+msg;
+  c.appendChild(t);
+  setTimeout(()=>{t.style.cssText='opacity:0;transform:translateX(100px);transition:all .3s;';setTimeout(()=>t.remove(),300);},3500);
+}
+
+// ══ SPIN KEYFRAME ══
+const style=document.createElement('style');
+style.textContent='@keyframes spin{to{transform:rotate(360deg)}}';
+document.head.appendChild(style);
+
+// ══ INIT ══
+document.addEventListener('DOMContentLoaded',()=>{
+  const today=new Date().toISOString().split('T')[0];
+  document.querySelectorAll('input[type=date]').forEach(d=>{d.min=today;if(!d.value)d.value=today;});
+});
+
+// ══ SURCHARGE LIVE WARNING ══
+// Attach to weight/dim inputs in new shipment form
+document.addEventListener('DOMContentLoaded',()=>{
+  const form=document.getElementById('c-new-ship');
+  if(!form)return;
+  const nums=form.querySelectorAll('input[type=number]');
+  nums.forEach(inp=>inp.addEventListener('input',updateSurchargeWarning));
+});
+
+function updateSurchargeWarning(){
+  const form=document.getElementById('c-new-ship');
+  if(!form)return;
+  const nums=Array.from(form.querySelectorAll('input[type=number]'));
+  const kg=parseFloat(nums[0]&&nums[0].value)||0;
+  const cm=parseFloat(nums[1]&&nums[1].value)||0;
+  let warn=document.getElementById('surcharge-warning');
+  if(!warn){
+    warn=document.createElement('div');
+    warn.id='surcharge-warning';
+    warn.style.cssText='margin-top:-.5rem;margin-bottom:1rem;';
+    const ref=nums[0]&&nums[0].closest('.form-group');
+    if(ref&&ref.parentNode)ref.parentNode.insertBefore(warn,ref.nextSibling.nextSibling.nextSibling||null);
+  }
+  if(kg>SURCHARGE_KG||cm>SURCHARGE_M){
+    warn.innerHTML='<div style="background:rgba(234,179,8,.1);border:1px solid rgba(234,179,8,.3);border-radius:var(--r);padding:.75rem 1rem;font-size:.83rem;color:#fde047;display:flex;gap:.5rem;align-items:flex-start;"><span style="font-size:1rem;flex-shrink:0;">⚠️</span><div><strong>Taxa extra aplicável:</strong> envios acima de <strong>40 kg</strong> ou com dimensão superior a <strong>1,80 m</strong> têm uma sobretaxa de <strong>+15,00€</strong>. O valor será refletido no pagamento.</div></div>';
+  } else {
+    warn.innerHTML='';
+  }
+}
+</script>
+</body>
+</html>
