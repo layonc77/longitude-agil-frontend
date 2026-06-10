@@ -788,7 +788,7 @@ tr:hover td{background:rgba(255,255,255,.02);}tr:last-child td{border-bottom:non
   </nav>
   <div class="sidebar-footer">
     <div class="sidebar-user"><div class="user-ava" id="client-ava">JC</div><div><div class="user-name" id="client-name">João Cliente</div><div class="user-role">Cliente</div></div></div>
-    <button class="btn btn-ghost btn-sm btn-full mt2" onclick="showPage('landing')">← Sair</button>
+    <button class="btn btn-ghost btn-sm btn-full mt2" onclick="doLogout()">← Sair</button>
   </div>
 </aside>
 <div class="dash-main">
@@ -1018,7 +1018,7 @@ tr:hover td{background:rgba(255,255,255,.02);}tr:last-child td{border-bottom:non
   </nav>
   <div class="sidebar-footer">
     <div class="sidebar-user"><div class="user-ava">AD</div><div><div class="user-name">Administrador</div><div class="user-role">Super Admin</div></div></div>
-    <button class="btn btn-ghost btn-sm btn-full mt2" onclick="showPage('landing')">← Sair</button>
+    <button class="btn btn-ghost btn-sm btn-full mt2" onclick="doLogout()">← Sair</button>
   </div>
 </aside>
 <div class="dash-main">
@@ -1848,6 +1848,14 @@ function switchPriceTab(dest){
   });
 }
 
+function doLogout() {
+  localStorage.removeItem('la_admin_token');
+  localStorage.removeItem('la_current_user');
+  currentUser = {};
+  showPage('landing');
+  showT('info', 'Sessão terminada.');
+}
+
 // ══ PAGE NAV ══
 function showPage(name){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
@@ -1938,7 +1946,7 @@ async function doLogin(){
     });
     const data = await res.json();
     if(data.ok && data.token){
-      sessionStorage.setItem('la_admin_token', data.token);
+      localStorage.setItem('la_admin_token', data.token);
       if(btn){ btn.disabled=false; btn.textContent=origText; }
       loginAs('admin', { email, name:'Administrador' });
       return;
@@ -2012,6 +2020,13 @@ function buildForgotWA(){
 function demoLogin(r){ loginAs(r,{email:'demo@longitudeagil.pt', name: r==='admin'?'Administrador':'Cliente Demo', preco: 5.90}); }
 function loginAs(role, userData) {
   currentUser = userData || {};
+  // Guardar sessão
+  if(role === 'client') {
+    localStorage.setItem('la_current_user', JSON.stringify({ ...userData, role:'client' }));
+  }
+  if(role === 'admin') {
+    // token já guardado em localStorage.setItem('la_admin_token')
+  }
   showT('success', role === 'admin' ? '🔑 Bem-vindo, Administrador!' : '👤 Bem-vindo, ' + (currentUser.name || 'Cliente') + '!');
   setTimeout(() => {
     if (role === 'admin') {
@@ -2139,7 +2154,7 @@ async function renderLeads() {
   listEl.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--txt3);">⏳ A carregar...</div>';
 
   try {
-    const token = sessionStorage.getItem('la_admin_token');
+    const token = localStorage.getItem('la_admin_token');
     const res   = await fetch(BACKEND + '/api/registos', { headers: { 'Authorization': 'Bearer ' + token } });
     const data  = await res.json();
     if(!data.ok) throw new Error(data.error);
@@ -2217,7 +2232,7 @@ async function approveReg() {
   if(btn){ btn.disabled=true; btn.textContent='A aprovar...'; }
 
   try {
-    const token = sessionStorage.getItem('la_admin_token');
+    const token = localStorage.getItem('la_admin_token');
     const res   = await fetch(BACKEND + '/api/registos/' + currentRegId + '/aprovar', {
       method:  'POST',
       headers: { 'Content-Type':'application/json', 'Authorization':'Bearer '+token },
@@ -2246,7 +2261,7 @@ function rejectReg() {
 async function rejectRegById(id) {
   const reg = _pendingRegs.find(r => r.id === id);
   try {
-    const token = sessionStorage.getItem('la_admin_token');
+    const token = localStorage.getItem('la_admin_token');
     await fetch(BACKEND + '/api/registos/' + id + '/rejeitar', {
       method:  'POST',
       headers: { 'Authorization':'Bearer '+token },
@@ -2720,6 +2735,38 @@ document.head.appendChild(style);
 document.addEventListener('DOMContentLoaded',()=>{
   const today=new Date().toISOString().split('T')[0];
   document.querySelectorAll('input[type=date]').forEach(d=>{d.min=today;if(!d.value)d.value=today;});
+
+  // ── AUTO-LOGIN: verificar token guardado ──
+  const token = localStorage.getItem('la_admin_token');
+  const savedUser = localStorage.getItem('la_current_user');
+
+  if(token) {
+    // Verificar se o token ainda é válido no backend
+    fetch(BACKEND + '/api/admin-verify', { headers:{ 'Authorization':'Bearer '+token } })
+      .then(r => r.json())
+      .then(data => {
+        if(data.ok) {
+          // Token válido — entrar direto como admin
+          loginAs('admin', { email: data.admin.email, name:'Administrador' });
+        } else {
+          // Token expirou — limpar e mostrar login
+          localStorage.removeItem('la_admin_token');
+        }
+      })
+      .catch(() => {
+        // Backend offline — tentar auto-login com PBKDF2 não é possível sem senha
+        // Limpar token inválido e mostrar login
+        localStorage.removeItem('la_admin_token');
+      });
+  } else if(savedUser) {
+    // Cliente guardado — restaurar sessão
+    try {
+      const user = JSON.parse(savedUser);
+      if(user && user.email && user.role === 'client') {
+        loginAs('client', user);
+      }
+    } catch {}
+  }
 });
 
 // ══ SURCHARGE LIVE WARNING ══
