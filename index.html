@@ -1708,7 +1708,28 @@ function nsCalcPrice() {
 
   if (kg <= 0) { box.style.display='none'; return; }
 
-  const basePrice = bcGetPrice(nsDest, kg);
+  // Usar preços personalizados do cliente se existirem
+  const precosKg = currentUser?.precosKg || JSON.parse(localStorage.getItem('la_cprices_' + (currentUser?.email||'')) || '{}');
+  let basePrice;
+
+  if(precosKg && Object.keys(precosKg).filter(k=>k!=='extra').length > 0) {
+    // Encontrar o escalão mais próximo (arredonda para cima)
+    const tiers = [1,3,5,10,15,20,25,30,35,40];
+    const tier  = tiers.find(t => kg <= t) || 40;
+    if(kg > 40 && precosKg.extra > 0) {
+      const base40 = precosKg[40] || currentUser?.preco || bcGetPrice(nsDest, 40);
+      basePrice = base40 + (kg - 40) * precosKg.extra;
+    } else if(precosKg[tier]) {
+      basePrice = precosKg[tier];
+    } else {
+      // Sem preço para este kg — usar preço base do cliente
+      basePrice = currentUser?.preco || bcGetPrice(nsDest, kg);
+    }
+  } else {
+    // Sem tabela personalizada — usar tabela geral
+    basePrice = currentUser?.preco || bcGetPrice(nsDest, kg);
+  }
+
   const surcharge = (kg > 40 || cm > 180) ? 15 : 0;
   const total     = +(basePrice + surcharge).toFixed(2);
   const labels    = {pt:'🇵🇹 Portugal 24h', es:'🇪🇸 Espanha 24h', mad:'🏝️ Madeira/Açores'};
@@ -1724,6 +1745,7 @@ function nsCalcPrice() {
     total, basePrice, surcharge,
     dest: nsDest, destLabel: labels[nsDest], kg, cm,
     isBalcao: false,
+    precoCustom: total,
   };
 }
 
