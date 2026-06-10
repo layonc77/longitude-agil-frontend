@@ -2343,13 +2343,7 @@ async function doLogin(){
       loginAs('admin', { email, name:'Administrador' });
       return;
     }
-    if(res.status===401){
-      // Backend respondeu — credenciais erradas
-      if(btn){ btn.disabled=false; btn.textContent=origText; }
-      errEl.textContent='Email ou palavra-passe incorrectos.';
-      errEl.style.display='block';
-      return;
-    }
+    // Se não é admin, continua para verificar clientes — não para aqui
   } catch(e) {
     // Backend offline — usar fallback local
   }
@@ -2361,12 +2355,8 @@ async function doLogin(){
       if(btn){ btn.disabled=false; btn.textContent=origText; }
       loginAs('admin', { email, name:'Administrador' });
       return;
-    } else {
-      if(btn){ btn.disabled=false; btn.textContent=origText; }
-      errEl.textContent='Palavra-passe incorrecta.';
-      errEl.style.display='block';
-      return;
     }
+    // não é admin — continua para clientes
   }
 
   // 3. Clientes — verificar via backend
