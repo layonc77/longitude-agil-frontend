@@ -690,26 +690,80 @@ tr:hover td{background:rgba(255,255,255,.02);}tr:last-child td{border-bottom:non
       <p class="small muted mt2" style="text-align:center;">Não tem conta? <a href="#" onclick="switchAuthTab('register')" style="color:var(--org);">Crie uma</a></p>
     </div>
     <div id="auth-register" class="hidden">
-      <div class="form-group">
-        <label class="form-label">Tipo de conta</label>
-        <div class="auth-type-btns">
-          <div class="auth-type-btn selected" id="type-particular" onclick="selType('particular')"><div class="type-ico">👤</div><div class="type-label">Particular</div></div>
-          <div class="auth-type-btn" id="type-empresa" onclick="selType('empresa')"><div class="type-ico">🏢</div><div class="type-label">Empresa</div></div>
+      <!-- STEP 1 -->
+      <div id="reg-step1">
+        <div class="form-group">
+          <label class="form-label">Tipo de conta</label>
+          <div class="auth-type-btns">
+            <div class="auth-type-btn selected" id="type-particular" onclick="selType('particular')"><div class="type-ico">👤</div><div class="type-label">Particular</div></div>
+            <div class="auth-type-btn" id="type-empresa" onclick="selType('empresa')"><div class="type-ico">🏢</div><div class="type-label">Empresa</div></div>
+          </div>
+        </div>
+        <div class="form-grid-2">
+          <div class="form-group"><label class="form-label">Nome *</label><input class="form-input" id="r-nome" placeholder="Nome completo"></div>
+          <div class="form-group"><label class="form-label">Telefone *</label><input class="form-input" id="r-tel" type="tel" placeholder="+351 9XX XXX XXX"></div>
+        </div>
+        <div class="form-group empresa-field hidden"><label class="form-label">Nome da empresa</label><input class="form-input" id="r-empresa" placeholder="Nome da empresa"></div>
+        <div class="form-grid-2">
+          <div class="form-group"><label class="form-label">NIF</label><input class="form-input" id="r-nif" placeholder="123456789"></div>
+          <div class="form-group"><label class="form-label">Cidade *</label><input class="form-input" id="r-cidade" placeholder="Ex: Cascais"></div>
+        </div>
+        <div class="form-group"><label class="form-label">Email *</label><input class="form-input" id="r-email" type="email" placeholder="email@exemplo.com"></div>
+        <div class="form-group"><label class="form-label">Palavra-passe *</label><input class="form-input" id="r-pass" type="password" placeholder="Mínimo 8 caracteres"></div>
+        <button class="btn btn-org btn-full mt2" onclick="regNextStep()">Continuar →</button>
+        <p class="small muted mt2" style="text-align:center;">Já tem conta? <a href="#" onclick="switchAuthTab('login')" style="color:var(--org);">Entre aqui</a></p>
+      </div>
+      <!-- STEP 2: questionário -->
+      <div id="reg-step2" class="hidden">
+        <div style="background:rgba(249,115,22,.08);border:1px solid rgba(249,115,22,.2);border-radius:var(--r);padding:.9rem 1rem;margin-bottom:1.2rem;font-size:.83rem;color:var(--txt2);line-height:1.6;">📋 Precisamos de algumas informações para configurar os seus preços personalizados.</div>
+        <div class="form-group">
+          <label class="form-label">Quantos envios faz por mês? *</label>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:.6rem;">
+            <div class="auth-type-btn" id="q-vol-1" onclick="qSel('vol','1–10','q-vol-1')" style="padding:.7rem;text-align:center;font-size:.82rem;">1 a 10</div>
+            <div class="auth-type-btn" id="q-vol-2" onclick="qSel('vol','11–30','q-vol-2')" style="padding:.7rem;text-align:center;font-size:.82rem;">11 a 30</div>
+            <div class="auth-type-btn" id="q-vol-3" onclick="qSel('vol','31–70','q-vol-3')" style="padding:.7rem;text-align:center;font-size:.82rem;">31 a 70</div>
+            <div class="auth-type-btn" id="q-vol-4" onclick="qSel('vol','71–150','q-vol-4')" style="padding:.7rem;text-align:center;font-size:.82rem;">71 a 150</div>
+            <div class="auth-type-btn" id="q-vol-5" onclick="qSel('vol','150+','q-vol-5')" style="padding:.7rem;text-align:center;font-size:.82rem;grid-column:span 2;">Mais de 150</div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Tipo de envios habitual? *</label>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:.6rem;">
+            <div class="auth-type-btn" id="q-tipo-1" onclick="qSel('tipo','Encomendas','q-tipo-1')" style="padding:.7rem;text-align:center;font-size:.82rem;">📦 Encomendas</div>
+            <div class="auth-type-btn" id="q-tipo-2" onclick="qSel('tipo','Mudanças','q-tipo-2')" style="padding:.7rem;text-align:center;font-size:.82rem;">🏠 Mudanças</div>
+            <div class="auth-type-btn" id="q-tipo-3" onclick="qSel('tipo','Mercadoria','q-tipo-3')" style="padding:.7rem;text-align:center;font-size:.82rem;">🚛 Mercadoria</div>
+            <div class="auth-type-btn" id="q-tipo-4" onclick="qSel('tipo','Documentos','q-tipo-4')" style="padding:.7rem;text-align:center;font-size:.82rem;">📄 Documentos</div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Precisa de fatura? *</label>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:.6rem;">
+            <div class="auth-type-btn" id="q-fat-sim" onclick="qSel('fatura','Sim','q-fat-sim')" style="padding:.7rem;text-align:center;font-size:.82rem;">✅ Sim</div>
+            <div class="auth-type-btn" id="q-fat-nao" onclick="qSel('fatura','Não','q-fat-nao')" style="padding:.7rem;text-align:center;font-size:.82rem;">❌ Não</div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Destinos habituais? *</label>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.6rem;">
+            <div class="auth-type-btn" id="q-dest-pt" onclick="qSel('destino','Portugal','q-dest-pt')" style="padding:.7rem;text-align:center;font-size:.82rem;">🇵🇹 Portugal</div>
+            <div class="auth-type-btn" id="q-dest-es" onclick="qSel('destino','Espanha','q-dest-es')" style="padding:.7rem;text-align:center;font-size:.82rem;">🇪🇸 Espanha</div>
+            <div class="auth-type-btn" id="q-dest-mad" onclick="qSel('destino','Madeira/Açores','q-dest-mad')" style="padding:.7rem;text-align:center;font-size:.82rem;">🏝️ Ilhas</div>
+          </div>
+        </div>
+        <div class="form-group"><label class="form-label">Observações</label><textarea class="form-textarea" id="r-obs" placeholder="Ex: produto frágil, recolha diária..." style="min-height:60px;"></textarea></div>
+        <div style="display:flex;gap:.8rem;margin-top:.5rem;">
+          <button class="btn btn-ghost" onclick="regPrevStep()">← Voltar</button>
+          <button class="btn btn-org btn-full" onclick="doRegister()">✅ Enviar Pedido</button>
         </div>
       </div>
-      <div class="form-grid-2">
-        <div class="form-group"><label class="form-label">Nome *</label><input class="form-input" id="r-nome" placeholder="Nome completo"></div>
-        <div class="form-group"><label class="form-label">Telefone *</label><input class="form-input" id="r-tel" type="tel" placeholder="+351 9XX XXX XXX"></div>
+      <!-- STEP 3: aguardar -->
+      <div id="reg-step3" class="hidden" style="text-align:center;padding:1.5rem 0;">
+        <div style="font-size:3.5rem;margin-bottom:1rem;">⏳</div>
+        <h3 style="font-family:var(--fh);font-weight:900;margin-bottom:.8rem;">Pedido enviado!</h3>
+        <p class="muted" style="line-height:1.7;font-size:.88rem;margin-bottom:1.2rem;">Recebemos o seu pedido. A equipa vai analisar o perfil e entrar em contacto com o preço personalizado.</p>
+        <a href="https://wa.me/351911580781" class="btn btn-wa btn-full" style="margin-bottom:.8rem;">💬 Falar no WhatsApp</a>
+        <button class="btn btn-ghost btn-full" onclick="switchAuthTab('login')">Já tenho acesso → Entrar</button>
       </div>
-      <div class="form-group empresa-field hidden"><label class="form-label">Nome da empresa</label><input class="form-input" id="r-empresa" placeholder="Nome da empresa"></div>
-      <div class="form-grid-2">
-        <div class="form-group"><label class="form-label">NIF</label><input class="form-input" id="r-nif" placeholder="123456789"></div>
-        <div class="form-group"><label class="form-label">Cidade *</label><input class="form-input" id="r-cidade" placeholder="Ex: Cascais"></div>
-      </div>
-      <div class="form-group"><label class="form-label">Email *</label><input class="form-input" id="r-email" type="email" placeholder="email@exemplo.com"></div>
-      <div class="form-group"><label class="form-label">Palavra-passe *</label><input class="form-input" id="r-pass" type="password" placeholder="Mínimo 8 caracteres"></div>
-      <button class="btn btn-org btn-full mt2" onclick="doRegister()">Criar Conta →</button>
-      <p class="small muted mt2" style="text-align:center;">Já tem conta? <a href="#" onclick="switchAuthTab('login')" style="color:var(--org);">Entre aqui</a></p>
     </div>
   </div>
 </div>
@@ -1007,16 +1061,19 @@ tr:hover td{background:rgba(255,255,255,.02);}tr:last-child td{border-bottom:non
 
     <!-- LEADS -->
     <div class="subpage" id="a-leads">
-      <div style="display:flex;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem;">
-        <div style="display:flex;gap:.5rem;"><button class="btn btn-org btn-sm">Todos</button><button class="btn btn-ghost btn-sm">Novos</button><button class="btn btn-ghost btn-sm">Contactados</button></div>
-        <button class="btn btn-ghost btn-sm">Exportar CSV</button>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem;">
+        <div>
+          <div style="font-family:var(--fh);font-weight:700;font-size:1rem;">📋 Pedidos de Acesso</div>
+          <div class="small muted">Novos registos aguardam aprovação com definição de preço</div>
+        </div>
+        <span class="badge badge-org" id="leads-count-badge">0 pendentes</span>
       </div>
-      <div class="leads-grid">
-        <div class="lead-card"><div class="lead-name">Ana Ferreira</div><div class="lead-contact">📞 +351 912 000 001</div><div class="lead-contact">✉️ ana@email.com</div><div class="small muted">Cascais · Mudança residencial</div><div class="small muted" style="margin-top:.3rem;">Hoje, 09:12</div><div style="display:flex;gap:.5rem;margin-top:.8rem;"><button class="btn btn-wa btn-sm" onclick="showT('success','WhatsApp aberto!')">WhatsApp</button><button class="btn btn-ghost btn-sm" onclick="showT('info','Cliente convertido!')">Converter</button></div></div>
-        <div class="lead-card"><div class="lead-name">Bruno Costa</div><div class="lead-contact">📞 +351 913 000 002</div><div class="lead-contact">✉️ bruno@empresa.pt</div><div class="small muted">Sintra · Distribuição mensal</div><div class="small muted" style="margin-top:.3rem;">Ontem, 14:30</div><div style="display:flex;gap:.5rem;margin-top:.8rem;"><button class="btn btn-wa btn-sm" onclick="showT('success','WhatsApp aberto!')">WhatsApp</button><button class="btn btn-ghost btn-sm" onclick="showT('info','Cliente convertido!')">Converter</button></div></div>
-        <div class="lead-card"><div class="lead-name">Carla Nunes</div><div class="lead-contact">📞 +351 914 000 003</div><div class="lead-contact">✉️ carla@loja.pt</div><div class="small muted">Amadora · E-commerce</div><div class="small muted" style="margin-top:.3rem;">22 Jun, 16:45</div><div style="display:flex;gap:.5rem;margin-top:.8rem;"><button class="btn btn-wa btn-sm" onclick="showT('success','WhatsApp aberto!')">WhatsApp</button><button class="btn btn-ghost btn-sm" onclick="showT('info','Cliente convertido!')">Converter</button></div></div>
-        <div class="lead-card"><div class="lead-name">Diego Martins</div><div class="lead-contact">📞 +351 915 000 004</div><div class="lead-contact">✉️ diego@negocio.pt</div><div class="small muted">Oeiras · Transporte urgente</div><div class="small muted" style="margin-top:.3rem;">21 Jun</div><div style="display:flex;gap:.5rem;margin-top:.8rem;"><button class="btn btn-wa btn-sm" onclick="showT('success','WhatsApp aberto!')">WhatsApp</button><button class="btn btn-ghost btn-sm">Converter</button></div></div>
-        <div class="lead-card"><div class="lead-name">Elisa Fonseca</div><div class="lead-contact">📞 +351 916 000 005</div><div class="lead-contact">✉️ elisa@studio.pt</div><div class="small muted">Parede · Recolhas frequentes</div><div class="small muted" style="margin-top:.3rem;">20 Jun</div><div style="display:flex;gap:.5rem;margin-top:.8rem;"><button class="btn btn-wa btn-sm" onclick="showT('success','WhatsApp aberto!')">WhatsApp</button><button class="btn btn-ghost btn-sm">Converter</button></div></div>
+      <!-- Lista dinâmica de pedidos de registo -->
+      <div id="leads-list"></div>
+      <div id="leads-empty" style="text-align:center;padding:3rem;color:var(--txt3);">
+        <div style="font-size:2.5rem;margin-bottom:.8rem;">📭</div>
+        <div style="font-weight:600;margin-bottom:.4rem;">Sem pedidos pendentes</div>
+        <div class="small">Quando um cliente se registar aparece aqui para aprovação.</div>
       </div>
     </div>
 
@@ -1156,6 +1213,41 @@ tr:hover td{background:rgba(255,255,255,.02);}tr:last-child td{border-bottom:non
 </div><!-- /admin -->
 
 <!-- MODALS -->
+
+<!-- Modal: Aprovar Registo -->
+<div class="modal-overlay" id="m-approve-reg">
+  <div class="modal" style="max-width:580px;">
+    <div class="modal-header">
+      <div class="modal-title">✅ Aprovar Pedido de Acesso</div>
+      <button class="modal-close" onclick="closeM('m-approve-reg')">✕</button>
+    </div>
+    <!-- Dados do cliente -->
+    <div style="background:var(--blk3);border:1px solid var(--bdr);border-radius:var(--r);padding:1.2rem;margin-bottom:1.2rem;">
+      <div id="ar-dados" style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem .8rem;font-size:.85rem;"></div>
+    </div>
+    <!-- Questionário respondido -->
+    <div style="background:rgba(249,115,22,.06);border:1px solid rgba(249,115,22,.2);border-radius:var(--r);padding:1rem;margin-bottom:1.2rem;">
+      <div style="font-weight:700;font-size:.82rem;margin-bottom:.6rem;text-transform:uppercase;letter-spacing:.06em;">Respostas do questionário</div>
+      <div id="ar-quiz" style="font-size:.83rem;color:var(--txt2);display:flex;flex-direction:column;gap:.3rem;"></div>
+    </div>
+    <!-- Definir preço -->
+    <div class="form-group">
+      <label class="form-label">Preço por envio (€) *</label>
+      <input class="form-input" id="ar-preco" type="number" step="0.01" placeholder="Ex: 5.90">
+      <div class="small muted mt1">Baseado no volume e tipo de envio declarados</div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Nota para o cliente (opcional)</label>
+      <textarea class="form-textarea" id="ar-nota" placeholder="Ex: Preço válido para envios até 10kg em Portugal..." style="min-height:60px;"></textarea>
+    </div>
+    <div style="display:flex;gap:.8rem;justify-content:flex-end;margin-top:1rem;flex-wrap:wrap;">
+      <button class="btn btn-red btn-sm" onclick="rejectReg()">❌ Recusar</button>
+      <button class="btn btn-ghost" onclick="closeM('m-approve-reg')">Cancelar</button>
+      <button class="btn btn-org" onclick="approveReg()">✅ Aprovar e Activar</button>
+    </div>
+  </div>
+</div>
+
 <div class="modal-overlay" id="m-client">
   <div class="modal" style="max-width:640px;">
     <div class="modal-header"><div class="modal-title">👤 Gerir Cliente</div><button class="modal-close" onclick="closeM('m-client')">✕</button></div>
@@ -1581,43 +1673,281 @@ async function sha256(str){
   return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
 }
 
+// ══ LOGIN — verificar utilizadores aprovados ══
 async function doLogin(){
   const email = document.getElementById('l-email').value.trim().toLowerCase();
   const pass  = document.getElementById('l-pass').value;
   const errEl = document.getElementById('login-error');
   errEl.style.display = 'none';
   if(!email||!pass){errEl.textContent='Preencha email e palavra-passe.';errEl.style.display='block';return;}
+
   const hash = await sha256(pass);
-  if(email===ADMIN_EMAIL && hash===ADMIN_HASH){ loginAs('admin',{email,name:'Administrador'}); return; }
-  if(email && pass.length>=6){ loginAs('client',{email, name: email.split('@')[0]}); return; }
-  errEl.textContent='Email ou palavra-passe incorretos.';errEl.style.display='block';
+
+  // Admin
+  if(email===ADMIN_EMAIL && hash===ADMIN_HASH){
+    loginAs('admin',{email,name:'Administrador'});
+    return;
+  }
+
+  // Verificar utilizadores aprovados pelo admin
+  const users = getApprovedUsers();
+  const user  = users.find(u => u.email.toLowerCase() === email);
+
+  if(!user){
+    // Verificar se está pendente
+    const pending = getPendingRegs().find(r => r.email.toLowerCase() === email);
+    if(pending){
+      errEl.innerHTML = '⏳ O seu pedido ainda está em análise. Aguarde aprovação ou contacte <a href="https://wa.me/351911580781" style="color:var(--org)">+351 911 580 781</a>.';
+    } else {
+      errEl.textContent = 'Email não encontrado. Crie uma conta primeiro.';
+    }
+    errEl.style.display = 'block';
+    return;
+  }
+
+  // Verificar senha (base64 simples — produção usar bcrypt)
+  if(btoa(pass) !== user.passHash){
+    errEl.textContent = 'Palavra-passe incorrecta.';
+    errEl.style.display = 'block';
+    return;
+  }
+
+  loginAs('client', { email: user.email, name: user.nome, preco: user.preco, quiz: user.quiz });
 }
-function demoLogin(r){ loginAs(r,{email:'demo@longitudeagil.pt', name: r==='admin'?'Administrador':'Cliente Demo'}); }
+function demoLogin(r){ loginAs(r,{email:'demo@longitudeagil.pt', name: r==='admin'?'Administrador':'Cliente Demo', preco: 5.90}); }
 function loginAs(role, userData) {
-  currentUser = userData || { email: '', name: role === 'admin' ? 'Administrador' : 'Cliente' };
+  currentUser = userData || {};
   showT('success', role === 'admin' ? '🔑 Bem-vindo, Administrador!' : '👤 Bem-vindo, ' + (currentUser.name || 'Cliente') + '!');
   setTimeout(() => {
     if (role === 'admin') {
       showPage('admin');
       aN('a-overview', document.querySelector('#page-admin .nav-item'));
+      renderLeads();
     } else {
       showPage('dashboard');
       const ini = (currentUser.name || 'C').split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase();
       document.getElementById('client-ava').textContent  = ini;
       document.getElementById('client-name').textContent = (currentUser.name || 'Cliente').split(' ')[0];
+      // Mostrar preço personalizado
+      const preco = currentUser.preco;
+      const priceCard = document.getElementById('c-price-card');
+      if(preco && priceCard){
+        priceCard.style.display = 'block';
+        document.getElementById('c-price-val').innerHTML = preco.toFixed(2) + '<span style="font-size:1rem;color:var(--txt2);font-weight:400;">€/envio</span>';
+        document.getElementById('c-price-tier').textContent = 'Preço definido pela Longitude Ágil para o seu perfil';
+        // Update submit button price
+        const btn = document.getElementById('ns-submit-btn');
+        if(btn) btn.textContent = '💳 Pagar e Confirmar';
+      }
       cNav('c-overview', document.querySelector('#page-dashboard .nav-item'));
       renderOverview();
       renderShipmentsTable();
     }
   }, 600);
 }
-function doRegister(){
-  const n=document.getElementById('r-nome').value.trim(),e=document.getElementById('r-email').value.trim(),p=document.getElementById('r-pass').value;
-  if(!n||!e||!p){showT('error','Preencha os campos obrigatórios');return;}
-  if(p.length<8){showT('error','Senha com mínimo 8 caracteres');return;}
-  showT('success','✅ Conta criada!');
-  setTimeout(()=>loginAs('client',{email:e,name:n}),700);
+// ══ REGISTO — chaves de armazenamento ══
+const REG_KEY      = 'la_pending_regs';   // pedidos aguardam aprovação
+const USERS_KEY    = 'la_approved_users'; // utilizadores aprovados pelo admin
+const ANSWERS_KEY  = 'la_quiz_answers';   // respostas do questionário em curso
+
+// Respostas do questionário actual
+let qAnswers = { vol:'', tipo:'', fatura:'', destino:'' };
+
+function qSel(field, value, btnId) {
+  qAnswers[field] = value;
+  // deselect siblings, select clicked
+  const prefix = 'q-' + field + '-';
+  document.querySelectorAll('[id^="' + prefix + '"]').forEach(el => el.classList.remove('selected'));
+  // for fatura
+  if(field==='fatura'){
+    document.getElementById('q-fat-sim')?.classList.remove('selected');
+    document.getElementById('q-fat-nao')?.classList.remove('selected');
+  }
+  document.getElementById(btnId)?.classList.add('selected');
 }
+
+// Passo 1 → 2
+function regNextStep() {
+  const nome  = document.getElementById('r-nome')?.value.trim();
+  const email = document.getElementById('r-email')?.value.trim();
+  const pass  = document.getElementById('r-pass')?.value;
+  const tel   = document.getElementById('r-tel')?.value.trim();
+  if(!nome)  { showT('error','Preencha o nome'); return; }
+  if(!tel)   { showT('error','Preencha o telefone'); return; }
+  if(!email) { showT('error','Preencha o email'); return; }
+  if(!pass || pass.length < 8) { showT('error','Senha com mínimo 8 caracteres'); return; }
+  document.getElementById('reg-step1').classList.add('hidden');
+  document.getElementById('reg-step2').classList.remove('hidden');
+  // reset quiz
+  qAnswers = { vol:'', tipo:'', fatura:'', destino:'' };
+}
+
+// Passo 2 → 1
+function regPrevStep() {
+  document.getElementById('reg-step2').classList.add('hidden');
+  document.getElementById('reg-step1').classList.remove('hidden');
+}
+
+function doRegister() {
+  // Validar questionário
+  if(!qAnswers.vol)     { showT('error','Seleccione o volume mensal'); return; }
+  if(!qAnswers.tipo)    { showT('error','Seleccione o tipo de envio'); return; }
+  if(!qAnswers.fatura)  { showT('error','Indique se precisa de fatura'); return; }
+  if(!qAnswers.destino) { showT('error','Seleccione o destino habitual'); return; }
+
+  const nome    = document.getElementById('r-nome').value.trim();
+  const email   = document.getElementById('r-email').value.trim();
+  const pass    = document.getElementById('r-pass').value;
+  const tel     = document.getElementById('r-tel').value.trim();
+  const empresa = document.getElementById('r-empresa')?.value.trim() || '';
+  const nif     = document.getElementById('r-nif')?.value.trim() || '';
+  const cidade  = document.getElementById('r-cidade')?.value.trim() || '';
+  const obs     = document.getElementById('r-obs')?.value.trim() || '';
+
+  // Guardar pedido pendente
+  const regs = JSON.parse(localStorage.getItem(REG_KEY) || '[]');
+  regs.push({
+    id:        Date.now(),
+    nome, email, tel, empresa, nif, cidade, obs,
+    passHash:  btoa(pass), // base64 simples (produção usar bcrypt no backend)
+    quiz:      { ...qAnswers },
+    estado:    'pendente',
+    criadoEm:  new Date().toISOString(),
+  });
+  localStorage.setItem(REG_KEY, JSON.stringify(regs));
+
+  // Mostrar step 3
+  document.getElementById('reg-step2').classList.add('hidden');
+  document.getElementById('reg-step3').classList.remove('hidden');
+  showT('success','✅ Pedido enviado com sucesso!');
+}
+
+// ══ ADMIN — gestão de pedidos ══
+let currentRegId = null;
+
+function getPendingRegs() {
+  return JSON.parse(localStorage.getItem(REG_KEY) || '[]');
+}
+function getApprovedUsers() {
+  return JSON.parse(localStorage.getItem(USERS_KEY) || '[]');
+}
+
+function renderLeads() {
+  const regs    = getPendingRegs().filter(r => r.estado === 'pendente');
+  const listEl  = document.getElementById('leads-list');
+  const emptyEl = document.getElementById('leads-empty');
+  const badge   = document.getElementById('leads-count-badge');
+  if(!listEl) return;
+
+  if(badge) badge.textContent = regs.length + ' pendente' + (regs.length !== 1 ? 's' : '');
+
+  // Update nav badge
+  const navBadge = document.querySelector('#page-admin .nav-badge');
+  if(navBadge) navBadge.textContent = regs.length;
+
+  if(regs.length === 0) {
+    listEl.innerHTML = '';
+    if(emptyEl) emptyEl.style.display = 'block';
+    return;
+  }
+  if(emptyEl) emptyEl.style.display = 'none';
+
+  listEl.innerHTML = '<div class="leads-grid">' + regs.map(r => `
+    <div class="lead-card">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+        <div class="lead-name">${r.nome}</div>
+        <span class="badge badge-org" style="font-size:.65rem;">Novo</span>
+      </div>
+      <div class="lead-contact">📞 ${r.tel}</div>
+      <div class="lead-contact">✉️ ${r.email}</div>
+      ${r.empresa ? `<div class="lead-contact">🏢 ${r.empresa}</div>` : ''}
+      <div class="small muted" style="margin-top:.3rem;">📍 ${r.cidade || '—'}</div>
+      <div style="background:rgba(249,115,22,.06);border-radius:var(--r);padding:.5rem .7rem;margin-top:.5rem;font-size:.78rem;color:var(--txt2);">
+        📦 ${r.quiz.vol}/mês · ${r.quiz.tipo} · 🧾 Fatura: ${r.quiz.fatura} · ${r.quiz.destino}
+      </div>
+      <div class="small muted" style="margin-top:.3rem;">${formatDate(r.criadoEm)}</div>
+      <div style="display:flex;gap:.5rem;margin-top:.8rem;flex-wrap:wrap;">
+        <a href="https://wa.me/351${r.tel.replace(/\D/g,'')}" class="btn btn-wa btn-sm" target="_blank">WhatsApp</a>
+        <button class="btn btn-org btn-sm" onclick="openApproveModal(${r.id})">✅ Aprovar</button>
+        <button class="btn btn-red btn-sm" onclick="rejectRegById(${r.id})">❌ Recusar</button>
+      </div>
+    </div>`).join('') + '</div>';
+}
+
+function openApproveModal(id) {
+  const regs = getPendingRegs();
+  const reg  = regs.find(r => r.id === id);
+  if(!reg) return;
+  currentRegId = id;
+
+  document.getElementById('ar-dados').innerHTML = `
+    <div><span class="small muted">Nome</span><br><strong>${reg.nome}</strong></div>
+    <div><span class="small muted">Email</span><br><strong>${reg.email}</strong></div>
+    <div><span class="small muted">Telefone</span><br><strong>${reg.tel}</strong></div>
+    <div><span class="small muted">Cidade</span><br><strong>${reg.cidade || '—'}</strong></div>
+    ${reg.empresa ? `<div style="grid-column:span 2"><span class="small muted">Empresa</span><br><strong>${reg.empresa}</strong></div>` : ''}
+    ${reg.nif ? `<div><span class="small muted">NIF</span><br><strong>${reg.nif}</strong></div>` : ''}
+  `;
+
+  document.getElementById('ar-quiz').innerHTML = `
+    <div>📦 Volume mensal: <strong style="color:var(--txt)">${reg.quiz.vol}</strong></div>
+    <div>🚛 Tipo de envio: <strong style="color:var(--txt)">${reg.quiz.tipo}</strong></div>
+    <div>🧾 Precisa de fatura: <strong style="color:var(--txt)">${reg.quiz.fatura}</strong></div>
+    <div>🌍 Destino: <strong style="color:var(--txt)">${reg.quiz.destino}</strong></div>
+    ${reg.obs ? `<div>💬 Obs: <em>${reg.obs}</em></div>` : ''}
+  `;
+
+  document.getElementById('ar-preco').value = '';
+  document.getElementById('ar-nota').value  = '';
+  openM('m-approve-reg');
+}
+
+function approveReg() {
+  const preco = parseFloat(document.getElementById('ar-preco').value);
+  if(!preco || preco <= 0) { showT('error','Defina um preço por envio'); return; }
+
+  const regs  = getPendingRegs();
+  const reg   = regs.find(r => r.id === currentRegId);
+  if(!reg) return;
+
+  // Aprovar — mover para utilizadores aprovados
+  const users = getApprovedUsers();
+  users.push({
+    ...reg,
+    preco,
+    notaAdmin: document.getElementById('ar-nota').value.trim(),
+    estado:    'aprovado',
+    aprovadoEm: new Date().toISOString(),
+  });
+  localStorage.setItem(USERS_KEY, JSON.stringify(users));
+
+  // Remover dos pendentes
+  const updated = regs.filter(r => r.id !== currentRegId);
+  localStorage.setItem(REG_KEY, JSON.stringify(updated));
+
+  closeM('m-approve-reg');
+  renderLeads();
+  showT('success', '✅ ' + reg.nome + ' aprovado com preço ' + preco.toFixed(2) + '€/envio');
+  currentRegId = null;
+}
+
+function rejectReg() {
+  if(!currentRegId) return;
+  rejectRegById(currentRegId);
+  closeM('m-approve-reg');
+}
+
+function rejectRegById(id) {
+  const regs = getPendingRegs();
+  const reg  = regs.find(r => r.id === id);
+  const updated = regs.filter(r => r.id !== id);
+  localStorage.setItem(REG_KEY, JSON.stringify(updated));
+  renderLeads();
+  if(reg) showT('info', reg.nome + ' recusado.');
+  currentRegId = null;
+}
+
+// ══ LOGIN — verificar utilizadores aprovados ══
 
 // ══ BALCÃO STEPS ══
 // ══ TABELA DE PREÇOS BALCÃO ══
