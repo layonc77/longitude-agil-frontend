@@ -212,10 +212,114 @@ tr:hover td{background:rgba(255,255,255,.02);}tr:last-child td{border-bottom:non
 .leads-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;}
 .lead-card{background:var(--blk2);border:1px solid var(--bdr);border-radius:var(--r);padding:1.2rem;display:flex;flex-direction:column;gap:.4rem;}
 .lead-name{font-weight:700;font-size:.92rem;}.lead-contact{font-size:.8rem;color:var(--txt2);}
-@media(max-width:900px){.svc-grid,.how-grid,.pricing-grid{grid-template-columns:1fr 1fr;}.stats-grid,.quick-actions{grid-template-columns:1fr 1fr;}.footer-grid,.client-detail-grid,.addr-grid{grid-template-columns:1fr;}.reviews-grid,.leads-grid{grid-template-columns:1fr;}.sidebar{display:none;}.form-grid-2,.form-grid-3{grid-template-columns:1fr;}}
-@media(max-width:600px){.svc-grid,.how-grid,.pricing-grid{grid-template-columns:1fr;}.lp-h1{font-size:2.2rem;}}
+/* ── TABLET ── */
+@media(max-width:1024px){
+  .svc-grid{grid-template-columns:1fr 1fr;}
+  .how-grid{grid-template-columns:1fr 1fr;}
+  .pricing-grid{grid-template-columns:1fr 1fr;}
+  .reviews-grid{grid-template-columns:1fr 1fr;}
+  .footer-grid{grid-template-columns:1fr 1fr;}
+  .stats-grid{grid-template-columns:1fr 1fr;}
+  .quick-actions{grid-template-columns:1fr 1fr;}
+  .leads-grid{grid-template-columns:1fr 1fr;}
+}
 
+/* ── MOBILE ── */
+@media(max-width:768px){
+  /* NAV */
+  .lp-nav{padding:.8rem 4vw;}
+  .lp-nav-links{gap:.5rem;}
+  .lp-nav-links a{display:none;}
 
+  /* HERO */
+  .lp-hero{padding:0 4vw;padding-top:70px;min-height:auto;}
+  .lp-h1{font-size:2rem;letter-spacing:-1px;}
+  .lp-sub{font-size:.95rem;}
+  .lp-btns{flex-direction:column;}
+  .lp-btns .btn{width:100%;justify-content:center;}
+  .lp-trust{gap:1rem;}
+
+  /* STRIP */
+  .lp-strip{gap:1rem;padding:.7rem 4vw;}
+  .lp-strip-item{font-size:.75rem;}
+
+  /* SECTIONS */
+  .lp-section{padding:3rem 4vw;}
+  .lp-sh{font-size:1.6rem;}
+
+  /* GRIDS */
+  .svc-grid{grid-template-columns:1fr;}
+  .how-grid{grid-template-columns:1fr 1fr;}
+  .pricing-grid{grid-template-columns:1fr 1fr;}
+  .reviews-grid{grid-template-columns:1fr;}
+  .footer-grid{grid-template-columns:1fr;}
+  .stats-grid{grid-template-columns:1fr 1fr;}
+  .quick-actions{grid-template-columns:1fr 1fr;}
+  .leads-grid{grid-template-columns:1fr;}
+  .client-detail-grid{grid-template-columns:1fr;}
+  .addr-grid{grid-template-columns:1fr;}
+  .form-grid-2{grid-template-columns:1fr;}
+  .form-grid-3{grid-template-columns:1fr 1fr;}
+
+  /* PRICE SECTION tabs */
+  .pricing-grid[style*="repeat(4"]{grid-template-columns:1fr 1fr!important;}
+
+  /* BALCÃO */
+  .balcao-wrap{padding:1.5rem 1rem;}
+  .balcao-steps{gap:.2rem;}
+  .bstep-line{width:24px;}
+  .bstep-label{font-size:.68rem;}
+
+  /* AUTH */
+  .auth-card{padding:1.5rem;}
+
+  /* DASHBOARD */
+  .sidebar{display:none;}
+  .dash-header{padding:1rem;}
+  .dash-content{padding:1rem;}
+  .dash-title{font-size:.95rem;}
+
+  /* MODAL */
+  .modal{padding:1.5rem;}
+  .modal-overlay{padding:.5rem;}
+  .client-detail-grid{grid-template-columns:1fr;}
+
+  /* FOOTER */
+  .footer-bottom{flex-direction:column;gap:.5rem;text-align:center;}
+
+  /* TABLES — scroll horizontal */
+  .table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+  table{min-width:500px;}
+
+  /* PRICE INFO CARD */
+  .price-info-card>div{flex-direction:column!important;}
+}
+
+/* ── SMALL MOBILE ── */
+@media(max-width:480px){
+  .lp-h1{font-size:1.75rem;}
+  .how-grid{grid-template-columns:1fr;}
+  .pricing-grid{grid-template-columns:1fr!important;}
+  .pricing-grid[style*="repeat(4"]{grid-template-columns:1fr!important;}
+  .stats-grid{grid-template-columns:1fr 1fr;}
+  .quick-actions{grid-template-columns:1fr 1fr;}
+  .form-grid-3{grid-template-columns:1fr;}
+  .auth-type-btns{grid-template-columns:1fr 1fr;}
+  .lp-btns .btn{font-size:.88rem;}
+  .balcao-wrap{padding:1rem .75rem;}
+  /* Destino selector 3 cols still ok on small */
+  #c-new-ship [style*="grid-template-columns:1fr 1fr 1fr"],
+  #balcao-s2 [style*="grid-template-columns:1fr 1fr 1fr"]{
+    grid-template-columns:1fr!important;
+  }
+  /* WA float smaller */
+  .wa-float a{width:44px;height:44px;font-size:1.2rem;}
+}
+/* Stripe Elements dark theme */
+#stripe-card-element .StripeElement{background:transparent!important;}
+.StripeElement{padding:.85rem 1rem;background:var(--blk3);border:1px solid var(--bdr);border-radius:var(--r);transition:border-color .2s;}
+.StripeElement--focus{border-color:var(--org)!important;}
+.StripeElement--invalid{border-color:var(--red)!important;}
 </style>
 <script src="https://js.stripe.com/v3/"></script>
 </head>
@@ -374,7 +478,7 @@ tr:hover td{background:rgba(255,255,255,.02);}tr:last-child td{border-bottom:non
   <!-- NOTA FINAL -->
   <div style="margin-top:1.5rem;background:var(--blk2);border:1px solid var(--bdr);border-radius:var(--r);padding:1rem 1.4rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
     <div style="font-size:1.2rem;">ℹ️</div>
-    <div class="small muted" style="flex:1;">Preços válidos para <strong style="color:var(--txt);">pacotes até 15 kg</strong>. Envios acima de <strong style="color:var(--txt);">40 kg</strong> ou com dimensão superior a <strong style="color:var(--txt);">1,80 m</strong> têm sobretaxa de +15€. Para mudanças, mercadoria a granel ou orçamento empresarial, contacte-nos.</div>
+    <div class="small muted" style="flex:1;">Preços válidos para <strong style="color:var(--txt);">pacotes até 15 kg</strong>. Envios acima de <strong style="color:var(--txt);">40 kg</strong> ou com dimensão superior a <strong style="color:var(--txt);">1,80 m</strong> podem ter sobretaxas adicionais. Para mudanças, mercadoria a granel ou orçamento empresarial, contacte-nos.</div>
     <a href="https://wa.me/351911580781" class="btn btn-ghost btn-sm">💬 Pedir Orçamento</a>
   </div>
 </div>
@@ -509,7 +613,7 @@ tr:hover td{background:rgba(255,255,255,.02);}tr:last-child td{border-bottom:non
             <div id="bc-price-desc" style="font-size:.78rem;color:var(--txt2);margin-top:.3rem;"></div>
           </div>
           <div id="bc-surcharge-warn" style="display:none;background:rgba(234,179,8,.08);border:1px solid rgba(234,179,8,.3);border-radius:var(--r);padding:.7rem 1rem;font-size:.8rem;color:#fde047;max-width:240px;line-height:1.5;">
-            ⚠️ <strong>Taxa extra:</strong> envios acima de <strong>40 kg</strong> ou <strong>1,80 m</strong> têm sobretaxa de <strong>+15,00€</strong>
+            ⚠️ <strong>Sobretaxa aplicável:</strong> envios acima de <strong>40 kg</strong> ou <strong>1,80 m</strong> — valor calculado individualmente
           </div>
         </div>
         <!-- TABELA resumida -->
@@ -641,62 +745,106 @@ tr:hover td{background:rgba(255,255,255,.02);}tr:last-child td{border-bottom:non
   <div class="dash-content">
 
     <div class="subpage active" id="c-overview">
-      <div class="price-info-card">
+      <!-- Preço info — preenchido pelo JS -->
+      <div class="price-info-card" id="c-price-card" style="display:none;">
         <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;">
-          <div><div class="tag muted">O seu preço atual</div><div style="font-family:var(--fh);font-size:2rem;font-weight:900;color:var(--org);margin:.3rem 0;">5,90€<span style="font-size:1rem;color:var(--txt2);font-weight:400;">/envio</span></div><div class="small muted">Escalão: 31–70 envios/mês · 35 envios este mês</div></div>
-          <div style="text-align:right;"><div class="badge badge-org" style="margin-bottom:.5rem;">Próximo: 71 envios → 4,90€</div><div class="small muted">Faltam 36 envios para desconto</div></div>
+          <div>
+            <div class="tag muted">O seu preço atual</div>
+            <div id="c-price-val" style="font-family:var(--fh);font-size:2rem;font-weight:900;color:var(--org);margin:.3rem 0;">—</div>
+            <div id="c-price-tier" class="small muted"></div>
+          </div>
         </div>
       </div>
+
       <div class="quick-actions">
         <div class="qa-card" onclick="cNav('c-new-ship',null)"><div class="qa-ico">📦</div><div class="qa-label">Novo Envio</div></div>
         <div class="qa-card" onclick="cNav('c-shipments',null)"><div class="qa-ico">🔍</div><div class="qa-label">Rastrear</div></div>
         <div class="qa-card" onclick="cNav('c-addresses',null)"><div class="qa-ico">📍</div><div class="qa-label">Moradas</div></div>
         <div class="qa-card" onclick="cNav('c-invoices',null)"><div class="qa-ico">🧾</div><div class="qa-label">Faturas</div></div>
       </div>
+
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:2rem;">
-        <div class="stat-card"><div class="stat-icon stat-icon-org">📦</div><div class="stat-num">35</div><div class="stat-label">Envios este mês</div><div class="stat-up">↑ +8 vs anterior</div></div>
-        <div class="stat-card"><div class="stat-icon stat-icon-grn">✅</div><div class="stat-num">33</div><div class="stat-label">Entregues</div><div class="stat-up">94% taxa</div></div>
-        <div class="stat-card"><div class="stat-icon stat-icon-yel">💶</div><div class="stat-num">206€</div><div class="stat-label">Total do mês</div></div>
+        <div class="stat-card"><div class="stat-icon stat-icon-org">📦</div><div class="stat-num" id="stat-total">0</div><div class="stat-label">Envios este mês</div></div>
+        <div class="stat-card"><div class="stat-icon stat-icon-grn">✅</div><div class="stat-num" id="stat-entregues">0</div><div class="stat-label">Entregues</div></div>
+        <div class="stat-card"><div class="stat-icon stat-icon-yel">💶</div><div class="stat-num" id="stat-total-val">0€</div><div class="stat-label">Total do mês</div></div>
       </div>
+
       <h3 style="font-family:var(--fh);font-weight:700;margin-bottom:1rem;">Envios recentes</h3>
-      <div class="shipment-list">
-        <div class="shipment-row"><div><div class="ship-code">LA-2025-004821</div><div class="ship-route">Carcavelos → Cascais · 3kg</div></div><div style="display:flex;align-items:center;gap:1rem;"><span class="badge badge-grn"><span class="dot"></span>Entregue</span><div><div class="ship-price">5,90€</div><div class="ship-date">Hoje</div></div></div></div>
-        <div class="shipment-row"><div><div class="ship-code">LA-2025-004798</div><div class="ship-route">Parede → Sintra · Caixas</div></div><div style="display:flex;align-items:center;gap:1rem;"><span class="badge badge-yel"><span class="dot"></span>Em transporte</span><div><div class="ship-price">5,90€</div><div class="ship-date">Hoje</div></div></div></div>
-        <div class="shipment-row"><div><div class="ship-code">LA-2025-004756</div><div class="ship-route">Cascais → Amadora</div></div><div style="display:flex;align-items:center;gap:1rem;"><span class="badge badge-grn"><span class="dot"></span>Entregue</span><div><div class="ship-price">5,90€</div><div class="ship-date">Ontem</div></div></div></div>
+      <div id="c-recent-list">
+        <!-- preenchido pelo JS -->
       </div>
     </div>
 
     <div class="subpage" id="c-new-ship">
       <div style="max-width:700px;">
-        <div class="price-info-card"><div style="display:flex;align-items:center;gap:1rem;"><div style="font-size:1.5rem;">💶</div><div><div class="small muted">Preço deste envio</div><div style="font-family:var(--fh);font-size:1.6rem;font-weight:900;color:var(--org);">5,90€</div></div><div class="small muted" style="margin-left:auto;">Escalão 31–70/mês</div></div></div>
+        <!-- Destino -->
+        <div class="card" style="margin-bottom:1rem;">
+          <div class="form-section-title">🌍 Destino</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.8rem;">
+            <div class="auth-type-btn selected" id="ns-dest-pt" onclick="nsSelDest('pt')" style="padding:.9rem .5rem;text-align:center;">
+              <div style="font-size:1.3rem;">🇵🇹</div><div style="font-size:.78rem;font-weight:700;margin-top:.3rem;">Portugal 24h</div>
+            </div>
+            <div class="auth-type-btn" id="ns-dest-es" onclick="nsSelDest('es')" style="padding:.9rem .5rem;text-align:center;">
+              <div style="font-size:1.3rem;">🇪🇸</div><div style="font-size:.78rem;font-weight:700;margin-top:.3rem;">Espanha 24h</div>
+            </div>
+            <div class="auth-type-btn" id="ns-dest-mad" onclick="nsSelDest('mad')" style="padding:.9rem .5rem;text-align:center;">
+              <div style="font-size:1.3rem;">🏝️</div><div style="font-size:.78rem;font-weight:700;margin-top:.3rem;">Madeira/Açores</div>
+            </div>
+          </div>
+        </div>
+
         <div class="card">
           <div class="form-section-title">📤 Recolha</div>
           <div class="form-group"><label class="form-label">Morada de recolha *</label><input class="form-input" id="ns-orig" placeholder="Rua, nº, localidade"></div>
           <div class="form-grid-2">
             <div class="form-group"><label class="form-label">Data *</label><input class="form-input" id="ns-data" type="date"></div>
-            <div class="form-group"><label class="form-label">Horário</label><select class="form-select"><option>08h–10h</option><option>10h–12h</option><option>12h–14h</option><option>14h–16h</option><option>16h–18h</option></select></div>
+            <div class="form-group"><label class="form-label">Horário</label><select class="form-select" id="ns-hora"><option>08h–10h</option><option>10h–12h</option><option>12h–14h</option><option>14h–16h</option><option>16h–18h</option></select></div>
           </div>
+
           <div class="form-section-title" style="margin-top:1rem;">📥 Entrega</div>
-          <div class="form-group"><label class="form-label">Morada de entrega *</label><input class="form-input" id="ns-dest" placeholder="Rua, nº, localidade"></div>
+          <div class="form-group"><label class="form-label">Morada de entrega *</label><input class="form-input" id="ns-dest-addr" placeholder="Rua, nº, localidade"></div>
           <div class="form-grid-2">
             <div class="form-group"><label class="form-label">Nome destinatário *</label><input class="form-input" id="ns-dname" placeholder="Nome completo"></div>
             <div class="form-group"><label class="form-label">Telefone destinatário</label><input class="form-input" id="ns-dtel" type="tel" placeholder="+351 9XX XXX XXX"></div>
           </div>
+
           <div class="form-section-title" style="margin-top:1rem;">📦 Carga</div>
-          <div class="form-group"><label class="form-label">Tipo</label><select class="form-select"><option>Encomenda</option><option>Mobília</option><option>Caixas</option><option>Documentos</option><option>Outro</option></select></div>
+          <div class="form-group"><label class="form-label">Tipo</label><select class="form-select" id="ns-tipo"><option>Encomenda / Pacote</option><option>Mobília</option><option>Caixas</option><option>Documentos</option><option>Outro</option></select></div>
           <div class="form-grid-3">
-            <div class="form-group"><label class="form-label">Peso (kg)</label><input class="form-input" type="number" placeholder="5"></div>
-            <div class="form-group"><label class="form-label">Comp. (cm)</label><input class="form-input" type="number" placeholder="40"></div>
-            <div class="form-group"><label class="form-label">Larg. (cm)</label><input class="form-input" type="number" placeholder="30"></div>
+            <div class="form-group"><label class="form-label">Peso (kg) *</label><input class="form-input" id="ns-peso" type="number" min="0.1" step="0.1" placeholder="ex: 5" oninput="nsCalcPrice()"></div>
+            <div class="form-group"><label class="form-label">Comp. (cm)</label><input class="form-input" id="ns-comp" type="number" placeholder="40" oninput="nsCalcPrice()"></div>
+            <div class="form-group"><label class="form-label">Larg. (cm)</label><input class="form-input" id="ns-larg" type="number" placeholder="30"></div>
           </div>
-          <div class="form-group"><label class="form-label">Observações</label><textarea class="form-textarea" placeholder="Frágil, instruções especiais..."></textarea></div>
+
+          <!-- Preço em tempo real -->
+          <div id="ns-price-box" style="display:none;margin:.5rem 0 1rem;">
+            <div class="price-info-card" style="margin-bottom:0;">
+              <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;">
+                <div>
+                  <div class="small muted">Preço estimado</div>
+                  <div id="ns-price-val" style="font-family:var(--fh);font-size:1.8rem;font-weight:900;color:var(--org);">—</div>
+                  <div id="ns-price-desc" class="small muted"></div>
+                </div>
+                <div id="ns-surcharge-warn" style="display:none;background:rgba(234,179,8,.08);border:1px solid rgba(234,179,8,.3);border-radius:var(--r);padding:.6rem .9rem;font-size:.8rem;color:#fde047;max-width:220px;line-height:1.5;">
+                  ⚠️ Sobretaxa aplicável (>40kg ou >1,80m)
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group"><label class="form-label">Observações</label><textarea class="form-textarea" id="ns-obs" placeholder="Frágil, instruções especiais..."></textarea></div>
           <div class="form-group">
             <label class="form-label">Documentos / Fotos</label>
-            <div class="upload-zone" onclick="document.getElementById('ns-files').click()"><div>📎 Carregar ficheiros</div><div class="small muted mt1">PDF, JPG, PNG até 10MB</div><input type="file" id="ns-files" multiple style="display:none"></div>
+            <div class="upload-zone" onclick="document.getElementById('ns-files').click()">
+              <div>📎 Carregar ficheiros</div>
+              <div class="small muted mt1">PDF, JPG, PNG até 10MB</div>
+              <input type="file" id="ns-files" multiple style="display:none">
+            </div>
           </div>
+
           <div style="display:flex;justify-content:flex-end;gap:.8rem;margin-top:1rem;">
-            <button class="btn btn-ghost" onclick="cNav('c-overview',null)">Cancelar</button>
-            <button class="btn btn-org" onclick="submitShip()">✅ Confirmar — 5,90€</button>
+            <button class="btn btn-ghost" onclick="nsReset()">Cancelar</button>
+            <button class="btn btn-org" id="ns-submit-btn" onclick="submitShip()">💳 Pagar e Confirmar</button>
           </div>
         </div>
       </div>
@@ -704,15 +852,27 @@ tr:hover td{background:rgba(255,255,255,.02);}tr:last-child td{border-bottom:non
 
     <div class="subpage" id="c-shipments">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem;">
-        <div style="display:flex;gap:.5rem;flex-wrap:wrap;"><button class="btn btn-org btn-sm">Todos</button><button class="btn btn-ghost btn-sm">Em trânsito</button><button class="btn btn-ghost btn-sm">Entregues</button></div>
-        <input class="form-input" placeholder="🔍 Pesquisar..." style="width:200px;padding:.5rem .9rem;font-size:.85rem;">
+        <div style="display:flex;gap:.5rem;flex-wrap:wrap;">
+          <button class="btn btn-org btn-sm" onclick="renderShipmentsTable('todos')">Todos</button>
+          <button class="btn btn-ghost btn-sm" onclick="renderShipmentsTable('transito')">Em trânsito</button>
+          <button class="btn btn-ghost btn-sm" onclick="renderShipmentsTable('entregues')">Entregues</button>
+        </div>
+        <input class="form-input" id="ship-search" placeholder="🔍 Pesquisar..." style="width:200px;padding:.5rem .9rem;font-size:.85rem;" oninput="renderShipmentsTable('todos')">
       </div>
-      <div class="panel"><div class="table-wrap"><table><thead><tr><th>Ref.</th><th>Origem</th><th>Destino</th><th>Data</th><th>Estado</th><th>Preço</th><th></th></tr></thead><tbody>
-        <tr><td><span class="ship-code">LA-004821</span></td><td>Carcavelos</td><td>Cascais</td><td>Hoje</td><td><span class="badge badge-grn"><span class="dot"></span>Entregue</span></td><td><strong>5,90€</strong></td><td><button class="btn btn-ghost btn-sm">Ver</button></td></tr>
-        <tr><td><span class="ship-code">LA-004798</span></td><td>Parede</td><td>Sintra</td><td>Hoje</td><td><span class="badge badge-yel"><span class="dot"></span>Em transporte</span></td><td><strong>5,90€</strong></td><td><button class="btn btn-ghost btn-sm">Ver</button></td></tr>
-        <tr><td><span class="ship-code">LA-004756</span></td><td>Cascais</td><td>Amadora</td><td>Ontem</td><td><span class="badge badge-grn"><span class="dot"></span>Entregue</span></td><td><strong>5,90€</strong></td><td><button class="btn btn-ghost btn-sm">Ver</button></td></tr>
-        <tr><td><span class="ship-code">LA-004688</span></td><td>Estoril</td><td>Sintra</td><td>21 Jun</td><td><span class="badge badge-red"><span class="dot"></span>Cancelado</span></td><td><strong>—</strong></td><td><button class="btn btn-ghost btn-sm">Ver</button></td></tr>
-      </tbody></table></div></div>
+      <div class="panel">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Ref.</th><th>Origem</th><th>Destino</th><th>Data</th><th>Estado</th><th>Preço</th></tr></thead>
+            <tbody id="shipments-tbody"></tbody>
+          </table>
+          <div id="shipments-empty" style="display:none;padding:3rem;text-align:center;color:var(--txt3);">
+            <div style="font-size:2.5rem;margin-bottom:.8rem;">📭</div>
+            <div style="font-weight:600;margin-bottom:.4rem;">Ainda não tem envios</div>
+            <div class="small">Crie o seu primeiro envio clicando em "Novo Envio".</div>
+            <button class="btn btn-org btn-sm mt2" onclick="cNav('c-new-ship',null)">+ Novo Envio</button>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div class="subpage" id="c-addresses">
@@ -728,10 +888,19 @@ tr:hover td{background:rgba(255,255,255,.02);}tr:last-child td{border-bottom:non
     </div>
 
     <div class="subpage" id="c-invoices">
-      <div class="panel"><div class="table-wrap"><table><thead><tr><th>Fatura</th><th>Período</th><th>Envios</th><th>Total</th><th>Estado</th><th></th></tr></thead><tbody>
-        <tr><td><strong>FAT-2025-0042</strong></td><td>Jun 2025</td><td>35</td><td><strong>206,50€</strong></td><td><span class="badge badge-yel">Pendente</span></td><td><button class="btn btn-ghost btn-sm">PDF</button></td></tr>
-        <tr><td><strong>FAT-2025-0031</strong></td><td>Mai 2025</td><td>27</td><td><strong>159,30€</strong></td><td><span class="badge badge-grn">Paga</span></td><td><button class="btn btn-ghost btn-sm">PDF</button></td></tr>
-      </tbody></table></div></div>
+      <div class="panel">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Fatura</th><th>Período</th><th>Envios</th><th>Total</th><th>Estado</th></tr></thead>
+            <tbody id="invoices-tbody"></tbody>
+          </table>
+          <div id="invoices-empty" style="padding:3rem;text-align:center;color:var(--txt3);">
+            <div style="font-size:2.5rem;margin-bottom:.8rem;">🧾</div>
+            <div style="font-weight:600;margin-bottom:.4rem;">Sem faturas ainda</div>
+            <div class="small">As faturas aparecem aqui após os seus primeiros envios.</div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div class="subpage" id="c-pricing">
@@ -1033,7 +1202,7 @@ tr:hover td{background:rgba(255,255,255,.02);}tr:last-child td{border-bottom:non
     <div id="m-payment-summary" style="background:var(--blk3);border:1px solid var(--bdr);border-radius:var(--r);padding:1.2rem;margin-bottom:1.5rem;">
       <div style="font-family:var(--fh);font-weight:700;margin-bottom:.8rem;">Resumo do Pedido</div>
       <div style="display:flex;justify-content:space-between;font-size:.88rem;margin-bottom:.4rem;"><span class="muted">Serviço de envio local</span><span id="pay-price-line">5,90€</span></div>
-      <div id="pay-surcharge-line" class="hidden" style="display:flex;justify-content:space-between;font-size:.88rem;margin-bottom:.4rem;color:var(--yel);"><span>⚠️ Taxa extra (peso/dimensão)</span><span id="pay-surcharge-val">+15,00€</span></div>
+      <div id="pay-surcharge-line" class="hidden" style="display:flex;justify-content:space-between;font-size:.88rem;margin-bottom:.4rem;color:var(--yel);"><span>⚠️ Sobretaxa (peso/dimensão)</span><span id="pay-surcharge-val">a calcular</span></div>
       <div style="border-top:1px solid var(--bdr);margin:.8rem 0;"></div>
       <div style="display:flex;justify-content:space-between;font-family:var(--fh);font-weight:700;font-size:1.1rem;"><span>Total</span><span id="pay-total" style="color:var(--org);">5,90€</span></div>
     </div>
@@ -1091,8 +1260,8 @@ tr:hover td{background:rgba(255,255,255,.02);}tr:last-child td{border-bottom:non
         <span id="bcp-base">—</span>
       </div>
       <div id="bcp-sur-row" style="display:none;justify-content:space-between;font-size:.88rem;margin-bottom:.35rem;color:var(--yel);">
-        <span>⚠️ Taxa extra (>40kg / >1,80m)</span>
-        <span>+15,00€</span>
+        <span>⚠️ Sobretaxa (>40kg / >1,80m)</span>
+        <span>a calcular</span>
       </div>
       <div style="border-top:1px solid var(--bdr);margin:.8rem 0;"></div>
       <div style="display:flex;justify-content:space-between;font-family:var(--fh);font-weight:700;font-size:1.15rem;">
@@ -1124,6 +1293,233 @@ tr:hover td{background:rgba(255,255,255,.02);}tr:last-child td{border-bottom:non
 </div>
 
 <script>
+// ══ STORAGE — dados reais do cliente ══
+const STORAGE_KEY = 'la_shipments';
+let currentUser = {};
+
+function getShipments() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); } catch { return []; }
+}
+function saveShipments(list) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+}
+
+// Renderiza overview com dados reais
+function renderOverview() {
+  const ships = getShipments();
+  const now   = new Date();
+  const month = now.getMonth();
+  const year  = now.getFullYear();
+
+  const thisMonth = ships.filter(s => {
+    const d = new Date(s.createdAt);
+    return d.getMonth() === month && d.getFullYear() === year;
+  });
+
+  const entregues = thisMonth.filter(s => s.estado === 'Entregue').length;
+  const totalVal  = thisMonth.reduce((acc, s) => acc + (s.preco || 0), 0);
+
+  document.getElementById('stat-total').textContent     = thisMonth.length;
+  document.getElementById('stat-entregues').textContent = entregues;
+  document.getElementById('stat-total-val').textContent = totalVal.toFixed(2) + '€';
+
+  // Últimos 3 envios
+  const recent = [...ships].reverse().slice(0, 3);
+  const listEl = document.getElementById('c-recent-list');
+  if (!listEl) return;
+
+  if (recent.length === 0) {
+    listEl.innerHTML = `
+      <div style="text-align:center;padding:2.5rem;color:var(--txt3);">
+        <div style="font-size:2.5rem;margin-bottom:.8rem;">📭</div>
+        <div style="font-weight:600;margin-bottom:.4rem;">Ainda não tem envios</div>
+        <div class="small">Clique em "Novo Envio" para começar.</div>
+        <button class="btn btn-org btn-sm mt2" onclick="cNav('c-new-ship',null)">+ Novo Envio</button>
+      </div>`;
+    return;
+  }
+
+  listEl.innerHTML = '<div class="shipment-list">' + recent.map(s => `
+    <div class="shipment-row">
+      <div>
+        <div class="ship-code">${s.ref}</div>
+        <div class="ship-route">${s.origem} → ${s.destino}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:1rem;">
+        <span class="badge ${badgeClass(s.estado)}"><span class="dot"></span>${s.estado}</span>
+        <div>
+          <div class="ship-price">${s.preco ? s.preco.toFixed(2)+'€' : '—'}</div>
+          <div class="ship-date">${formatDate(s.createdAt)}</div>
+        </div>
+      </div>
+    </div>`).join('') + '</div>';
+}
+
+// Renderiza tabela de envios
+function renderShipmentsTable(filtro = 'todos') {
+  const ships  = getShipments();
+  const search = (document.getElementById('ship-search')?.value || '').toLowerCase();
+  const tbody  = document.getElementById('shipments-tbody');
+  const empty  = document.getElementById('shipments-empty');
+  if (!tbody) return;
+
+  let filtered = [...ships].reverse();
+  if (filtro === 'transito') filtered = filtered.filter(s => s.estado === 'Em transporte' || s.estado === 'Recolhido');
+  if (filtro === 'entregues') filtered = filtered.filter(s => s.estado === 'Entregue');
+  if (search) filtered = filtered.filter(s =>
+    s.ref.toLowerCase().includes(search) ||
+    s.origem.toLowerCase().includes(search) ||
+    s.destino.toLowerCase().includes(search)
+  );
+
+  if (filtered.length === 0) {
+    tbody.innerHTML = '';
+    empty.style.display = 'block';
+    return;
+  }
+  empty.style.display = 'none';
+  tbody.innerHTML = filtered.map(s => `
+    <tr>
+      <td><span class="ship-code">${s.ref}</span></td>
+      <td>${s.origem}</td>
+      <td>${s.destino}</td>
+      <td>${formatDate(s.createdAt)}</td>
+      <td><span class="badge ${badgeClass(s.estado)}"><span class="dot"></span>${s.estado}</span></td>
+      <td><strong>${s.preco ? s.preco.toFixed(2)+'€' : '—'}</strong></td>
+    </tr>`).join('');
+}
+
+function badgeClass(estado) {
+  if (!estado) return 'badge-gray';
+  if (estado === 'Entregue') return 'badge-grn';
+  if (estado === 'Cancelado') return 'badge-red';
+  if (estado === 'Em transporte' || estado === 'Recolhido') return 'badge-yel';
+  return 'badge-org';
+}
+function formatDate(iso) {
+  if (!iso) return '—';
+  const d = new Date(iso);
+  const today = new Date();
+  if (d.toDateString() === today.toDateString()) return 'Hoje';
+  const yesterday = new Date(today); yesterday.setDate(today.getDate()-1);
+  if (d.toDateString() === yesterday.toDateString()) return 'Ontem';
+  return d.toLocaleDateString('pt-PT', {day:'2-digit', month:'short'});
+}
+
+// ── NOVO ENVIO — destino selector ──
+let nsDest = 'pt';
+function nsSelDest(d) {
+  nsDest = d;
+  ['pt','es','mad'].forEach(k => {
+    const el = document.getElementById('ns-dest-'+k);
+    if (el) el.classList.toggle('selected', k===d);
+  });
+  nsCalcPrice();
+}
+
+function nsCalcPrice() {
+  const kg  = parseFloat(document.getElementById('ns-peso')?.value) || 0;
+  const cm  = parseFloat(document.getElementById('ns-comp')?.value) || 0;
+  const box = document.getElementById('ns-price-box');
+  const btn = document.getElementById('ns-submit-btn');
+  if (!box) return;
+
+  if (kg <= 0) { box.style.display='none'; return; }
+
+  const basePrice = bcGetPrice(nsDest, kg);
+  const surcharge = (kg > 40 || cm > 180) ? 15 : 0;
+  const total     = +(basePrice + surcharge).toFixed(2);
+  const labels    = {pt:'🇵🇹 Portugal 24h', es:'🇪🇸 Espanha 24h', mad:'🏝️ Madeira/Açores'};
+
+  box.style.display = 'block';
+  document.getElementById('ns-price-val').textContent  = total.toFixed(2) + '€';
+  document.getElementById('ns-price-desc').textContent = labels[nsDest] + ' · ' + kg + ' kg';
+  document.getElementById('ns-surcharge-warn').style.display = surcharge > 0 ? 'block' : 'none';
+
+  if (btn) btn.textContent = '💳 Pagar ' + total.toFixed(2) + '€';
+
+  window._nsPayCtx = {
+    total, basePrice, surcharge,
+    dest: nsDest, destLabel: labels[nsDest], kg, cm,
+    isBalcao: false,
+  };
+}
+
+function nsReset() {
+  ['ns-orig','ns-dest-addr','ns-dname','ns-dtel','ns-obs'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.value = '';
+  });
+  ['ns-peso','ns-comp','ns-larg'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.value = '';
+  });
+  const box = document.getElementById('ns-price-box');
+  if (box) box.style.display = 'none';
+  nsDest = 'pt'; nsSelDest('pt');
+  cNav('c-overview', null);
+}
+
+// ── SUBMIT SHIP — abre modal pagamento ──
+function submitShip() {
+  const orig  = document.getElementById('ns-orig')?.value;
+  const dest  = document.getElementById('ns-dest-addr')?.value;
+  const dname = document.getElementById('ns-dname')?.value;
+  const data  = document.getElementById('ns-data')?.value;
+  const kg    = parseFloat(document.getElementById('ns-peso')?.value) || 0;
+
+  if (!orig)  { showT('error','Preencha a morada de recolha'); return; }
+  if (!dest)  { showT('error','Preencha a morada de entrega'); return; }
+  if (!dname) { showT('error','Preencha o nome do destinatário'); return; }
+  if (!data)  { showT('error','Escolha a data de recolha'); return; }
+  if (kg <= 0){ showT('error','Indique o peso da carga'); return; }
+
+  const ctx = window._nsPayCtx;
+  if (!ctx)   { showT('error','Introduza o peso para calcular o preço'); return; }
+
+  // Guardar contexto completo
+  window._payCtx = {
+    ...ctx,
+    origem:         orig,
+    destino:        dest,
+    destinatario:   dname,
+    tipoMercadoria: document.getElementById('ns-tipo')?.value || '',
+    data,
+    horario:        document.getElementById('ns-hora')?.value || '',
+    clientEmail:    currentUser.email || '',
+    monthlyVolume:  getShipments().length,
+  };
+
+  // Preencher modal pagamento
+  document.getElementById('pay-price-line').textContent = ctx.basePrice.toFixed(2) + '€';
+  const sLine = document.getElementById('pay-surcharge-line');
+  if (sLine) sLine.style.display = ctx.surcharge > 0 ? 'flex' : 'none';
+  document.getElementById('pay-total').textContent      = ctx.total.toFixed(2) + '€';
+  document.getElementById('pay-btn-amount').textContent = ctx.total.toFixed(2) + '€';
+
+  openM('m-payment');
+}
+
+// ── APÓS PAGAMENTO — guardar envio ──
+function saveNewShipment(ref) {
+  const ctx  = window._payCtx || {};
+  const list = getShipments();
+  list.push({
+    ref,
+    origem:    ctx.origem    || '—',
+    destino:   ctx.destino   || '—',
+    estado:    'Pedido recebido',
+    preco:     ctx.total     || 0,
+    dest:      ctx.dest      || 'pt',
+    kg:        ctx.kg        || 0,
+    createdAt: new Date().toISOString(),
+  });
+  saveShipments(list);
+  renderOverview();
+  renderShipmentsTable();
+  // badge do nav
+  const badge = document.querySelector('#page-dashboard .nav-badge');
+  if (badge) badge.textContent = list.length;
+}
+
 // ══ PRICE TABLE TABS ══
 function switchPriceTab(dest){
   ['pt','es','mad'].forEach(d=>{
@@ -1190,48 +1586,37 @@ async function doLogin(){
   const pass  = document.getElementById('l-pass').value;
   const errEl = document.getElementById('login-error');
   errEl.style.display = 'none';
-
-  if(!email || !pass){
-    errEl.textContent = 'Preencha email e palavra-passe.';
-    errEl.style.display = 'block';
-    return;
-  }
-
+  if(!email||!pass){errEl.textContent='Preencha email e palavra-passe.';errEl.style.display='block';return;}
   const hash = await sha256(pass);
-
-  // Admin
-  if(email === ADMIN_EMAIL && hash === ADMIN_HASH){
-    loginAs('admin');
-    return;
-  }
-
-  // Cliente registado (em produção validar contra BD)
-  if(email && pass.length >= 6){
-    loginAs('client');
-    return;
-  }
-
-  errEl.textContent = 'Email ou palavra-passe incorretos.';
-  errEl.style.display = 'block';
+  if(email===ADMIN_EMAIL && hash===ADMIN_HASH){ loginAs('admin',{email,name:'Administrador'}); return; }
+  if(email && pass.length>=6){ loginAs('client',{email, name: email.split('@')[0]}); return; }
+  errEl.textContent='Email ou palavra-passe incorretos.';errEl.style.display='block';
 }
-
-function demoLogin(r){loginAs(r);}
-function loginAs(role){
-  showT('success',role==='admin'?'🔑 Bem-vindo, Administrador!':'👤 Bem-vindo, João!');
-  setTimeout(()=>{
-    if(role==='admin'){showPage('admin');aN('a-overview',document.querySelector('#page-admin .nav-item'));}
-    else{showPage('dashboard');cNav('c-overview',document.querySelector('#page-dashboard .nav-item'));}
-  },600);
+function demoLogin(r){ loginAs(r,{email:'demo@longitudeagil.pt', name: r==='admin'?'Administrador':'Cliente Demo'}); }
+function loginAs(role, userData) {
+  currentUser = userData || { email: '', name: role === 'admin' ? 'Administrador' : 'Cliente' };
+  showT('success', role === 'admin' ? '🔑 Bem-vindo, Administrador!' : '👤 Bem-vindo, ' + (currentUser.name || 'Cliente') + '!');
+  setTimeout(() => {
+    if (role === 'admin') {
+      showPage('admin');
+      aN('a-overview', document.querySelector('#page-admin .nav-item'));
+    } else {
+      showPage('dashboard');
+      const ini = (currentUser.name || 'C').split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase();
+      document.getElementById('client-ava').textContent  = ini;
+      document.getElementById('client-name').textContent = (currentUser.name || 'Cliente').split(' ')[0];
+      cNav('c-overview', document.querySelector('#page-dashboard .nav-item'));
+      renderOverview();
+      renderShipmentsTable();
+    }
+  }, 600);
 }
 function doRegister(){
-  const n=document.getElementById('r-nome').value,e=document.getElementById('r-email').value,p=document.getElementById('r-pass').value;
+  const n=document.getElementById('r-nome').value.trim(),e=document.getElementById('r-email').value.trim(),p=document.getElementById('r-pass').value;
   if(!n||!e||!p){showT('error','Preencha os campos obrigatórios');return;}
   if(p.length<8){showT('error','Senha com mínimo 8 caracteres');return;}
-  const ini=n.split(' ').map(x=>x[0]).join('').substring(0,2).toUpperCase();
-  document.getElementById('client-ava').textContent=ini;
-  document.getElementById('client-name').textContent=n.split(' ')[0];
   showT('success','✅ Conta criada!');
-  setTimeout(()=>loginAs('client'),700);
+  setTimeout(()=>loginAs('client',{email:e,name:n}),700);
 }
 
 // ══ BALCÃO STEPS ══
@@ -1541,7 +1926,7 @@ function submitShip(){
   document.getElementById('pay-price-line').textContent = base.toFixed(2)+'€';
   const sLine = document.getElementById('pay-surcharge-line');
   sLine.style.display = hasSur ? 'flex' : 'none';
-  document.getElementById('pay-surcharge-val').textContent = '+'+SURCHARGE_FEE.toFixed(2)+'€';
+  document.getElementById('pay-surcharge-val').textContent = 'a calcular';
   document.getElementById('pay-total').textContent = total.toFixed(2)+'€';
   document.getElementById('pay-btn-amount').textContent  = total.toFixed(2)+'€';
 
@@ -1550,7 +1935,7 @@ function submitShip(){
 
 // ══ STRIPE REAL INTEGRATION ══
 const STRIPE_PK  = 'pk_test_51S1SfFEOZsbZn2hBIG4gSIDjNQRwnnOxWbEfJ32nIaUlzTr9Rv6tLZNmcCu7XvY9mMSwIFyvAqs1EAG3sZIf3jOh00hSVt3TEm';
-const BACKEND = 'https://web-production-47960.up.railway.app';
+const BACKEND    = 'http://localhost:4000'; // ← mude para o URL do servidor em produção
 
 let stripe, cardElement, stripeReady=false;
 let _payCtx={}; // contexto do envio actual (preenchido em submitShip)
@@ -1632,6 +2017,7 @@ async function processPayment(){
       closeM('m-payment');
       const ref='LA-'+new Date().getFullYear()+'-'+Math.floor(Math.random()*90000+10000);
       document.getElementById('success-ref').textContent=ref;
+      saveNewShipment(ref);
       openM('m-pay-success');
       showT('success','✅ Pagamento confirmado! Ref: '+ref);
     }
@@ -1648,6 +2034,7 @@ async function processPayment(){
       closeM('m-payment');
       const ref='LA-DEMO-'+Math.floor(Math.random()*90000+10000);
       document.getElementById('success-ref').textContent=ref;
+      saveNewShipment(ref);
       openM('m-pay-success');
     } else {
       showT('error','Erro: '+err.message);
@@ -1719,7 +2106,7 @@ function updateSurchargeWarning(){
     if(ref&&ref.parentNode)ref.parentNode.insertBefore(warn,ref.nextSibling.nextSibling.nextSibling||null);
   }
   if(kg>SURCHARGE_KG||cm>SURCHARGE_M){
-    warn.innerHTML='<div style="background:rgba(234,179,8,.1);border:1px solid rgba(234,179,8,.3);border-radius:var(--r);padding:.75rem 1rem;font-size:.83rem;color:#fde047;display:flex;gap:.5rem;align-items:flex-start;"><span style="font-size:1rem;flex-shrink:0;">⚠️</span><div><strong>Taxa extra aplicável:</strong> envios acima de <strong>40 kg</strong> ou com dimensão superior a <strong>1,80 m</strong> têm uma sobretaxa de <strong>+15,00€</strong>. O valor será refletido no pagamento.</div></div>';
+    warn.innerHTML='<div style="background:rgba(234,179,8,.1);border:1px solid rgba(234,179,8,.3);border-radius:var(--r);padding:.75rem 1rem;font-size:.83rem;color:#fde047;display:flex;gap:.5rem;align-items:flex-start;"><span style="font-size:1rem;flex-shrink:0;">⚠️</span><div><strong>Sobretaxa aplicável:</strong> envios acima de <strong>40 kg</strong> ou com dimensão superior a <strong>1,80 m</strong> têm sobretaxas adicionais. O valor será confirmado antes do pagamento.</div></div>';
   } else {
     warn.innerHTML='';
   }
