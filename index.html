@@ -1331,6 +1331,45 @@ tr:hover td{background:rgba(255,255,255,.02);}tr:last-child td{border-bottom:non
   </div>
 </div>
 
+<!-- Modal: Preços por kg por cliente -->
+<div class="modal-overlay" id="m-client-prices">
+  <div class="modal" style="max-width:520px;">
+    <div class="modal-header">
+      <div class="modal-title" id="cp-modal-title">💶 Preços do Cliente</div>
+      <button class="modal-close" onclick="closeM('m-client-prices')">✕</button>
+    </div>
+    <div style="font-size:.82rem;color:var(--txt3);margin-bottom:1rem;" id="cp-email-display"></div>
+
+    <!-- Preço base -->
+    <div class="form-group">
+      <label class="form-label">Preço base por envio (€) *</label>
+      <input class="form-input" id="cp-preco-base" type="number" step="0.01" placeholder="ex: 5.90">
+      <div class="small muted mt1">Usado quando não há preço específico para o peso</div>
+    </div>
+
+    <!-- Tabela por kg -->
+    <div style="margin-top:1rem;">
+      <div style="font-weight:700;font-size:.82rem;text-transform:uppercase;letter-spacing:.06em;color:var(--txt2);margin-bottom:.6rem;">Preços por peso (opcional)</div>
+      <div style="background:rgba(249,115,22,.04);border:1px solid rgba(249,115,22,.15);border-radius:var(--r);padding:.5rem;">
+        <table style="width:100%;min-width:auto;">
+          <thead><tr>
+            <th style="padding:.4rem .8rem;font-size:.75rem;">Peso</th>
+            <th style="padding:.4rem .5rem;font-size:.75rem;">Preço</th>
+            <th></th>
+          </tr></thead>
+          <tbody id="cp-kg-tbody"></tbody>
+        </table>
+      </div>
+      <div class="small muted mt1">Deixa em branco para usar o preço base</div>
+    </div>
+
+    <div style="display:flex;justify-content:flex-end;gap:.8rem;margin-top:1.2rem;">
+      <button class="btn btn-ghost" onclick="closeM('m-client-prices')">Cancelar</button>
+      <button class="btn btn-org" onclick="saveClientPrices()">💾 Guardar Preços</button>
+    </div>
+  </div>
+</div>
+
 <!-- Modal GLS — criar etiqueta -->
 <div class="modal-overlay" id="m-gls">
   <div class="modal" style="max-width:500px;">
@@ -1825,27 +1864,127 @@ function getAllAdminShipments() {
   } catch { return []; }
 }
 
-function renderAdminClients() {
-  const clients = getApprovedUsers();
-  const tbody   = document.getElementById('admin-clients-tbody');
-  const empty   = document.getElementById('admin-clients-empty');
+async function renderAdminClients() {
+  const tbody = document.getElementById('admin-clients-tbody');
+  const empty = document.getElementById('admin-clients-empty');
   if(!tbody) return;
-  if(clients.length === 0){
-    tbody.innerHTML = '';
-    if(empty) empty.style.display = 'block';
+
+  tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--txt3);">⏳ A carregar...</td></tr>';
+
+  try {
+    const token = localStorage.getItem('la_admin_token');
+    const res   = await fetch(BACKEND + '/api/clientes', { headers:{ 'Authorization':'Bearer '+token } });
+    const data  = await res.json();
+    if(!data.ok) throw new Error(data.error);
+
+    const clients = data.clientes || [];
+    if(clients.length === 0){
+      tbody.innerHTML = '';
+      if(empty) empty.style.display = 'block';
+      return;
+    }
+    if(empty) empty.style.display = 'none';
+
+    tbody.innerHTML = clients.map(u => `
+      <tr>
+        <td><strong>${u.nome}</strong><br><span class="small muted">${u.email}</span></td>
+        <td>${u.empresa || '—'}</td>
+        <td>${u.cidade || '—'}</td>
+        <td>${u.quiz?.vol || '—'}</td>
+        <td>
+          <span style="color:var(--org);font-weight:700;">${parseFloat(u.preco||0).toFixed(2)}€</span>
+          <span class="small muted" style="display:block;font-size:.68rem;">preço base/envio</span>
+        </td>
+        <td><span class="badge badge-grn">Ativo</span></td>
+        <td>
+          <button class="btn btn-org btn-sm" onclick="openClientPriceModal(${JSON.stringify(u).replace(/"/g,'&quot;')})">💶 Preços</button>
+        </td>
+      </tr>`).join('');
+  } catch(e) {
+    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--red);">❌ Erro: ${e.message}</td></tr>`;
+  }
+}
+
+// ── Modal de preços por kg por cliente ──
+let _clientPriceCtx = null;
+const KG_TIERS_CLIENT = [1, 3, 5, 10, 15, 20, 25, 30, 35, 40];
+
+function openClientPriceModal(cliente) {
+  _clientPriceCtx = cliente;
+
+  // Título
+  document.getElementById('cp-modal-title').textContent = '💶 Preços — ' + cliente.nome;
+  document.getElementById('cp-email-display').textContent = cliente.email;
+
+  // Preço base
+  document.getElementById('cp-preco-base').value = parseFloat(cliente.preco || 0).toFixed(2);
+
+  // Carregar preços por kg guardados (localStorage por email)
+  const saved = JSON.parse(localStorage.getItem('la_cprices_' + cliente.email) || '{}');
+
+  // Preencher campos por kg
+  const tbody = document.getElementById('cp-kg-tbody');
+  tbody.innerHTML = KG_TIERS_CLIENT.map(kg => `
+    <tr>
+      <td style="font-weight:600;padding:.5rem .8rem;">${kg} kg</td>
+      <td style="padding:.3rem .5rem;">
+        <input class="form-input" id="cp-${kg}" type="number" step="0.01" min="0"
+          value="${(saved[kg] || '').toString()}"
+          placeholder="ex: ${(parseFloat(cliente.preco||5) + (kg>10?(kg-10)*0.3:0)).toFixed(2)}"
+          style="width:110px;padding:.35rem .6rem;font-size:.88rem;">
+      </td>
+      <td style="padding:.3rem .5rem;color:var(--txt3);font-size:.78rem;">€/envio</td>
+    </tr>
+  `).join('') + `
+    <tr style="background:rgba(249,115,22,.06);">
+      <td style="font-weight:700;color:var(--org);padding:.5rem .8rem;">+kg adicional<br><span style="font-size:.7rem;font-weight:400;color:var(--txt3);">acima de 40kg</span></td>
+      <td style="padding:.3rem .5rem;">
+        <input class="form-input" id="cp-extra" type="number" step="0.01" min="0"
+          value="${saved.extra || ''}"
+          placeholder="ex: 0.80"
+          style="width:110px;padding:.35rem .6rem;font-size:.88rem;">
+      </td>
+      <td style="padding:.3rem .5rem;color:var(--org);font-size:.78rem;font-weight:600;">€/kg</td>
+    </tr>
+  `;
+
+  openM('m-client-prices');
+}
+
+async function saveClientPrices() {
+  if(!_clientPriceCtx) return;
+  const email     = _clientPriceCtx.email;
+  const precoBase = parseFloat(document.getElementById('cp-preco-base').value);
+
+  if(!precoBase || precoBase <= 0){ showT('error','Defina o preço base'); return; }
+
+  // Guardar preços por kg no localStorage
+  const prices = { extra: parseFloat(document.getElementById('cp-extra').value) || 0 };
+  KG_TIERS_CLIENT.forEach(kg => {
+    const v = parseFloat(document.getElementById('cp-' + kg).value);
+    if(v > 0) prices[kg] = v;
+  });
+  localStorage.setItem('la_cprices_' + email, JSON.stringify(prices));
+
+  // Actualizar preço base no backend
+  try {
+    const token = localStorage.getItem('la_admin_token');
+    const res   = await fetch(BACKEND + '/api/clientes/' + encodeURIComponent(email) + '/preco', {
+      method:  'PATCH',
+      headers: { 'Content-Type':'application/json', 'Authorization':'Bearer '+token },
+      body:    JSON.stringify({ preco: precoBase }),
+    });
+    const data = await res.json();
+    if(!data.ok) throw new Error(data.error);
+  } catch(e) {
+    showT('error', 'Erro ao guardar no servidor: ' + e.message);
     return;
   }
-  if(empty) empty.style.display = 'none';
-  tbody.innerHTML = clients.map(u => `
-    <tr>
-      <td><strong>${u.nome}</strong><br><span class="small muted">${u.email}</span></td>
-      <td>${u.empresa || '—'}</td>
-      <td>${u.cidade || '—'}</td>
-      <td>${u.quiz?.vol || '—'}</td>
-      <td><span style="color:var(--org);font-weight:700;">${u.preco?.toFixed(2)}€</span></td>
-      <td><span class="badge badge-grn">Ativo</span></td>
-      <td><button class="btn btn-ghost btn-sm" onclick="openAdminClientModal('${u.email}')">Gerir</button></td>
-    </tr>`).join('');
+
+  closeM('m-client-prices');
+  renderAdminClients();
+  showT('success', '✅ Preços de ' + _clientPriceCtx.nome + ' guardados!');
+  _clientPriceCtx = null;
 }
 
 function renderAdminShipments() {
