@@ -2067,6 +2067,7 @@ function showPage(name){
   if(p)p.classList.add('active');
   document.getElementById('wa-float').style.display=(name==='landing'||name==='balcao')?'block':'none';
   window.scrollTo(0,0);
+  if(typeof updateMobNav==='function') updateMobNav(name);
 }
 
 // ══ CLIENT NAV ══
@@ -3055,23 +3056,22 @@ function updateSurchargeWarning(){
   </div>
 </div>
 
-<script>
 // ══ DRAWER ══
 const DRAWER_MENUS = {
   landing: `
-    <a href="#" onclick="closeDrawer()">🏠 Início</a>
-    <a href="#lp-svc" onclick="closeDrawer()">⚡ Serviços</a>
-    <a href="#lp-price" onclick="closeDrawer()">💶 Preços</a>
+    <a href="#" onclick="closeDrawer()" style="display:flex;align-items:center;gap:.8rem;padding:.8rem 1.4rem;font-size:.92rem;color:var(--txt2);text-decoration:none;">🏠 Início</a>
+    <a href="#lp-svc" onclick="closeDrawer()" style="display:flex;align-items:center;gap:.8rem;padding:.8rem 1.4rem;font-size:.92rem;color:var(--txt2);text-decoration:none;">⚡ Serviços</a>
+    <a href="#lp-price" onclick="closeDrawer()" style="display:flex;align-items:center;gap:.8rem;padding:.8rem 1.4rem;font-size:.92rem;color:var(--txt2);text-decoration:none;">💶 Preços</a>
     <div class="drawer-divider"></div>
     <button class="drawer-item" onclick="showPage('balcao');closeDrawer()">📦 Envio de Balcão</button>
     <button class="drawer-item drawer-item-org" onclick="showPage('auth');closeDrawer()">👤 Entrar / Criar Conta</button>
-    <a href="https://wa.me/351911580781" target="_blank" onclick="closeDrawer()" style="color:#25d366;">💬 WhatsApp</a>
+    <a href="https://wa.me/351911580781" target="_blank" onclick="closeDrawer()" style="display:flex;align-items:center;gap:.8rem;padding:.8rem 1.4rem;font-size:.92rem;color:#25d366;text-decoration:none;">💬 WhatsApp</a>
   `,
   balcao: `
     <button class="drawer-item" onclick="showPage('landing');closeDrawer()">← Início</button>
     <div class="drawer-divider"></div>
     <button class="drawer-item drawer-item-org" onclick="showPage('auth');closeDrawer()">👤 Entrar / Criar Conta</button>
-    <a href="https://wa.me/351911580781" target="_blank" onclick="closeDrawer()" style="color:#25d366;">💬 WhatsApp</a>
+    <a href="https://wa.me/351911580781" target="_blank" onclick="closeDrawer()" style="display:flex;align-items:center;gap:.8rem;padding:.8rem 1.4rem;font-size:.92rem;color:#25d366;text-decoration:none;">💬 WhatsApp</a>
   `,
   client: `
     <button class="drawer-item" onclick="cNav('c-addresses',null);closeDrawer()">📍 Moradas</button>
@@ -3105,21 +3105,19 @@ function closeDrawer() {
   document.getElementById('drawer-overlay').classList.remove('open');
   document.body.style.overflow = '';
 }
-
 function setMobActive(dash, id) {
   const prefix = 'mob-' + dash + '-';
   document.querySelectorAll('[id^="' + prefix + '"]').forEach(b => b.classList.remove('active'));
   const el = document.getElementById(prefix + id);
   if(el) el.classList.add('active');
 }
-
-// Show/hide mobile bottom nav based on page
-const _origShowPage = showPage;
-function showPage(name) {
-  _origShowPage(name);
-  document.getElementById('client-mob-nav').style.display = (name === 'dashboard') ? 'block' : 'none';
-  document.getElementById('admin-mob-nav').style.display  = (name === 'admin')     ? 'block' : 'none';
+function updateMobNav(name) {
+  const cn = document.getElementById('client-mob-nav');
+  const an = document.getElementById('admin-mob-nav');
+  if(cn) cn.style.display = (name === 'dashboard') ? 'block' : 'none';
+  if(an) an.style.display = (name === 'admin') ? 'block' : 'none';
 }
+
 </script>
 </body>
 </html>
