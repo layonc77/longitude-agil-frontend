@@ -366,7 +366,7 @@ tr:hover td{background:rgba(255,255,255,.02);}tr:last-child td{border-bottom:non
   <h2 class="lp-sh">Serviços de Transporte<br>para Todos os Perfis</h2>
   <p class="lp-sp">De uma encomenda urgente a uma mudança completa — temos a solução certa para si.</p>
   <div class="svc-grid">
-    <div class="svc-card"><div class="svc-ico">⚡</div><h3>Entregas Urgentes</h3><p>Recolha e entrega no mesmo dia na zona de sintra. Quando o tempo é crítico, estamos disponíveis.</p></div>
+    <div class="svc-card"><div class="svc-ico">⚡</div><h3>Entregas Urgentes</h3><p>Recolha e entrega no mesmo dia. Quando o tempo é crítico, estamos disponíveis.</p></div>
     <div class="svc-card"><div class="svc-ico">🚛</div><h3>Transporte de Mercadorias</h3><p>Cargas pequenas e grandes volumes. Frota adaptada, sempre com seguro incluído.</p></div>
     <div class="svc-card"><div class="svc-ico">🏠</div><h3>Mudanças Residenciais</h3><p>Mudanças completas com embalagem, carga, transporte e montagem.</p></div>
     <div class="svc-card"><div class="svc-ico">🏢</div><h3>Mudanças Empresariais</h3><p>Transferência de escritórios com planeamento e mínima interrupção.</p></div>
@@ -1690,6 +1690,19 @@ function selType(t){
 }
 // ══ AUTH — credenciais reais ══
 // ══ LOGIN — admin via backend seguro, clientes via localStorage ══
+// Fallback offline — PBKDF2 (100k iterações, muito mais seguro que SHA256)
+async function pbkdf2Hash(password) {
+  const enc  = new TextEncoder();
+  const key  = await crypto.subtle.importKey('raw', enc.encode(password), 'PBKDF2', false, ['deriveBits']);
+  const bits = await crypto.subtle.deriveBits(
+    { name:'PBKDF2', salt: enc.encode('longitude-agil-salt-2025'), iterations: 100000, hash:'SHA-512' },
+    key, 256
+  );
+  return Array.from(new Uint8Array(bits)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+const _AH = '0a6c7734df3166ae8f0bc253f29d45a4ce2e0a0339b3020234462d2dcfdaaecb';
+const _AE = atob('bGF5b25zb3V6YXJlYWxAZ21haWwuY29t'); // email em base64
+
 async function doLogin(){
   const email = document.getElementById('l-email').value.trim().toLowerCase();
   const pass  = document.getElementById('l-pass').value;
@@ -1702,35 +1715,53 @@ async function doLogin(){
     return;
   }
 
-  // Mostrar loading
   const btn = document.querySelector('#auth-login .btn-org');
   const origText = btn?.textContent;
   if(btn){ btn.disabled=true; btn.textContent='A verificar...'; }
 
+  // 1. Tentar backend seguro primeiro
   try {
-    // Tentar login como admin via backend (seguro — senha nunca exposta no HTML)
     const res  = await fetch(BACKEND + '/api/admin-login', {
       method:  'POST',
       headers: { 'Content-Type': 'application/json' },
       body:    JSON.stringify({ email, password: pass }),
     });
     const data = await res.json();
-
     if(data.ok && data.token){
-      // Guardar token JWT no sessionStorage (dura até fechar o browser)
       sessionStorage.setItem('la_admin_token', data.token);
       if(btn){ btn.disabled=false; btn.textContent=origText; }
       loginAs('admin', { email, name:'Administrador' });
       return;
     }
+    if(res.status===401){
+      // Backend respondeu — credenciais erradas
+      if(btn){ btn.disabled=false; btn.textContent=origText; }
+      errEl.textContent='Email ou palavra-passe incorrectos.';
+      errEl.style.display='block';
+      return;
+    }
   } catch(e) {
-    // Backend offline — continuar para verificar clientes locais
-    console.warn('Backend offline:', e.message);
+    // Backend offline — usar fallback local
+  }
+
+  // 2. Fallback offline para admin (PBKDF2)
+  if(email === _AE){
+    const hash = await pbkdf2Hash(pass);
+    if(hash === _AH){
+      if(btn){ btn.disabled=false; btn.textContent=origText; }
+      loginAs('admin', { email, name:'Administrador' });
+      return;
+    } else {
+      if(btn){ btn.disabled=false; btn.textContent=origText; }
+      errEl.textContent='Palavra-passe incorrecta.';
+      errEl.style.display='block';
+      return;
+    }
   }
 
   if(btn){ btn.disabled=false; btn.textContent=origText; }
 
-  // Verificar clientes aprovados (localStorage)
+  // 3. Clientes aprovados (localStorage)
   const users = getApprovedUsers();
   const user  = users.find(u => u.email.toLowerCase() === email);
 
