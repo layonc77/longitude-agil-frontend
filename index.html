@@ -862,12 +862,13 @@ tr:hover td{background:rgba(255,255,255,.02);}tr:last-child td{border-bottom:non
     <div class="subpage active" id="c-overview">
       <!-- Preço info — preenchido pelo JS -->
       <div class="price-info-card" id="c-price-card" style="display:none;">
-        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:1rem;">
           <div>
             <div class="tag muted">O seu preço atual</div>
             <div id="c-price-val" style="font-family:var(--fh);font-size:2rem;font-weight:900;color:var(--org);margin:.3rem 0;">—</div>
             <div id="c-price-tier" class="small muted"></div>
           </div>
+          <div id="c-price-tiers" style="min-width:180px;"></div>
         </div>
       </div>
 
@@ -1966,13 +1967,13 @@ async function saveClientPrices() {
   });
   localStorage.setItem('la_cprices_' + email, JSON.stringify(prices));
 
-  // Actualizar preço base no backend
+  // Actualizar preço base + preços por kg no backend
   try {
     const token = localStorage.getItem('la_admin_token');
     const res   = await fetch(BACKEND + '/api/clientes/' + encodeURIComponent(email) + '/preco', {
       method:  'PATCH',
       headers: { 'Content-Type':'application/json', 'Authorization':'Bearer '+token },
-      body:    JSON.stringify({ preco: precoBase }),
+      body:    JSON.stringify({ preco: precoBase, precosKg: prices }),
     });
     const data = await res.json();
     if(!data.ok) throw new Error(data.error);
@@ -2508,7 +2509,11 @@ async function doLogin(){
     const data = await res.json();
     if(data.ok && data.cliente) {
       if(btn){ btn.disabled=false; btn.textContent=origText; }
-      loginAs('client', { email: data.cliente.email, name: data.cliente.nome, preco: data.cliente.preco, quiz: data.cliente.quiz });
+      // Guardar preços por kg no localStorage para uso nos cálculos
+      if(data.cliente.precosKg && Object.keys(data.cliente.precosKg).length > 0) {
+        localStorage.setItem('la_cprices_' + data.cliente.email, JSON.stringify(data.cliente.precosKg));
+      }
+      loginAs('client', { email: data.cliente.email, name: data.cliente.nome, preco: data.cliente.preco, precosKg: data.cliente.precosKg, quiz: data.cliente.quiz });
       return;
     }
     if(data.pendente) {
@@ -2560,15 +2565,30 @@ function loginAs(role, userData) {
       document.getElementById('client-ava').textContent  = ini;
       document.getElementById('client-name').textContent = (currentUser.name || 'Cliente').split(' ')[0];
       // Mostrar preço personalizado
-      const preco = currentUser.preco;
+      const preco    = currentUser.preco;
+      const precosKg = currentUser.precosKg || {};
       const priceCard = document.getElementById('c-price-card');
       if(preco && priceCard){
         priceCard.style.display = 'block';
         document.getElementById('c-price-val').innerHTML = preco.toFixed(2) + '<span style="font-size:1rem;color:var(--txt2);font-weight:400;">€/envio</span>';
         document.getElementById('c-price-tier').textContent = 'Preço definido pela Longitude Ágil para o seu perfil';
-        // Update submit button price
-        const btn = document.getElementById('ns-submit-btn');
-        if(btn) btn.textContent = '💳 Pagar e Confirmar';
+        // Mostrar tabela de preços por kg se existir
+        const hasTiers = Object.keys(precosKg).filter(k => k !== 'extra' && precosKg[k] > 0).length > 0;
+        if(hasTiers) {
+          const tiersHtml = [1,3,5,10,15,20,25,30,35,40].filter(kg => precosKg[kg] > 0).map(kg =>
+            `<div style="display:flex;justify-content:space-between;padding:.3rem 0;border-bottom:1px solid rgba(255,255,255,.05);font-size:.82rem;">
+              <span style="color:var(--txt2);">${kg} kg</span>
+              <span style="color:var(--org);font-weight:700;">${parseFloat(precosKg[kg]).toFixed(2)}€</span>
+            </div>`
+          ).join('');
+          const extraHtml = precosKg.extra > 0
+            ? `<div style="display:flex;justify-content:space-between;padding:.3rem 0;font-size:.82rem;">
+                <span style="color:var(--txt3);">+kg adicional</span>
+                <span style="color:var(--txt2);">${parseFloat(precosKg.extra).toFixed(2)}€/kg</span>
+              </div>` : '';
+          const tiersEl = document.getElementById('c-price-tiers');
+          if(tiersEl) tiersEl.innerHTML = tiersHtml + extraHtml;
+        }
       }
       cNav('c-overview', document.querySelector('#page-dashboard .nav-item'));
       renderOverview();
