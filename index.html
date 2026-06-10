@@ -1129,31 +1129,64 @@ tr:hover td{background:rgba(255,255,255,.02);}tr:last-child td{border-bottom:non
 
     <!-- PRICING -->
     <div class="subpage" id="a-pricing">
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;">
-        <div>
-          <h3 style="font-family:var(--fh);font-weight:700;margin-bottom:1rem;">📊 Escalões de Volume</h3>
-          <div class="panel"><div class="table-wrap"><table><thead><tr><th>Volume mensal</th><th>Preço/envio</th><th></th></tr></thead><tbody>
-            <tr><td>1–10 envios</td><td><input class="form-input" value="7,90€" style="width:90px;padding:.3rem .6rem;font-size:.85rem;"></td><td><button style="background:none;border:none;color:var(--org);cursor:pointer;font-weight:700;" onclick="showT('success','Guardado!')">💾</button></td></tr>
-            <tr><td>11–30 envios</td><td><input class="form-input" value="6,90€" style="width:90px;padding:.3rem .6rem;font-size:.85rem;"></td><td><button style="background:none;border:none;color:var(--org);cursor:pointer;font-weight:700;" onclick="showT('success','Guardado!')">💾</button></td></tr>
-            <tr><td>31–70 envios</td><td><input class="form-input" value="5,90€" style="width:90px;padding:.3rem .6rem;font-size:.85rem;"></td><td><button style="background:none;border:none;color:var(--org);cursor:pointer;font-weight:700;" onclick="showT('success','Guardado!')">💾</button></td></tr>
-            <tr><td>71–150 envios</td><td><input class="form-input" value="4,90€" style="width:90px;padding:.3rem .6rem;font-size:.85rem;"></td><td><button style="background:none;border:none;color:var(--org);cursor:pointer;font-weight:700;" onclick="showT('success','Guardado!')">💾</button></td></tr>
-            <tr><td>150+ envios</td><td><input class="form-input" value="Personalizado" style="width:120px;padding:.3rem .6rem;font-size:.85rem;"></td><td><button style="background:none;border:none;color:var(--org);cursor:pointer;font-weight:700;" onclick="showT('success','Guardado!')">💾</button></td></tr>
-          </tbody></table></div></div>
-          <h3 style="font-family:var(--fh);font-weight:700;margin:1.5rem 0 1rem;">🪟 Preço Balcão</h3>
-          <div class="card card-sm">
-            <div class="form-group"><label class="form-label">Preço por envio</label><input class="form-input" value="9,90€"></div>
-            <button class="btn btn-org btn-sm" onclick="showT('success','Guardado!')">Guardar</button>
-          </div>
+
+      <!-- TABS destino -->
+      <div style="display:flex;gap:.6rem;margin-bottom:1.5rem;flex-wrap:wrap;align-items:center;justify-content:space-between;">
+        <div style="display:flex;gap:.6rem;flex-wrap:wrap;">
+          <button class="btn btn-org btn-sm" id="ptab-admin-pt"  onclick="switchAdminPriceTab('pt')">🇵🇹 Portugal</button>
+          <button class="btn btn-ghost btn-sm" id="ptab-admin-es"  onclick="switchAdminPriceTab('es')">🇪🇸 Espanha</button>
+          <button class="btn btn-ghost btn-sm" id="ptab-admin-mad" onclick="switchAdminPriceTab('mad')">🏝️ Madeira/Açores</button>
         </div>
+        <button class="btn btn-org btn-sm" onclick="saveAdminPrices()">💾 Guardar Tabela</button>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1.4fr 1fr;gap:1.5rem;align-items:start;">
+
+        <!-- TABELA DE PREÇOS POR PESO -->
         <div>
-          <h3 style="font-family:var(--fh);font-weight:700;margin-bottom:1rem;">👤 Preços por Cliente</h3>
-          <div class="pricing-rules">
-            <div id="admin-pricing-rules">
-              <div style="text-align:center;padding:1.5rem;color:var(--txt3);font-size:.85rem;">Sem preços manuais definidos ainda.</div>
+          <div class="panel">
+            <div class="table-wrap">
+              <table id="admin-price-table">
+                <thead>
+                  <tr>
+                    <th>Peso</th>
+                    <th>Preço (€)</th>
+                    <th style="color:var(--txt3);font-size:.7rem;">Destino</th>
+                  </tr>
+                </thead>
+                <tbody id="admin-price-tbody">
+                  <!-- preenchido pelo JS -->
+                </tbody>
+              </table>
             </div>
           </div>
-          <div style="margin-top:1.5rem;"><button class="btn btn-ghost btn-full" onclick="openM('m-price')">+ Adicionar regra de preço</button></div>
+          <div class="card card-sm mt2" style="background:rgba(249,115,22,.04);border-color:rgba(249,115,22,.2);">
+            <div style="font-size:.82rem;color:var(--txt2);line-height:1.7;">
+              ℹ️ Os preços desta tabela são usados para calcular automaticamente o custo ao cliente com base no peso do envio. O valor adicional é cobrado por cada kg acima do último escalão.
+            </div>
+          </div>
         </div>
+
+        <!-- PREÇOS POR CLIENTE + BALCÃO -->
+        <div style="display:flex;flex-direction:column;gap:1.2rem;">
+          <div class="card card-sm">
+            <h4 style="font-family:var(--fh);font-weight:700;margin-bottom:1rem;">🪟 Preço Balcão</h4>
+            <div class="form-group">
+              <label class="form-label">Preço por envio (€)</label>
+              <input class="form-input" id="admin-balcao-price" type="number" step="0.01" value="9.90">
+            </div>
+            <button class="btn btn-org btn-sm btn-full" onclick="saveBalcaoPrice()">💾 Guardar</button>
+          </div>
+
+          <div class="card card-sm">
+            <h4 style="font-family:var(--fh);font-weight:700;margin-bottom:1rem;">👤 Preços por Cliente</h4>
+            <div id="admin-pricing-rules">
+              <div style="text-align:center;padding:1rem;color:var(--txt3);font-size:.82rem;">Sem preços manuais ainda.</div>
+            </div>
+            <button class="btn btn-ghost btn-full mt2" onclick="openM('m-price')">+ Definir preço manual</button>
+          </div>
+        </div>
+
       </div>
     </div>
 
@@ -1796,12 +1829,21 @@ function renderAdminInvoices() {
 }
 
 function renderAdminPricing() {
+  renderAdminPriceTable();
+  renderAdminPricingRules();
+  // Balcão price
+  const bp = localStorage.getItem('la_balcao_price');
+  const bpEl = document.getElementById('admin-balcao-price');
+  if(bp && bpEl) bpEl.value = bp;
+}
+
+function renderAdminPricingRules() {
   const clients = getApprovedUsers();
-  const el = document.getElementById('admin-pricing-rules');
+  const el  = document.getElementById('admin-pricing-rules');
   const sel = document.getElementById('modal-price-client-sel');
   if(!el) return;
-  if(clients.length === 0){
-    el.innerHTML = '<div style="text-align:center;padding:1.5rem;color:var(--txt3);font-size:.85rem;">Sem preços manuais definidos ainda.</div>';
+  if(clients.length === 0) {
+    el.innerHTML = '<div style="text-align:center;padding:1rem;color:var(--txt3);font-size:.82rem;">Sem preços manuais ainda.</div>';
   } else {
     el.innerHTML = clients.map(u => `
       <div class="rule-card">
@@ -1810,13 +1852,11 @@ function renderAdminPricing() {
         <div><button class="btn btn-ghost btn-sm" onclick="openM('m-price')">✏️ Editar</button></div>
       </div>`).join('');
   }
-  if(sel){
+  if(sel) {
     sel.innerHTML = '<option value="">— Seleccionar —</option>' +
       clients.map(u => `<option value="${u.email}">${u.nome} — ${u.email}</option>`).join('');
   }
-}
-
-function updateShipStatus(ref, clientEmail, newStatus) {
+}(ref, clientEmail, newStatus) {
   // Actualizar no localStorage do cliente
   const key   = clientEmail ? 'la_shipments_' + clientEmail : STORAGE_KEY;
   const ships = JSON.parse(localStorage.getItem(key) || localStorage.getItem(STORAGE_KEY) || '[]');
@@ -1837,6 +1877,125 @@ function openAdminClientModal(email) {
   const title = document.querySelector('#m-client .modal-title');
   if(title) title.textContent = '👤 ' + u.nome;
   openM('m-client');
+}
+
+// ══ ADMIN PRICE TABLE ══
+const PRICE_TABLE_KEY = 'la_price_table';
+const KG_TIERS = [1, 3, 5, 10, 15, 20, 25, 30, 35, 40];
+
+const DEFAULT_PRICES = {
+  pt:  { tiers: { 1:4.88, 3:5.46, 5:5.87, 10:7.15, 15:8.71, 20:10.21, 25:12.10, 30:13.57, 35:15.00, 40:16.50 }, extra: 0.51 },
+  es:  { tiers: { 1:8.05, 3:8.14, 5:9.31, 10:11.62, 15:13.49, 20:15.42, 25:18.52, 30:21.21, 35:23.00, 40:25.00 }, extra: 0.92 },
+  mad: { tiers: { 1:10.72, 3:13.22, 5:15.72, 10:21.97, 15:28.22, 20:34.47, 25:40.72, 30:46.97, 35:53.22, 40:59.47 }, extra: 2.25 },
+};
+
+let _adminPriceTab = 'pt';
+let _editedPrices  = null; // null = usar defaults
+
+function getAdminPrices() {
+  try {
+    const saved = localStorage.getItem(PRICE_TABLE_KEY);
+    return saved ? JSON.parse(saved) : JSON.parse(JSON.stringify(DEFAULT_PRICES));
+  } catch { return JSON.parse(JSON.stringify(DEFAULT_PRICES)); }
+}
+
+function switchAdminPriceTab(dest) {
+  _adminPriceTab = dest;
+  ['pt','es','mad'].forEach(d => {
+    const btn = document.getElementById('ptab-admin-' + d);
+    if(btn) btn.className = d === dest ? 'btn btn-org btn-sm' : 'btn btn-ghost btn-sm';
+  });
+  renderAdminPriceTable();
+}
+
+function renderAdminPriceTable() {
+  const tbody = document.getElementById('admin-price-tbody');
+  if(!tbody) return;
+  const prices = getAdminPrices();
+  const dest   = _adminPriceTab;
+  const data   = prices[dest] || DEFAULT_PRICES[dest];
+  const destLabels = { pt:'🇵🇹 PT', es:'🇪🇸 ES', mad:'🏝️ MAD' };
+
+  tbody.innerHTML = KG_TIERS.map(kg => `
+    <tr>
+      <td style="font-weight:600;">${kg} kg</td>
+      <td>
+        <input
+          class="form-input"
+          id="price-${dest}-${kg}"
+          type="number"
+          step="0.01"
+          min="0"
+          value="${(data.tiers[kg] || 0).toFixed(2)}"
+          style="width:100px;padding:.35rem .6rem;font-size:.88rem;"
+        >
+      </td>
+      <td style="color:var(--txt3);font-size:.78rem;">${destLabels[dest]}</td>
+    </tr>
+  `).join('') + `
+    <tr style="background:rgba(249,115,22,.06);">
+      <td style="font-weight:700;color:var(--org);">+kg adicional<br><span style="font-size:.72rem;font-weight:400;color:var(--txt3);">acima de 40kg</span></td>
+      <td>
+        <input
+          class="form-input"
+          id="price-${dest}-extra"
+          type="number"
+          step="0.01"
+          min="0"
+          value="${(data.extra || 0).toFixed(2)}"
+          style="width:100px;padding:.35rem .6rem;font-size:.88rem;"
+        >
+      </td>
+      <td style="color:var(--org);font-size:.78rem;font-weight:600;">€/kg</td>
+    </tr>
+  `;
+}
+
+function saveAdminPrices() {
+  const prices = getAdminPrices();
+  const dest   = _adminPriceTab;
+  if(!prices[dest]) prices[dest] = { tiers:{}, extra:0 };
+
+  KG_TIERS.forEach(kg => {
+    const el = document.getElementById('price-' + dest + '-' + kg);
+    if(el) prices[dest].tiers[kg] = parseFloat(el.value) || 0;
+  });
+  const extraEl = document.getElementById('price-' + dest + '-extra');
+  if(extraEl) prices[dest].extra = parseFloat(extraEl.value) || 0;
+
+  localStorage.setItem(PRICE_TABLE_KEY, JSON.stringify(prices));
+
+  // Actualizar também a tabela BC_PRICES usada no cálculo ao vivo
+  if(BC_PRICES[dest]) {
+    BC_PRICES[dest].tiers = KG_TIERS.map(kg => ({ kg, price: prices[dest].tiers[kg] || 0 }));
+    BC_PRICES[dest].extra = prices[dest].extra;
+  }
+
+  showT('success', '✅ Preços guardados para ' + {pt:'Portugal',es:'Espanha',mad:'Madeira/Açores'}[dest] + '!');
+}
+
+function saveBalcaoPrice() {
+  const el = document.getElementById('admin-balcao-price');
+  if(!el || !el.value) return;
+  localStorage.setItem('la_balcao_price', el.value);
+  showT('success', '✅ Preço balcão guardado: ' + parseFloat(el.value).toFixed(2) + '€');
+}
+
+function loadAdminPricesOnInit() {
+  // Ao carregar, sincronizar BC_PRICES com os valores guardados
+  const prices = getAdminPrices();
+  Object.keys(prices).forEach(dest => {
+    if(BC_PRICES[dest]) {
+      BC_PRICES[dest].tiers = KG_TIERS.map(kg => ({ kg, price: prices[dest].tiers[kg] || DEFAULT_PRICES[dest].tiers[kg] || 0 }));
+      BC_PRICES[dest].extra = prices[dest].extra || DEFAULT_PRICES[dest].extra;
+    }
+  });
+  // Balcão price
+  const bp = localStorage.getItem('la_balcao_price');
+  if(bp) {
+    const bpEl = document.getElementById('admin-balcao-price');
+    if(bpEl) bpEl.value = bp;
+  }
 }
 
 // ══ PRICE TABLE TABS ══
@@ -2739,6 +2898,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   document.querySelectorAll('input[type=date]').forEach(d=>{d.min=today;if(!d.value)d.value=today;});
 
   // ── AUTO-LOGIN: verificar token guardado ──
+  loadAdminPricesOnInit();
   const token = localStorage.getItem('la_admin_token');
   const savedUser = localStorage.getItem('la_current_user');
 
