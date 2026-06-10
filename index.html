@@ -1901,7 +1901,9 @@ function renderAdminPricingRules() {
     sel.innerHTML = '<option value="">— Seleccionar —</option>' +
       clients.map(u => `<option value="${u.email}">${u.nome} — ${u.email}</option>`).join('');
   }
-}(ref, clientEmail, newStatus) {
+}
+
+function updateShipStatus(ref, clientEmail, newStatus) {
   // Actualizar no localStorage do cliente
   const key   = clientEmail ? 'la_shipments_' + clientEmail : STORAGE_KEY;
   const ships = JSON.parse(localStorage.getItem(key) || localStorage.getItem(STORAGE_KEY) || '[]');
@@ -3006,55 +3008,7 @@ function updateSurchargeWarning(){
     warn.innerHTML='';
   }
 }
-<!-- ════════════════════════════════════════
-     DRAWER MENU (mobile)
-════════════════════════════════════════ -->
-<div class="drawer-overlay" id="drawer-overlay" onclick="closeDrawer()"></div>
-<div class="drawer" id="drawer">
-  <div class="drawer-header">
-    <div class="drawer-logo"><div class="dot-live"></div>LongitudeÁgil</div>
-    <button class="drawer-close" onclick="closeDrawer()">✕</button>
-  </div>
-  <div class="drawer-nav" id="drawer-nav-content">
-    <!-- preenchido pelo JS conforme contexto -->
-  </div>
-</div>
 
-<!-- DASHBOARD CLIENTE — bottom nav mobile -->
-<div class="dash-mob-nav" id="client-mob-nav" style="display:none;">
-  <div class="dash-mob-nav-inner">
-    <button class="dash-mob-btn active" id="mob-c-overview" onclick="cNav('c-overview',null);setMobActive('c','overview')">
-      <span class="mob-ico">🏠</span>Início
-    </button>
-    <button class="dash-mob-btn" id="mob-c-new-ship" onclick="cNav('c-new-ship',null);setMobActive('c','new-ship')">
-      <span class="mob-ico">➕</span>Envio
-    </button>
-    <button class="dash-mob-btn" id="mob-c-shipments" onclick="cNav('c-shipments',null);setMobActive('c','shipments')">
-      <span class="mob-ico">📦</span>Envios
-    </button>
-    <button class="dash-mob-btn" id="mob-c-more" onclick="openDrawer('client')">
-      <span class="mob-ico">☰</span>Mais
-    </button>
-  </div>
-</div>
-
-<!-- DASHBOARD ADMIN — bottom nav mobile -->
-<div class="dash-mob-nav" id="admin-mob-nav" style="display:none;">
-  <div class="dash-mob-nav-inner">
-    <button class="dash-mob-btn active" id="mob-a-overview" onclick="aN('a-overview',null);setMobActive('a','overview')">
-      <span class="mob-ico">📊</span>Geral
-    </button>
-    <button class="dash-mob-btn" id="mob-a-leads" onclick="aN('a-leads',null);setMobActive('a','leads')">
-      <span class="mob-ico">🎯</span>Leads
-    </button>
-    <button class="dash-mob-btn" id="mob-a-shipments" onclick="aN('a-shipments',null);setMobActive('a','shipments')">
-      <span class="mob-ico">📦</span>Envios
-    </button>
-    <button class="dash-mob-btn" id="mob-a-more" onclick="openDrawer('admin')">
-      <span class="mob-ico">☰</span>Mais
-    </button>
-  </div>
-</div>
 
 // ══ DRAWER ══
 const DRAWER_MENUS = {
@@ -3119,5 +3073,56 @@ function updateMobNav(name) {
 }
 
 </script>
+<!-- ════════════════════════════════════════
+     DRAWER MENU (mobile)
+════════════════════════════════════════ -->
+<div class="drawer-overlay" id="drawer-overlay" onclick="closeDrawer()"></div>
+<div class="drawer" id="drawer">
+  <div class="drawer-header">
+    <div class="drawer-logo"><div class="dot-live"></div>LongitudeÁgil</div>
+    <button class="drawer-close" onclick="closeDrawer()">✕</button>
+  </div>
+  <div class="drawer-nav" id="drawer-nav-content">
+    <!-- preenchido pelo JS conforme contexto -->
+  </div>
+</div>
+
+<!-- DASHBOARD CLIENTE — bottom nav mobile -->
+<div class="dash-mob-nav" id="client-mob-nav" style="display:none;">
+  <div class="dash-mob-nav-inner">
+    <button class="dash-mob-btn active" id="mob-c-overview" onclick="cNav('c-overview',null);setMobActive('c','overview')">
+      <span class="mob-ico">🏠</span>Início
+    </button>
+    <button class="dash-mob-btn" id="mob-c-new-ship" onclick="cNav('c-new-ship',null);setMobActive('c','new-ship')">
+      <span class="mob-ico">➕</span>Envio
+    </button>
+    <button class="dash-mob-btn" id="mob-c-shipments" onclick="cNav('c-shipments',null);setMobActive('c','shipments')">
+      <span class="mob-ico">📦</span>Envios
+    </button>
+    <button class="dash-mob-btn" id="mob-c-more" onclick="openDrawer('client')">
+      <span class="mob-ico">☰</span>Mais
+    </button>
+  </div>
+</div>
+
+<!-- DASHBOARD ADMIN — bottom nav mobile -->
+<div class="dash-mob-nav" id="admin-mob-nav" style="display:none;">
+  <div class="dash-mob-nav-inner">
+    <button class="dash-mob-btn active" id="mob-a-overview" onclick="aN('a-overview',null);setMobActive('a','overview')">
+      <span class="mob-ico">📊</span>Geral
+    </button>
+    <button class="dash-mob-btn" id="mob-a-leads" onclick="aN('a-leads',null);setMobActive('a','leads')">
+      <span class="mob-ico">🎯</span>Leads
+    </button>
+    <button class="dash-mob-btn" id="mob-a-shipments" onclick="aN('a-shipments',null);setMobActive('a','shipments')">
+      <span class="mob-ico">📦</span>Envios
+    </button>
+    <button class="dash-mob-btn" id="mob-a-more" onclick="openDrawer('admin')">
+      <span class="mob-ico">☰</span>Mais
+    </button>
+  </div>
+</div>
+
+
 </body>
 </html>
