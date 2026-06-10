@@ -315,7 +315,46 @@ tr:hover td{background:rgba(255,255,255,.02);}tr:last-child td{border-bottom:non
   /* WA float smaller */
   .wa-float a{width:44px;height:44px;font-size:1.2rem;}
 }
-/* Stripe Elements dark theme */
+/* ── HAMBURGER & DRAWER ── */
+.hamburger{display:none;flex-direction:column;justify-content:center;gap:5px;width:38px;height:38px;background:var(--blk3);border:1px solid var(--bdr);border-radius:var(--r);cursor:pointer;padding:8px;flex-shrink:0;}
+.hamburger span{display:block;height:2px;background:var(--txt);border-radius:2px;transition:all .3s;}
+.hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg);}
+.hamburger.open span:nth-child(2){opacity:0;}
+.hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
+
+.drawer-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(4px);z-index:990;}
+.drawer-overlay.open{display:block;}
+
+.drawer{position:fixed;top:0;right:-320px;width:300px;height:100vh;background:var(--blk2);border-left:1px solid var(--bdr);z-index:991;transition:right .3s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;overflow-y:auto;}
+.drawer.open{right:0;}
+.drawer-header{display:flex;align-items:center;justify-content:space-between;padding:1.2rem 1.4rem;border-bottom:1px solid var(--bdr);}
+.drawer-logo{font-family:var(--fh);font-weight:900;font-size:1.1rem;display:flex;align-items:center;gap:.4rem;}
+.drawer-close{width:32px;height:32px;background:var(--blk3);border:1px solid var(--bdr);color:var(--txt2);border-radius:6px;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;}
+.drawer-nav{padding:1rem 0;flex:1;}
+.drawer-nav a,.drawer-nav button.drawer-item{display:flex;align-items:center;gap:.8rem;padding:.8rem 1.4rem;font-size:.92rem;font-weight:500;color:var(--txt2);cursor:pointer;transition:all .2s;background:none;border:none;width:100%;text-align:left;text-decoration:none;}
+.drawer-nav a:hover,.drawer-nav button.drawer-item:hover{color:var(--txt);background:rgba(255,255,255,.04);}
+.drawer-nav .drawer-item-org{color:var(--org)!important;}
+.drawer-divider{height:1px;background:var(--bdr);margin:.5rem 1.4rem;}
+.drawer-footer{padding:1.2rem 1.4rem;border-top:1px solid var(--bdr);display:flex;flex-direction:column;gap:.6rem;}
+
+/* Dashboard mobile nav */
+.dash-mob-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--blk2);border-top:1px solid var(--bdr);z-index:100;padding:.5rem 0;}
+.dash-mob-nav-inner{display:flex;justify-content:space-around;}
+.dash-mob-btn{display:flex;flex-direction:column;align-items:center;gap:.2rem;padding:.5rem .8rem;cursor:pointer;color:var(--txt3);font-size:.65rem;font-weight:600;background:none;border:none;transition:color .2s;}
+.dash-mob-btn.active{color:var(--org);}
+.dash-mob-btn .mob-ico{font-size:1.3rem;}
+
+@media(max-width:768px){
+  .hamburger{display:flex;}
+  .lp-nav-links{gap:.5rem;}
+  .lp-nav-links > *:not(.hamburger){display:none;}
+  .dash-mob-nav{display:block;}
+  .dash-main{padding-bottom:70px;}
+}
+@media(min-width:769px){
+  .drawer,.drawer-overlay{display:none!important;}
+  .dash-mob-nav{display:none!important;}
+}
 #stripe-card-element .StripeElement{background:transparent!important;}
 .StripeElement{padding:.85rem 1rem;background:var(--blk3);border:1px solid var(--bdr);border-radius:var(--r);transition:border-color .2s;}
 .StripeElement--focus{border-color:var(--org)!important;}
@@ -335,6 +374,9 @@ tr:hover td{background:rgba(255,255,255,.02);}tr:last-child td{border-bottom:non
     <a href="#">Início</a><a href="#lp-svc">Serviços</a><a href="#lp-price">Preços</a>
     <button class="btn btn-ghost btn-sm" onclick="showPage('balcao')">Envio de Balcão</button>
     <button class="btn btn-org btn-sm" onclick="showPage('auth')">Entrar / Criar Conta</button>
+    <button class="hamburger" id="ham-landing" onclick="openDrawer('landing')" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
   </div>
 </nav>
 <div class="lp-hero">
@@ -519,6 +561,9 @@ tr:hover td{background:rgba(255,255,255,.02);}tr:last-child td{border-bottom:non
   <div class="lp-nav-links">
     <button class="btn btn-ghost btn-sm" onclick="showPage('landing')">← Início</button>
     <button class="btn btn-org btn-sm" onclick="showPage('auth')">Entrar</button>
+    <button class="hamburger" id="ham-balcao" onclick="openDrawer('balcao')" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
   </div>
 </nav>
 <div class="balcao-wrap" style="padding-top:6rem;">
@@ -2959,6 +3004,121 @@ function updateSurchargeWarning(){
   } else {
     warn.innerHTML='';
   }
+}
+<!-- ════════════════════════════════════════
+     DRAWER MENU (mobile)
+════════════════════════════════════════ -->
+<div class="drawer-overlay" id="drawer-overlay" onclick="closeDrawer()"></div>
+<div class="drawer" id="drawer">
+  <div class="drawer-header">
+    <div class="drawer-logo"><div class="dot-live"></div>LongitudeÁgil</div>
+    <button class="drawer-close" onclick="closeDrawer()">✕</button>
+  </div>
+  <div class="drawer-nav" id="drawer-nav-content">
+    <!-- preenchido pelo JS conforme contexto -->
+  </div>
+</div>
+
+<!-- DASHBOARD CLIENTE — bottom nav mobile -->
+<div class="dash-mob-nav" id="client-mob-nav" style="display:none;">
+  <div class="dash-mob-nav-inner">
+    <button class="dash-mob-btn active" id="mob-c-overview" onclick="cNav('c-overview',null);setMobActive('c','overview')">
+      <span class="mob-ico">🏠</span>Início
+    </button>
+    <button class="dash-mob-btn" id="mob-c-new-ship" onclick="cNav('c-new-ship',null);setMobActive('c','new-ship')">
+      <span class="mob-ico">➕</span>Envio
+    </button>
+    <button class="dash-mob-btn" id="mob-c-shipments" onclick="cNav('c-shipments',null);setMobActive('c','shipments')">
+      <span class="mob-ico">📦</span>Envios
+    </button>
+    <button class="dash-mob-btn" id="mob-c-more" onclick="openDrawer('client')">
+      <span class="mob-ico">☰</span>Mais
+    </button>
+  </div>
+</div>
+
+<!-- DASHBOARD ADMIN — bottom nav mobile -->
+<div class="dash-mob-nav" id="admin-mob-nav" style="display:none;">
+  <div class="dash-mob-nav-inner">
+    <button class="dash-mob-btn active" id="mob-a-overview" onclick="aN('a-overview',null);setMobActive('a','overview')">
+      <span class="mob-ico">📊</span>Geral
+    </button>
+    <button class="dash-mob-btn" id="mob-a-leads" onclick="aN('a-leads',null);setMobActive('a','leads')">
+      <span class="mob-ico">🎯</span>Leads
+    </button>
+    <button class="dash-mob-btn" id="mob-a-shipments" onclick="aN('a-shipments',null);setMobActive('a','shipments')">
+      <span class="mob-ico">📦</span>Envios
+    </button>
+    <button class="dash-mob-btn" id="mob-a-more" onclick="openDrawer('admin')">
+      <span class="mob-ico">☰</span>Mais
+    </button>
+  </div>
+</div>
+
+<script>
+// ══ DRAWER ══
+const DRAWER_MENUS = {
+  landing: `
+    <a href="#" onclick="closeDrawer()">🏠 Início</a>
+    <a href="#lp-svc" onclick="closeDrawer()">⚡ Serviços</a>
+    <a href="#lp-price" onclick="closeDrawer()">💶 Preços</a>
+    <div class="drawer-divider"></div>
+    <button class="drawer-item" onclick="showPage('balcao');closeDrawer()">📦 Envio de Balcão</button>
+    <button class="drawer-item drawer-item-org" onclick="showPage('auth');closeDrawer()">👤 Entrar / Criar Conta</button>
+    <a href="https://wa.me/351911580781" target="_blank" onclick="closeDrawer()" style="color:#25d366;">💬 WhatsApp</a>
+  `,
+  balcao: `
+    <button class="drawer-item" onclick="showPage('landing');closeDrawer()">← Início</button>
+    <div class="drawer-divider"></div>
+    <button class="drawer-item drawer-item-org" onclick="showPage('auth');closeDrawer()">👤 Entrar / Criar Conta</button>
+    <a href="https://wa.me/351911580781" target="_blank" onclick="closeDrawer()" style="color:#25d366;">💬 WhatsApp</a>
+  `,
+  client: `
+    <button class="drawer-item" onclick="cNav('c-addresses',null);closeDrawer()">📍 Moradas</button>
+    <button class="drawer-item" onclick="cNav('c-invoices',null);closeDrawer()">🧾 Faturas</button>
+    <button class="drawer-item" onclick="cNav('c-pricing',null);closeDrawer()">💶 Os meus Preços</button>
+    <button class="drawer-item" onclick="cNav('c-profile',null);closeDrawer()">👤 Perfil</button>
+    <div class="drawer-divider"></div>
+    <button class="drawer-item" onclick="doLogout();closeDrawer()" style="color:var(--red);">← Sair</button>
+  `,
+  admin: `
+    <button class="drawer-item" onclick="aN('a-clients',null);closeDrawer()">👥 Clientes</button>
+    <button class="drawer-item" onclick="aN('a-balcao',null);closeDrawer()">🪟 Balcão</button>
+    <button class="drawer-item" onclick="aN('a-pricing',null);closeDrawer()">💶 Preços</button>
+    <button class="drawer-item" onclick="aN('a-invoices',null);closeDrawer()">🧾 Faturas</button>
+    <button class="drawer-item" onclick="aN('a-stats',null);closeDrawer()">📈 Estatísticas</button>
+    <button class="drawer-item" onclick="aN('a-settings',null);closeDrawer()">⚙️ Configurações</button>
+    <div class="drawer-divider"></div>
+    <button class="drawer-item" onclick="doLogout();closeDrawer()" style="color:var(--red);">← Sair</button>
+  `,
+};
+
+function openDrawer(ctx) {
+  const nav = document.getElementById('drawer-nav-content');
+  if(nav) nav.innerHTML = DRAWER_MENUS[ctx] || '';
+  document.getElementById('drawer').classList.add('open');
+  document.getElementById('drawer-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeDrawer() {
+  document.getElementById('drawer').classList.remove('open');
+  document.getElementById('drawer-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function setMobActive(dash, id) {
+  const prefix = 'mob-' + dash + '-';
+  document.querySelectorAll('[id^="' + prefix + '"]').forEach(b => b.classList.remove('active'));
+  const el = document.getElementById(prefix + id);
+  if(el) el.classList.add('active');
+}
+
+// Show/hide mobile bottom nav based on page
+const _origShowPage = showPage;
+function showPage(name) {
+  _origShowPage(name);
+  document.getElementById('client-mob-nav').style.display = (name === 'dashboard') ? 'block' : 'none';
+  document.getElementById('admin-mob-nav').style.display  = (name === 'admin')     ? 'block' : 'none';
 }
 </script>
 </body>
