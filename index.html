@@ -2590,7 +2590,9 @@ function submitShip(){
 
 // ══ STRIPE REAL INTEGRATION ══
 const STRIPE_PK  = 'pk_test_51S1SfFEOZsbZn2hBIG4gSIDjNQRwnnOxWbEfJ32nIaUlzTr9Rv6tLZNmcCu7XvY9mMSwIFyvAqs1EAG3sZIf3jOh00hSVt3TEm';
-const BACKEND    = 'http://localhost:4000'; // ← mude para o URL do servidor em produção
+const BACKEND = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+  ? 'http://localhost:4000'
+  : 'https://web-production-47960.up.railway.app';
 
 let stripe, cardElement, stripeReady=false;
 let _payCtx={}; // contexto do envio actual (preenchido em submitShip)
