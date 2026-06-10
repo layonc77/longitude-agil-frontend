@@ -1034,32 +1034,31 @@ tr:hover td{background:rgba(255,255,255,.02);}tr:last-child td{border-bottom:non
     <!-- OVERVIEW -->
     <div class="subpage active" id="a-overview">
       <div class="stats-grid">
-        <div class="stat-card"><div class="stat-icon stat-icon-org">🎯</div><div class="stat-num">47</div><div class="stat-label">Total de Leads</div><div class="stat-up">↑ +12 esta semana</div></div>
-        <div class="stat-card"><div class="stat-icon stat-icon-yel">🪟</div><div class="stat-num">23</div><div class="stat-label">Envios Balcão</div><div class="stat-up">↑ +3 hoje</div></div>
-        <div class="stat-card"><div class="stat-icon stat-icon-blu">👥</div><div class="stat-num">18</div><div class="stat-label">Clientes Ativos</div><div class="stat-up">↑ +2 este mês</div></div>
-        <div class="stat-card"><div class="stat-icon stat-icon-grn">💶</div><div class="stat-num">4.280€</div><div class="stat-label">Receita do Mês</div><div class="stat-up">↑ +18%</div></div>
+        <div class="stat-card"><div class="stat-icon stat-icon-org">🎯</div><div class="stat-num" id="admin-stat-leads">0</div><div class="stat-label">Pedidos Pendentes</div></div>
+        <div class="stat-card"><div class="stat-icon stat-icon-blu">👥</div><div class="stat-num" id="admin-stat-clients">0</div><div class="stat-label">Clientes Ativos</div></div>
+        <div class="stat-card"><div class="stat-icon stat-icon-yel">📦</div><div class="stat-num" id="admin-stat-ships">0</div><div class="stat-label">Envios Totais</div></div>
+        <div class="stat-card"><div class="stat-icon stat-icon-grn">💶</div><div class="stat-num" id="admin-stat-revenue">0€</div><div class="stat-label">Receita Total</div></div>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:2rem;">
         <div class="panel card-sm">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;"><h4 style="font-family:var(--fh);font-weight:700;">Envios por dia</h4><span class="badge badge-org">Junho</span></div>
-          <div class="chart-placeholder"><div class="chart-bars"><div class="chart-bar" style="height:60%"></div><div class="chart-bar" style="height:80%"></div><div class="chart-bar" style="height:45%"></div><div class="chart-bar" style="height:90%"></div><div class="chart-bar" style="height:70%"></div><div class="chart-bar" style="height:100%"></div><div class="chart-bar" style="height:55%"></div></div></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+            <h4 style="font-family:var(--fh);font-weight:700;">📋 Pedidos de Acesso</h4>
+            <button class="btn btn-org btn-sm" onclick="aN('a-leads',null)">Ver todos</button>
+          </div>
+          <div id="admin-overview-leads">
+            <div style="text-align:center;padding:1.5rem;color:var(--txt3);font-size:.85rem;">Sem pedidos pendentes</div>
+          </div>
         </div>
         <div class="panel card-sm">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;"><h4 style="font-family:var(--fh);font-weight:700;">Pedidos Pendentes</h4><span class="badge badge-red">3 urgentes</span></div>
-          <div class="shipment-list">
-            <div class="shipment-row"><div><div class="ship-code">BC-2025-0089</div><div class="ship-route">Balcão · Cascais → Sintra</div></div><span class="badge badge-org"><span class="dot"></span>Novo</span></div>
-            <div class="shipment-row"><div><div class="ship-code">BC-2025-0088</div><div class="ship-route">Balcão · Amadora → Cascais</div></div><span class="badge badge-org"><span class="dot"></span>Novo</span></div>
-            <div class="shipment-row"><div><div class="ship-code">LA-2025-004799</div><div class="ship-route">Cliente · Carcavelos → Lisboa</div></div><span class="badge badge-yel"><span class="dot"></span>Análise</span></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+            <h4 style="font-family:var(--fh);font-weight:700;">👥 Clientes Recentes</h4>
+            <button class="btn btn-ghost btn-sm" onclick="aN('a-clients',null)">Ver todos</button>
+          </div>
+          <div id="admin-overview-clients">
+            <div style="text-align:center;padding:1.5rem;color:var(--txt3);font-size:.85rem;">Sem clientes ainda</div>
           </div>
         </div>
       </div>
-      <h3 style="font-family:var(--fh);font-weight:700;margin-bottom:1rem;">Top Clientes do Mês</h3>
-      <div class="panel"><div class="table-wrap"><table><thead><tr><th>Cliente</th><th>Empresa</th><th>Envios</th><th>Preço/Envio</th><th>Total</th><th>Estado</th></tr></thead><tbody>
-        <tr><td><strong>João Pereira</strong></td><td>JP Distribuição</td><td><strong>156</strong></td><td><span style="color:var(--org);font-weight:700;">3,90€</span> <span class="badge badge-blu" style="font-size:.62rem;">Manual</span></td><td><strong>608€</strong></td><td><span class="badge badge-grn">Ativo</span></td></tr>
-        <tr><td><strong>Sofia Rodrigues</strong></td><td>SR Loja Online</td><td><strong>98</strong></td><td><span style="color:var(--org);font-weight:700;">4,50€</span> <span class="badge badge-blu" style="font-size:.62rem;">Manual</span></td><td><strong>441€</strong></td><td><span class="badge badge-grn">Ativo</span></td></tr>
-        <tr><td><strong>Carlos Mendes</strong></td><td>—</td><td><strong>35</strong></td><td><span style="color:var(--org);font-weight:700;">5,90€</span> <span class="badge badge-gray" style="font-size:.62rem;">Escalão</span></td><td><strong>206€</strong></td><td><span class="badge badge-grn">Ativo</span></td></tr>
-        <tr><td><strong>Maria Santos</strong></td><td>—</td><td><strong>8</strong></td><td><span style="color:var(--org);font-weight:700;">7,90€</span> <span class="badge badge-gray" style="font-size:.62rem;">Escalão</span></td><td><strong>63€</strong></td><td><span class="badge badge-grn">Ativo</span></td></tr>
-      </tbody></table></div></div>
     </div>
 
     <!-- LEADS -->
@@ -1082,12 +1081,17 @@ tr:hover td{background:rgba(255,255,255,.02);}tr:last-child td{border-bottom:non
 
     <!-- BALCÃO ADMIN -->
     <div class="subpage" id="a-balcao">
-      <div class="panel"><div class="table-wrap"><table><thead><tr><th>Ref.</th><th>Nome / Tel</th><th>Origem</th><th>Destino</th><th>Tipo</th><th>Data</th><th>Estado</th><th>Ações</th></tr></thead><tbody>
-        <tr><td><span class="ship-code">BC-0089</span></td><td><strong>Ana Ferreira</strong><br><span class="small muted">+351 912 000 001</span></td><td>Cascais</td><td>Sintra</td><td>Encomenda</td><td>Hoje</td><td><span class="badge badge-org">Novo</span></td><td><div style="display:flex;gap:.4rem;"><button class="btn btn-org btn-sm" onclick="showT('success','Aceite!')">Aceitar</button><button class="btn btn-ghost btn-sm">Detalhes</button></div></td></tr>
-        <tr><td><span class="ship-code">BC-0088</span></td><td><strong>Bruno Costa</strong><br><span class="small muted">+351 913 000 002</span></td><td>Amadora</td><td>Cascais</td><td>Caixas</td><td>Hoje</td><td><span class="badge badge-org">Novo</span></td><td><div style="display:flex;gap:.4rem;"><button class="btn btn-org btn-sm" onclick="showT('success','Aceite!')">Aceitar</button><button class="btn btn-ghost btn-sm">Detalhes</button></div></td></tr>
-        <tr><td><span class="ship-code">BC-0082</span></td><td><strong>Diana Lima</strong><br><span class="small muted">+351 915 000 004</span></td><td>Parede</td><td>Oeiras</td><td>Mercadoria</td><td>Ontem</td><td><span class="badge badge-yel">Em análise</span></td><td><div style="display:flex;gap:.4rem;"><button class="btn btn-grn btn-sm" onclick="showT('success','Orçamento enviado!')">Orçamento</button><button class="btn btn-ghost btn-sm">Detalhes</button></div></td></tr>
-        <tr><td><span class="ship-code">BC-0075</span></td><td><strong>Eduardo Pinto</strong></td><td>Estoril</td><td>Sintra</td><td>Mobília</td><td>22 Jun</td><td><span class="badge badge-grn">Entregue</span></td><td><button class="btn btn-ghost btn-sm">Ver</button></td></tr>
-      </tbody></table></div></div>
+      <div class="panel">
+        <div class="table-wrap">
+          <table><thead><tr><th>Ref.</th><th>Nome / Tel</th><th>Origem</th><th>Destino</th><th>Tipo</th><th>Data</th><th>Estado</th><th>Ações</th></tr></thead>
+          <tbody id="admin-balcao-tbody"></tbody></table>
+          <div id="admin-balcao-empty" style="padding:3rem;text-align:center;color:var(--txt3);">
+            <div style="font-size:2.5rem;margin-bottom:.8rem;">📭</div>
+            <div style="font-weight:600;margin-bottom:.4rem;">Sem pedidos de balcão</div>
+            <div class="small">Os pedidos de clientes sem conta aparecem aqui.</div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- CLIENTS -->
@@ -1099,13 +1103,13 @@ tr:hover td{background:rgba(255,255,255,.02);}tr:last-child td{border-bottom:non
           <button class="btn btn-org btn-sm" onclick="openM('m-add-client')">+ Novo Cliente</button>
         </div>
       </div>
-      <div class="panel"><div class="table-wrap"><table><thead><tr><th>Nome</th><th>Empresa</th><th>Cidade</th><th>Envios/mês</th><th>Preço</th><th>Estado</th><th>Ações</th></tr></thead><tbody>
-        <tr><td><strong>João Pereira</strong><br><span class="small muted">joao@jp.pt</span></td><td>JP Distribuição</td><td>Carcavelos</td><td><strong>156</strong></td><td><span style="color:var(--org);font-weight:700;">3,90€</span> <span class="badge badge-blu" style="font-size:.62rem;">Manual</span></td><td><span class="badge badge-grn">Ativo</span></td><td><button class="btn btn-ghost btn-sm" onclick="openM('m-client')">Gerir</button></td></tr>
-        <tr><td><strong>Sofia Rodrigues</strong><br><span class="small muted">sofia@sr.pt</span></td><td>SR Loja Online</td><td>Amadora</td><td><strong>98</strong></td><td><span style="color:var(--org);font-weight:700;">4,50€</span> <span class="badge badge-blu" style="font-size:.62rem;">Manual</span></td><td><span class="badge badge-grn">Ativo</span></td><td><button class="btn btn-ghost btn-sm" onclick="openM('m-client')">Gerir</button></td></tr>
-        <tr><td><strong>Carlos Mendes</strong><br><span class="small muted">carlos@email.com</span></td><td>—</td><td>Cascais</td><td><strong>35</strong></td><td><span style="color:var(--org);font-weight:700;">5,90€</span> <span class="badge badge-gray" style="font-size:.62rem;">Escalão</span></td><td><span class="badge badge-grn">Ativo</span></td><td><button class="btn btn-ghost btn-sm" onclick="openM('m-client')">Gerir</button></td></tr>
-        <tr><td><strong>Maria Santos</strong><br><span class="small muted">maria@email.com</span></td><td>—</td><td>Sintra</td><td><strong>8</strong></td><td><span style="color:var(--org);font-weight:700;">7,90€</span> <span class="badge badge-gray" style="font-size:.62rem;">Escalão</span></td><td><span class="badge badge-grn">Ativo</span></td><td><button class="btn btn-ghost btn-sm" onclick="openM('m-client')">Gerir</button></td></tr>
-        <tr><td><strong>Pedro Alves</strong><br><span class="small muted">pedro@email.com</span></td><td>—</td><td>Parede</td><td><strong>0</strong></td><td>—</td><td><span class="badge badge-gray">Inativo</span></td><td><button class="btn btn-ghost btn-sm">Gerir</button></td></tr>
-      </tbody></table></div></div>
+      <div class="panel"><div class="table-wrap"><table><thead><tr><th>Nome</th><th>Empresa</th><th>Cidade</th><th>Envios/mês</th><th>Preço</th><th>Estado</th><th>Ações</th></tr></thead><tbody id="admin-clients-tbody"></tbody></table>
+        <div id="admin-clients-empty" style="padding:3rem;text-align:center;color:var(--txt3);">
+          <div style="font-size:2.5rem;margin-bottom:.8rem;">👥</div>
+          <div style="font-weight:600;margin-bottom:.4rem;">Sem clientes ainda</div>
+          <div class="small">Os clientes aparecem aqui após aprovação dos pedidos de registo.</div>
+        </div>
+      </div></div>
     </div>
 
     <!-- SHIPMENTS ADMIN -->
@@ -1114,16 +1118,13 @@ tr:hover td{background:rgba(255,255,255,.02);}tr:last-child td{border-bottom:non
         <button class="btn btn-org btn-sm">Todos</button><button class="btn btn-ghost btn-sm">Pendentes</button><button class="btn btn-ghost btn-sm">Em transporte</button><button class="btn btn-ghost btn-sm">Entregues</button>
         <input class="form-input" placeholder="🔍 Pesquisar..." style="width:200px;padding:.5rem .9rem;font-size:.85rem;margin-left:auto;">
       </div>
-      <div class="panel"><div class="table-wrap"><table><thead><tr><th>Ref.</th><th>Cliente</th><th>Origem</th><th>Destino</th><th>Data</th><th>Estado</th><th>Preço</th><th>Ações</th></tr></thead><tbody>
-        <tr><td><span class="ship-code">LA-004821</span></td><td>Carlos Mendes</td><td>Carcavelos</td><td>Cascais</td><td>Hoje</td><td><span class="badge badge-grn">Entregue</span></td><td>5,90€</td><td><button class="btn btn-ghost btn-sm">Ver</button></td></tr>
-        <tr><td><span class="ship-code">LA-004799</span></td><td>João Pereira</td><td>Carcavelos</td><td>Lisboa</td><td>Hoje</td><td>
-          <select class="form-select" style="padding:.25rem .5rem;font-size:.75rem;width:auto;background:var(--blk3);border-color:var(--bdr);" onchange="showT('success','Estado atualizado!')">
-            <option>Em análise</option><option>Recolha agendada</option><option>Recolhido</option><option>Em transporte</option><option>Entregue</option>
-          </select>
-        </td><td>3,90€</td><td><button class="btn btn-ghost btn-sm">Ver</button></td></tr>
-        <tr><td><span class="ship-code">LA-004798</span></td><td>Carlos Mendes</td><td>Parede</td><td>Sintra</td><td>Hoje</td><td><span class="badge badge-yel">Em transporte</span></td><td>5,90€</td><td><button class="btn btn-ghost btn-sm">Ver</button></td></tr>
-        <tr><td><span class="ship-code">BC-0089</span></td><td>Ana Ferreira (Balcão)</td><td>Cascais</td><td>Sintra</td><td>Hoje</td><td><span class="badge badge-org">Novo</span></td><td>9,90€</td><td><button class="btn btn-org btn-sm" onclick="showT('success','Aceite!')">Aceitar</button></td></tr>
-      </tbody></table></div></div>
+      <div class="panel"><div class="table-wrap"><table><thead><tr><th>Ref.</th><th>Cliente</th><th>Origem</th><th>Destino</th><th>Data</th><th>Estado</th><th>Preço</th><th>Ações</th></tr></thead><tbody id="admin-ships-tbody"></tbody></table>
+        <div id="admin-ships-empty" style="padding:3rem;text-align:center;color:var(--txt3);">
+          <div style="font-size:2.5rem;margin-bottom:.8rem;">📦</div>
+          <div style="font-weight:600;margin-bottom:.4rem;">Sem envios ainda</div>
+          <div class="small">Os envios dos clientes aparecem aqui após pagamento.</div>
+        </div>
+      </div></div>
     </div>
 
     <!-- PRICING -->
@@ -1147,9 +1148,9 @@ tr:hover td{background:rgba(255,255,255,.02);}tr:last-child td{border-bottom:non
         <div>
           <h3 style="font-family:var(--fh);font-weight:700;margin-bottom:1rem;">👤 Preços por Cliente</h3>
           <div class="pricing-rules">
-            <div class="rule-card"><div><div class="rule-name">João Pereira</div><div class="rule-desc">156 envios/mês · JP Distribuição</div></div><div class="rule-val">3,90€</div><div><button class="btn btn-ghost btn-sm" onclick="openM('m-price')">✏️ Editar</button></div></div>
-            <div class="rule-card"><div><div class="rule-name">Sofia Rodrigues</div><div class="rule-desc">98 envios/mês · SR Loja Online</div></div><div class="rule-val">4,50€</div><div><button class="btn btn-ghost btn-sm" onclick="openM('m-price')">✏️ Editar</button></div></div>
-            <div class="rule-card"><div><div class="rule-name">Carlos Mendes</div><div class="rule-desc">35 envios/mês · Escalão auto</div></div><div class="rule-val" style="font-size:.9rem;color:var(--txt2);">5,90€ auto</div><div><button class="btn btn-org btn-sm" onclick="openM('m-price')">Definir Manual</button></div></div>
+            <div id="admin-pricing-rules">
+              <div style="text-align:center;padding:1.5rem;color:var(--txt3);font-size:.85rem;">Sem preços manuais definidos ainda.</div>
+            </div>
           </div>
           <div style="margin-top:1.5rem;"><button class="btn btn-ghost btn-full" onclick="openM('m-price')">+ Adicionar regra de preço</button></div>
         </div>
@@ -1162,12 +1163,13 @@ tr:hover td{background:rgba(255,255,255,.02);}tr:last-child td{border-bottom:non
         <div style="display:flex;gap:.5rem;"><button class="btn btn-org btn-sm">Todas</button><button class="btn btn-ghost btn-sm">Pendentes</button><button class="btn btn-ghost btn-sm">Pagas</button></div>
         <button class="btn btn-org btn-sm" onclick="showT('info','Fatura gerada!')">+ Gerar Fatura</button>
       </div>
-      <div class="panel"><div class="table-wrap"><table><thead><tr><th>Fatura</th><th>Cliente</th><th>Período</th><th>Envios</th><th>Total</th><th>Estado</th><th>Ações</th></tr></thead><tbody>
-        <tr><td><strong>FAT-0042</strong></td><td>Carlos Mendes</td><td>Jun 2025</td><td>35</td><td><strong>206,50€</strong></td><td><span class="badge badge-yel">Pendente</span></td><td><div style="display:flex;gap:.4rem;"><button class="btn btn-ghost btn-sm">PDF</button><button class="btn btn-grn btn-sm" onclick="showT('success','Marcada como paga!')">Paga ✓</button></div></td></tr>
-        <tr><td><strong>FAT-0041</strong></td><td>João Pereira</td><td>Jun 2025</td><td>156</td><td><strong>608,40€</strong></td><td><span class="badge badge-yel">Pendente</span></td><td><div style="display:flex;gap:.4rem;"><button class="btn btn-ghost btn-sm">PDF</button><button class="btn btn-grn btn-sm" onclick="showT('success','Marcada como paga!')">Paga ✓</button></div></td></tr>
-        <tr><td><strong>FAT-0040</strong></td><td>Sofia Rodrigues</td><td>Jun 2025</td><td>98</td><td><strong>441,00€</strong></td><td><span class="badge badge-grn">Paga</span></td><td><button class="btn btn-ghost btn-sm">PDF</button></td></tr>
-        <tr><td><strong>FAT-0039</strong></td><td>Maria Santos</td><td>Jun 2025</td><td>8</td><td><strong>63,20€</strong></td><td><span class="badge badge-grn">Paga</span></td><td><button class="btn btn-ghost btn-sm">PDF</button></td></tr>
-      </tbody></table></div></div>
+      <div class="panel"><div class="table-wrap"><table><thead><tr><th>Fatura</th><th>Cliente</th><th>Período</th><th>Envios</th><th>Total</th><th>Estado</th><th>Ações</th></tr></thead><tbody id="admin-invoices-tbody"></tbody></table>
+        <div id="admin-invoices-empty" style="padding:3rem;text-align:center;color:var(--txt3);">
+          <div style="font-size:2.5rem;margin-bottom:.8rem;">🧾</div>
+          <div style="font-weight:600;margin-bottom:.4rem;">Sem faturas ainda</div>
+          <div class="small">As faturas são geradas automaticamente com os envios.</div>
+        </div>
+      </div></div>
     </div>
 
     <!-- STATS -->
@@ -1293,7 +1295,7 @@ tr:hover td{background:rgba(255,255,255,.02);}tr:last-child td{border-bottom:non
 <div class="modal-overlay" id="m-price">
   <div class="modal">
     <div class="modal-header"><div class="modal-title">💶 Preço Manual por Cliente</div><button class="modal-close" onclick="closeM('m-price')">✕</button></div>
-    <div class="form-group"><label class="form-label">Cliente</label><select class="form-select"><option>João Pereira — 156 envios/mês</option><option>Sofia Rodrigues — 98 envios/mês</option><option>Carlos Mendes — 35 envios/mês</option></select></div>
+    <div class="form-group"><label class="form-label">Cliente</label><select class="form-select" id="modal-price-client-sel"><option value="">— Seleccionar cliente —</option></select></div>
     <div class="form-group"><label class="form-label">Preço por envio (€)</label><input class="form-input" placeholder="Ex: 4.50"></div>
     <div class="form-group"><label class="form-label">Motivo</label><textarea class="form-textarea" placeholder="Ex: Acordo por volume..." style="min-height:70px;"></textarea></div>
     <div style="display:flex;justify-content:flex-end;gap:.8rem;margin-top:1rem;"><button class="btn btn-ghost" onclick="closeM('m-price')">Cancelar</button><button class="btn btn-org" onclick="showT('success','Preço definido!');closeM('m-price')">Definir</button></div>
@@ -1636,6 +1638,207 @@ function saveNewShipment(ref) {
   if (badge) badge.textContent = list.length;
 }
 
+// ══ ADMIN — render dinâmico ══
+function renderAdminOverview() {
+  const regs    = getPendingRegs().filter(r => r.estado === 'pendente');
+  const clients = getApprovedUsers();
+  const allShips = getAllAdminShipments();
+  const revenue  = allShips.reduce((a, s) => a + (s.preco||0), 0);
+
+  // Stats
+  const s1 = document.getElementById('admin-stat-leads');
+  const s2 = document.getElementById('admin-stat-clients');
+  const s3 = document.getElementById('admin-stat-ships');
+  const s4 = document.getElementById('admin-stat-revenue');
+  if(s1) s1.textContent = regs.length;
+  if(s2) s2.textContent = clients.length;
+  if(s3) s3.textContent = allShips.length;
+  if(s4) s4.textContent = revenue.toFixed(2) + '€';
+
+  // Badge header
+  const badge = document.getElementById('admin-pending-badge');
+  if(badge) badge.textContent = regs.length + ' pendente' + (regs.length!==1?'s':'');
+
+  // Overview leads
+  const leadsEl = document.getElementById('admin-overview-leads');
+  if(leadsEl){
+    if(regs.length === 0){
+      leadsEl.innerHTML = '<div style="text-align:center;padding:1.5rem;color:var(--txt3);font-size:.85rem;">Sem pedidos pendentes</div>';
+    } else {
+      leadsEl.innerHTML = '<div class="shipment-list">' + regs.slice(0,3).map(r => `
+        <div class="shipment-row" style="cursor:pointer;" onclick="aN('a-leads',null);renderLeads();">
+          <div><div class="ship-code">${r.nome}</div><div class="ship-route">${r.email} · ${r.quiz.vol}/mês</div></div>
+          <span class="badge badge-org">Novo</span>
+        </div>`).join('') + '</div>' +
+        (regs.length > 3 ? `<div class="small muted mt1" style="text-align:center;">+${regs.length-3} mais</div>` : '');
+    }
+  }
+
+  // Overview clients
+  const clientsEl = document.getElementById('admin-overview-clients');
+  if(clientsEl){
+    if(clients.length === 0){
+      clientsEl.innerHTML = '<div style="text-align:center;padding:1.5rem;color:var(--txt3);font-size:.85rem;">Sem clientes ainda</div>';
+    } else {
+      clientsEl.innerHTML = '<div class="shipment-list">' + clients.slice(-3).reverse().map(u => `
+        <div class="shipment-row">
+          <div><div class="ship-code">${u.nome}</div><div class="ship-route">${u.email}</div></div>
+          <span style="color:var(--org);font-weight:700;font-size:.88rem;">${u.preco?.toFixed(2)}€</span>
+        </div>`).join('') + '</div>';
+    }
+  }
+}
+
+function getAllAdminShipments() {
+  // Agrega todos os envios de todos os clientes aprovados
+  try {
+    const all = [];
+    const users = getApprovedUsers();
+    users.forEach(u => {
+      const key  = 'la_shipments_' + u.email;
+      const ships = JSON.parse(localStorage.getItem(key) || '[]');
+      ships.forEach(s => all.push({ ...s, clientNome: u.nome, clientEmail: u.email }));
+    });
+    // também os envios genéricos
+    const gen = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+    gen.forEach(s => { if(!all.find(x=>x.ref===s.ref)) all.push(s); });
+    return all.sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
+  } catch { return []; }
+}
+
+function renderAdminClients() {
+  const clients = getApprovedUsers();
+  const tbody   = document.getElementById('admin-clients-tbody');
+  const empty   = document.getElementById('admin-clients-empty');
+  if(!tbody) return;
+  if(clients.length === 0){
+    tbody.innerHTML = '';
+    if(empty) empty.style.display = 'block';
+    return;
+  }
+  if(empty) empty.style.display = 'none';
+  tbody.innerHTML = clients.map(u => `
+    <tr>
+      <td><strong>${u.nome}</strong><br><span class="small muted">${u.email}</span></td>
+      <td>${u.empresa || '—'}</td>
+      <td>${u.cidade || '—'}</td>
+      <td>${u.quiz?.vol || '—'}</td>
+      <td><span style="color:var(--org);font-weight:700;">${u.preco?.toFixed(2)}€</span></td>
+      <td><span class="badge badge-grn">Ativo</span></td>
+      <td><button class="btn btn-ghost btn-sm" onclick="openAdminClientModal('${u.email}')">Gerir</button></td>
+    </tr>`).join('');
+}
+
+function renderAdminShipments() {
+  const ships = getAllAdminShipments();
+  const tbody = document.getElementById('admin-ships-tbody');
+  const empty = document.getElementById('admin-ships-empty');
+  if(!tbody) return;
+  if(ships.length === 0){
+    tbody.innerHTML = '';
+    if(empty) empty.style.display = 'block';
+    return;
+  }
+  if(empty) empty.style.display = 'none';
+  tbody.innerHTML = ships.map(s => `
+    <tr>
+      <td><span class="ship-code">${s.ref}</span></td>
+      <td>${s.clientNome || s.clientEmail || '—'}</td>
+      <td>${s.origem}</td>
+      <td>${s.destino}</td>
+      <td>${formatDate(s.createdAt)}</td>
+      <td><span class="badge ${badgeClass(s.estado)}"><span class="dot"></span>${s.estado}</span></td>
+      <td>${s.preco ? s.preco.toFixed(2)+'€' : '—'}</td>
+      <td>
+        <select class="form-select" style="padding:.25rem .5rem;font-size:.75rem;width:auto;" onchange="updateShipStatus('${s.ref}','${s.clientEmail||''}',this.value)">
+          <option ${s.estado==='Pedido recebido'?'selected':''}>Pedido recebido</option>
+          <option ${s.estado==='Em análise'?'selected':''}>Em análise</option>
+          <option ${s.estado==='Recolha agendada'?'selected':''}>Recolha agendada</option>
+          <option ${s.estado==='Recolhido'?'selected':''}>Recolhido</option>
+          <option ${s.estado==='Em transporte'?'selected':''}>Em transporte</option>
+          <option ${s.estado==='Entregue'?'selected':''}>Entregue</option>
+          <option ${s.estado==='Cancelado'?'selected':''}>Cancelado</option>
+        </select>
+      </td>
+    </tr>`).join('');
+}
+
+function renderAdminInvoices() {
+  const ships = getAllAdminShipments();
+  const tbody = document.getElementById('admin-invoices-tbody');
+  const empty = document.getElementById('admin-invoices-empty');
+  if(!tbody) return;
+  if(ships.length === 0){
+    tbody.innerHTML = '';
+    if(empty) empty.style.display = 'block';
+    return;
+  }
+  if(empty) empty.style.display = 'none';
+  // Agrupar por cliente e mês
+  const groups = {};
+  ships.forEach(s => {
+    const d   = new Date(s.createdAt);
+    const key = (s.clientEmail||'balcao') + '-' + d.getFullYear() + '-' + d.getMonth();
+    if(!groups[key]) groups[key] = { nome: s.clientNome||s.clientEmail||'Balcão', periodo: d.toLocaleDateString('pt-PT',{month:'short',year:'numeric'}), ships:[], total:0 };
+    groups[key].ships.push(s);
+    groups[key].total += s.preco||0;
+  });
+  tbody.innerHTML = Object.values(groups).map((g,i) => `
+    <tr>
+      <td><strong>FAT-${new Date().getFullYear()}-${String(i+1).padStart(4,'0')}</strong></td>
+      <td>${g.nome}</td>
+      <td>${g.periodo}</td>
+      <td>${g.ships.length}</td>
+      <td><strong>${g.total.toFixed(2)}€</strong></td>
+      <td><span class="badge badge-yel">Pendente</span></td>
+      <td><button class="btn btn-grn btn-sm" onclick="showT('success','Marcada como paga!')">Paga ✓</button></td>
+    </tr>`).join('');
+}
+
+function renderAdminPricing() {
+  const clients = getApprovedUsers();
+  const el = document.getElementById('admin-pricing-rules');
+  const sel = document.getElementById('modal-price-client-sel');
+  if(!el) return;
+  if(clients.length === 0){
+    el.innerHTML = '<div style="text-align:center;padding:1.5rem;color:var(--txt3);font-size:.85rem;">Sem preços manuais definidos ainda.</div>';
+  } else {
+    el.innerHTML = clients.map(u => `
+      <div class="rule-card">
+        <div><div class="rule-name">${u.nome}</div><div class="rule-desc">${u.email} · ${u.quiz?.vol||'—'}/mês</div></div>
+        <div class="rule-val">${u.preco?.toFixed(2)}€</div>
+        <div><button class="btn btn-ghost btn-sm" onclick="openM('m-price')">✏️ Editar</button></div>
+      </div>`).join('');
+  }
+  if(sel){
+    sel.innerHTML = '<option value="">— Seleccionar —</option>' +
+      clients.map(u => `<option value="${u.email}">${u.nome} — ${u.email}</option>`).join('');
+  }
+}
+
+function updateShipStatus(ref, clientEmail, newStatus) {
+  // Actualizar no localStorage do cliente
+  const key   = clientEmail ? 'la_shipments_' + clientEmail : STORAGE_KEY;
+  const ships = JSON.parse(localStorage.getItem(key) || localStorage.getItem(STORAGE_KEY) || '[]');
+  const idx   = ships.findIndex(s => s.ref === ref);
+  if(idx >= 0){ ships[idx].estado = newStatus; localStorage.setItem(key, JSON.stringify(ships)); }
+  // Também tentar no STORAGE_KEY global
+  const gen = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+  const gi  = gen.findIndex(s => s.ref === ref);
+  if(gi >= 0){ gen[gi].estado = newStatus; localStorage.setItem(STORAGE_KEY, JSON.stringify(gen)); }
+  showT('success', 'Estado actualizado: ' + newStatus);
+}
+
+function openAdminClientModal(email) {
+  const users = getApprovedUsers();
+  const u = users.find(x => x.email === email);
+  if(!u) return;
+  // Reutilizar modal m-client com dados reais
+  const title = document.querySelector('#m-client .modal-title');
+  if(title) title.textContent = '👤 ' + u.nome;
+  openM('m-client');
+}
+
 // ══ PRICE TABLE TABS ══
 function switchPriceTab(dest){
   ['pt','es','mad'].forEach(d=>{
@@ -1669,11 +1872,18 @@ function cNav(id,el){
 const aTitles={'a-overview':'Visão Geral','a-leads':'Leads','a-balcao':'Envios de Balcão','a-clients':'Clientes','a-shipments':'Envios','a-pricing':'Preços','a-invoices':'Faturas','a-stats':'Estatísticas','a-settings':'Configurações'};
 function aN(id,el){
   document.querySelectorAll('#page-admin .subpage').forEach(s=>s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
+  document.getElementById(id)?.classList.add('active');
   document.querySelectorAll('#page-admin .nav-item').forEach(n=>n.classList.remove('active'));
   if(el)el.classList.add('active');
   const t=document.getElementById('a-title');
   if(t&&aTitles[id])t.textContent=aTitles[id];
+  // Render dinâmico por secção
+  if(id==='a-overview')  { renderAdminOverview(); }
+  if(id==='a-leads')     { renderLeads(); }
+  if(id==='a-clients')   { renderAdminClients(); }
+  if(id==='a-shipments') { renderAdminShipments(); }
+  if(id==='a-invoices')  { renderAdminInvoices(); }
+  if(id==='a-pricing')   { renderAdminPricing(); }
 }
 
 // ══ AUTH ══
