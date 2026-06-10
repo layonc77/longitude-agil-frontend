@@ -1969,30 +1969,30 @@ async function doLogin(){
     }
   }
 
-  if(btn){ btn.disabled=false; btn.textContent=origText; }
-
-  // 3. Clientes aprovados (localStorage)
-  const users = getApprovedUsers();
-  const user  = users.find(u => u.email.toLowerCase() === email);
-
-  if(!user){
-    const pending = getPendingRegs().find(r => r.email.toLowerCase() === email);
-    if(pending){
-      errEl.innerHTML = '⏳ O seu pedido ainda está em análise. Aguarde aprovação ou contacte <a href="https://wa.me/351911580781" style="color:var(--org)">+351 911 580 781</a>.';
-    } else {
-      errEl.textContent = 'Email não encontrado. Crie uma conta primeiro.';
+  // 3. Clientes — verificar via backend
+  try {
+    const res  = await fetch(BACKEND + '/api/client-login', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ email, passHash: btoa(pass) }),
+    });
+    const data = await res.json();
+    if(data.ok && data.cliente) {
+      if(btn){ btn.disabled=false; btn.textContent=origText; }
+      loginAs('client', { email: data.cliente.email, name: data.cliente.nome, preco: data.cliente.preco, quiz: data.cliente.quiz });
+      return;
     }
+    if(data.pendente) {
+      errEl.innerHTML = '⏳ O seu pedido ainda está em análise. Aguarde aprovação ou contacte <a href="https://wa.me/351911580781" style="color:var(--org)">+351 911 580 781</a>.';
+      errEl.style.display = 'block';
+      return;
+    }
+    errEl.textContent = data.error || 'Email ou palavra-passe incorrectos.';
     errEl.style.display = 'block';
-    return;
-  }
-
-  if(btoa(pass) !== user.passHash){
-    errEl.textContent = 'Palavra-passe incorrecta.';
+  } catch(e) {
+    errEl.textContent = 'Sem ligação ao servidor. Tente mais tarde.';
     errEl.style.display = 'block';
-    return;
   }
-
-  loginAs('client', { email: user.email, name: user.nome, preco: user.preco, quiz: user.quiz });
 }
 
 function forgotPassword(){
@@ -2083,15 +2083,14 @@ function regPrevStep() {
   document.getElementById('reg-step1').classList.remove('hidden');
 }
 
-function doRegister() {
-  // Validar questionário
+async function doRegister() {
   if(!qAnswers.vol)     { showT('error','Seleccione o volume mensal'); return; }
   if(!qAnswers.tipo)    { showT('error','Seleccione o tipo de envio'); return; }
   if(!qAnswers.fatura)  { showT('error','Indique se precisa de fatura'); return; }
   if(!qAnswers.destino) { showT('error','Seleccione o destino habitual'); return; }
 
   const nome    = document.getElementById('r-nome').value.trim();
-  const email   = document.getElementById('r-email').value.trim();
+  const email   = document.getElementById('r-email').value.trim().toLowerCase();
   const pass    = document.getElementById('r-pass').value;
   const tel     = document.getElementById('r-tel').value.trim();
   const empresa = document.getElementById('r-empresa')?.value.trim() || '';
@@ -2099,44 +2098,59 @@ function doRegister() {
   const cidade  = document.getElementById('r-cidade')?.value.trim() || '';
   const obs     = document.getElementById('r-obs')?.value.trim() || '';
 
-  // Guardar pedido pendente
-  const regs = JSON.parse(localStorage.getItem(REG_KEY) || '[]');
-  regs.push({
-    id:        Date.now(),
-    nome, email, tel, empresa, nif, cidade, obs,
-    passHash:  btoa(pass), // base64 simples (produção usar bcrypt no backend)
-    quiz:      { ...qAnswers },
-    estado:    'pendente',
-    criadoEm:  new Date().toISOString(),
-  });
-  localStorage.setItem(REG_KEY, JSON.stringify(regs));
+  const btn = document.querySelector('#reg-step2 .btn-org');
+  if(btn){ btn.disabled=true; btn.textContent='A enviar...'; }
 
-  // Mostrar step 3
+  try {
+    const res  = await fetch(BACKEND + '/api/registos', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ nome, email, tel, empresa, nif, cidade, obs, passHash: btoa(pass), quiz: {...qAnswers} }),
+    });
+    const data = await res.json();
+    if(btn){ btn.disabled=false; btn.textContent='✅ Enviar Pedido'; }
+    if(!data.ok) { showT('error', data.error || 'Erro ao enviar'); return; }
+  } catch(e) {
+    if(btn){ btn.disabled=false; btn.textContent='✅ Enviar Pedido'; }
+    showT('error','Sem ligação ao servidor. Tente mais tarde.');
+    return;
+  }
+
   document.getElementById('reg-step2').classList.add('hidden');
   document.getElementById('reg-step3').classList.remove('hidden');
   showT('success','✅ Pedido enviado com sucesso!');
 }
 
-// ══ ADMIN — gestão de pedidos ══
+// ══ ADMIN — gestão de pedidos via backend ══
 let currentRegId = null;
+let _pendingRegs = []; // cache local
 
-function getPendingRegs() {
-  return JSON.parse(localStorage.getItem(REG_KEY) || '[]');
-}
+function getPendingRegs() { return _pendingRegs; }
 function getApprovedUsers() {
   return JSON.parse(localStorage.getItem(USERS_KEY) || '[]');
 }
 
-function renderLeads() {
-  const regs    = getPendingRegs().filter(r => r.estado === 'pendente');
+async function renderLeads() {
   const listEl  = document.getElementById('leads-list');
   const emptyEl = document.getElementById('leads-empty');
   const badge   = document.getElementById('leads-count-badge');
   if(!listEl) return;
 
-  if(badge) badge.textContent = regs.length + ' pendente' + (regs.length !== 1 ? 's' : '');
+  listEl.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--txt3);">⏳ A carregar...</div>';
 
-  // Update nav badge
+  try {
+    const token = sessionStorage.getItem('la_admin_token');
+    const res   = await fetch(BACKEND + '/api/registos', { headers: { 'Authorization': 'Bearer ' + token } });
+    const data  = await res.json();
+    if(!data.ok) throw new Error(data.error);
+    _pendingRegs = data.registos || [];
+  } catch(e) {
+    listEl.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--red);">❌ Erro ao carregar. Backend offline?</div>';
+    return;
+  }
+
+  const regs = _pendingRegs;
+  if(badge) badge.textContent = regs.length + ' pendente' + (regs.length!==1?'s':'');
   const navBadge = document.querySelector('#page-admin .nav-badge');
   if(navBadge) navBadge.textContent = regs.length;
 
@@ -2156,13 +2170,13 @@ function renderLeads() {
       <div class="lead-contact">📞 ${r.tel}</div>
       <div class="lead-contact">✉️ ${r.email}</div>
       ${r.empresa ? `<div class="lead-contact">🏢 ${r.empresa}</div>` : ''}
-      <div class="small muted" style="margin-top:.3rem;">📍 ${r.cidade || '—'}</div>
+      <div class="small muted" style="margin-top:.3rem;">📍 ${r.cidade||'—'}</div>
       <div style="background:rgba(249,115,22,.06);border-radius:var(--r);padding:.5rem .7rem;margin-top:.5rem;font-size:.78rem;color:var(--txt2);">
-        📦 ${r.quiz.vol}/mês · ${r.quiz.tipo} · 🧾 Fatura: ${r.quiz.fatura} · ${r.quiz.destino}
+        📦 ${r.quiz?.vol||'—'}/mês · ${r.quiz?.tipo||'—'} · 🧾 Fatura: ${r.quiz?.fatura||'—'} · ${r.quiz?.destino||'—'}
       </div>
       <div class="small muted" style="margin-top:.3rem;">${formatDate(r.criadoEm)}</div>
       <div style="display:flex;gap:.5rem;margin-top:.8rem;flex-wrap:wrap;">
-        <a href="https://wa.me/351${r.tel.replace(/\D/g,'')}" class="btn btn-wa btn-sm" target="_blank">WhatsApp</a>
+        <a href="https://wa.me/351${(r.tel||'').replace(/\D/g,'')}" class="btn btn-wa btn-sm" target="_blank">WhatsApp</a>
         <button class="btn btn-org btn-sm" onclick="openApproveModal(${r.id})">✅ Aprovar</button>
         <button class="btn btn-red btn-sm" onclick="rejectRegById(${r.id})">❌ Recusar</button>
       </div>
@@ -2170,60 +2184,57 @@ function renderLeads() {
 }
 
 function openApproveModal(id) {
-  const regs = getPendingRegs();
-  const reg  = regs.find(r => r.id === id);
+  const reg = _pendingRegs.find(r => r.id === id);
   if(!reg) return;
   currentRegId = id;
-
   document.getElementById('ar-dados').innerHTML = `
     <div><span class="small muted">Nome</span><br><strong>${reg.nome}</strong></div>
     <div><span class="small muted">Email</span><br><strong>${reg.email}</strong></div>
     <div><span class="small muted">Telefone</span><br><strong>${reg.tel}</strong></div>
-    <div><span class="small muted">Cidade</span><br><strong>${reg.cidade || '—'}</strong></div>
-    ${reg.empresa ? `<div style="grid-column:span 2"><span class="small muted">Empresa</span><br><strong>${reg.empresa}</strong></div>` : ''}
-    ${reg.nif ? `<div><span class="small muted">NIF</span><br><strong>${reg.nif}</strong></div>` : ''}
+    <div><span class="small muted">Cidade</span><br><strong>${reg.cidade||'—'}</strong></div>
+    ${reg.empresa?`<div style="grid-column:span 2"><span class="small muted">Empresa</span><br><strong>${reg.empresa}</strong></div>`:''}
+    ${reg.nif?`<div><span class="small muted">NIF</span><br><strong>${reg.nif}</strong></div>`:''}
   `;
-
   document.getElementById('ar-quiz').innerHTML = `
-    <div>📦 Volume mensal: <strong style="color:var(--txt)">${reg.quiz.vol}</strong></div>
-    <div>🚛 Tipo de envio: <strong style="color:var(--txt)">${reg.quiz.tipo}</strong></div>
-    <div>🧾 Precisa de fatura: <strong style="color:var(--txt)">${reg.quiz.fatura}</strong></div>
-    <div>🌍 Destino: <strong style="color:var(--txt)">${reg.quiz.destino}</strong></div>
-    ${reg.obs ? `<div>💬 Obs: <em>${reg.obs}</em></div>` : ''}
+    <div>📦 Volume: <strong style="color:var(--txt)">${reg.quiz?.vol||'—'}</strong></div>
+    <div>🚛 Tipo: <strong style="color:var(--txt)">${reg.quiz?.tipo||'—'}</strong></div>
+    <div>🧾 Fatura: <strong style="color:var(--txt)">${reg.quiz?.fatura||'—'}</strong></div>
+    <div>🌍 Destino: <strong style="color:var(--txt)">${reg.quiz?.destino||'—'}</strong></div>
+    ${reg.obs?`<div>💬 Obs: <em>${reg.obs}</em></div>`:''}
   `;
-
   document.getElementById('ar-preco').value = '';
   document.getElementById('ar-nota').value  = '';
   openM('m-approve-reg');
 }
 
-function approveReg() {
+async function approveReg() {
   const preco = parseFloat(document.getElementById('ar-preco').value);
   if(!preco || preco <= 0) { showT('error','Defina um preço por envio'); return; }
-
-  const regs  = getPendingRegs();
-  const reg   = regs.find(r => r.id === currentRegId);
+  const reg = _pendingRegs.find(r => r.id === currentRegId);
   if(!reg) return;
 
-  // Aprovar — mover para utilizadores aprovados
-  const users = getApprovedUsers();
-  users.push({
-    ...reg,
-    preco,
-    notaAdmin: document.getElementById('ar-nota').value.trim(),
-    estado:    'aprovado',
-    aprovadoEm: new Date().toISOString(),
-  });
-  localStorage.setItem(USERS_KEY, JSON.stringify(users));
+  const btn = document.querySelector('#m-approve-reg .btn-org');
+  if(btn){ btn.disabled=true; btn.textContent='A aprovar...'; }
 
-  // Remover dos pendentes
-  const updated = regs.filter(r => r.id !== currentRegId);
-  localStorage.setItem(REG_KEY, JSON.stringify(updated));
-
-  closeM('m-approve-reg');
-  renderLeads();
-  showT('success', '✅ ' + reg.nome + ' aprovado com preço ' + preco.toFixed(2) + '€/envio');
-  currentRegId = null;
+  try {
+    const token = sessionStorage.getItem('la_admin_token');
+    const res   = await fetch(BACKEND + '/api/registos/' + currentRegId + '/aprovar', {
+      method:  'POST',
+      headers: { 'Content-Type':'application/json', 'Authorization':'Bearer '+token },
+      body:    JSON.stringify({ preco, notaAdmin: document.getElementById('ar-nota').value.trim() }),
+    });
+    const data = await res.json();
+    if(!data.ok) throw new Error(data.error);
+    if(btn){ btn.disabled=false; btn.textContent='✅ Aprovar e Activar'; }
+    closeM('m-approve-reg');
+    renderLeads();
+    renderAdminOverview();
+    showT('success', '✅ ' + reg.nome + ' aprovado — ' + preco.toFixed(2) + '€/envio');
+    currentRegId = null;
+  } catch(e) {
+    if(btn){ btn.disabled=false; btn.textContent='✅ Aprovar e Activar'; }
+    showT('error', 'Erro: ' + e.message);
+  }
 }
 
 function rejectReg() {
@@ -2232,11 +2243,15 @@ function rejectReg() {
   closeM('m-approve-reg');
 }
 
-function rejectRegById(id) {
-  const regs = getPendingRegs();
-  const reg  = regs.find(r => r.id === id);
-  const updated = regs.filter(r => r.id !== id);
-  localStorage.setItem(REG_KEY, JSON.stringify(updated));
+async function rejectRegById(id) {
+  const reg = _pendingRegs.find(r => r.id === id);
+  try {
+    const token = sessionStorage.getItem('la_admin_token');
+    await fetch(BACKEND + '/api/registos/' + id + '/rejeitar', {
+      method:  'POST',
+      headers: { 'Authorization':'Bearer '+token },
+    });
+  } catch {}
   renderLeads();
   if(reg) showT('info', reg.nome + ' recusado.');
   currentRegId = null;
