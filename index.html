@@ -687,6 +687,9 @@ tr:hover td{background:rgba(255,255,255,.02);}tr:last-child td{border-bottom:non
       <div class="form-group"><label class="form-label">Palavra-passe</label><input class="form-input" id="l-pass" type="password" placeholder="••••••••"></div>
       <button class="btn btn-org btn-full mt2" onclick="doLogin()">Entrar →</button>
       <div id="login-error" style="display:none;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);border-radius:var(--r);padding:.7rem 1rem;font-size:.83rem;color:#fca5a5;margin-top:.8rem;text-align:center;"></div>
+      <div style="text-align:right;margin-top:.5rem;">
+        <a href="#" onclick="forgotPassword()" style="font-size:.78rem;color:var(--txt3);text-decoration:underline;">Esqueceu a senha?</a>
+      </div>
       <p class="small muted mt2" style="text-align:center;">Não tem conta? <a href="#" onclick="switchAuthTab('register')" style="color:var(--org);">Crie uma</a></p>
     </div>
     <div id="auth-register" class="hidden">
@@ -1214,6 +1217,27 @@ tr:hover td{background:rgba(255,255,255,.02);}tr:last-child td{border-bottom:non
 
 <!-- MODALS -->
 
+<!-- Modal: Esqueceu senha -->
+<div class="modal-overlay" id="m-forgot">
+  <div class="modal" style="max-width:420px;text-align:center;">
+    <div class="modal-header" style="justify-content:center;border:none;margin-bottom:.5rem;">
+      <div class="modal-title">🔑 Recuperar Acesso</div>
+    </div>
+    <div style="font-size:2.5rem;margin-bottom:1rem;">🔒</div>
+    <p style="font-size:.88rem;color:var(--txt2);line-height:1.7;margin-bottom:1.5rem;">
+      Como o sistema ainda não tem email automático, o reset de senha é feito manualmente.<br><br>
+      Envia uma mensagem pelo WhatsApp com o teu email e a equipa da Longitude Ágil vai resetar o acesso.
+    </p>
+    <div id="forgot-email-wrap" style="margin-bottom:1.2rem;">
+      <input class="form-input" id="forgot-email" type="email" placeholder="O seu email de acesso">
+    </div>
+    <a id="forgot-wa-btn" href="#" target="_blank" class="btn btn-wa btn-full" onclick="buildForgotWA()" style="margin-bottom:.8rem;">
+      💬 Pedir Reset pelo WhatsApp
+    </a>
+    <button class="btn btn-ghost btn-full" onclick="closeM('m-forgot')">Fechar</button>
+  </div>
+</div>
+
 <!-- Modal: Aprovar Registo -->
 <div class="modal-overlay" id="m-approve-reg">
   <div class="modal" style="max-width:580px;">
@@ -1665,36 +1689,52 @@ function selType(t){
   document.querySelectorAll('.empresa-field').forEach(e=>e.classList.toggle('hidden',t!=='empresa'));
 }
 // ══ AUTH — credenciais reais ══
-const ADMIN_EMAIL = 'layonsouzareal@gmail.com';
-const ADMIN_HASH  = '6f112bb9ebaf2da0a7439531fbe7b474a2d8104f048fcd0f720dbd19d5db4427'; // SHA-256 de Lay04072005#
-
-async function sha256(str){
-  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
-  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
-}
-
-// ══ LOGIN — verificar utilizadores aprovados ══
+// ══ LOGIN — admin via backend seguro, clientes via localStorage ══
 async function doLogin(){
   const email = document.getElementById('l-email').value.trim().toLowerCase();
   const pass  = document.getElementById('l-pass').value;
   const errEl = document.getElementById('login-error');
   errEl.style.display = 'none';
-  if(!email||!pass){errEl.textContent='Preencha email e palavra-passe.';errEl.style.display='block';return;}
 
-  const hash = await sha256(pass);
-
-  // Admin
-  if(email===ADMIN_EMAIL && hash===ADMIN_HASH){
-    loginAs('admin',{email,name:'Administrador'});
+  if(!email||!pass){
+    errEl.textContent='Preencha email e palavra-passe.';
+    errEl.style.display='block';
     return;
   }
 
-  // Verificar utilizadores aprovados pelo admin
+  // Mostrar loading
+  const btn = document.querySelector('#auth-login .btn-org');
+  const origText = btn?.textContent;
+  if(btn){ btn.disabled=true; btn.textContent='A verificar...'; }
+
+  try {
+    // Tentar login como admin via backend (seguro — senha nunca exposta no HTML)
+    const res  = await fetch(BACKEND + '/api/admin-login', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ email, password: pass }),
+    });
+    const data = await res.json();
+
+    if(data.ok && data.token){
+      // Guardar token JWT no sessionStorage (dura até fechar o browser)
+      sessionStorage.setItem('la_admin_token', data.token);
+      if(btn){ btn.disabled=false; btn.textContent=origText; }
+      loginAs('admin', { email, name:'Administrador' });
+      return;
+    }
+  } catch(e) {
+    // Backend offline — continuar para verificar clientes locais
+    console.warn('Backend offline:', e.message);
+  }
+
+  if(btn){ btn.disabled=false; btn.textContent=origText; }
+
+  // Verificar clientes aprovados (localStorage)
   const users = getApprovedUsers();
   const user  = users.find(u => u.email.toLowerCase() === email);
 
   if(!user){
-    // Verificar se está pendente
     const pending = getPendingRegs().find(r => r.email.toLowerCase() === email);
     if(pending){
       errEl.innerHTML = '⏳ O seu pedido ainda está em análise. Aguarde aprovação ou contacte <a href="https://wa.me/351911580781" style="color:var(--org)">+351 911 580 781</a>.';
@@ -1705,7 +1745,6 @@ async function doLogin(){
     return;
   }
 
-  // Verificar senha (base64 simples — produção usar bcrypt)
   if(btoa(pass) !== user.passHash){
     errEl.textContent = 'Palavra-passe incorrecta.';
     errEl.style.display = 'block';
@@ -1714,6 +1753,21 @@ async function doLogin(){
 
   loginAs('client', { email: user.email, name: user.nome, preco: user.preco, quiz: user.quiz });
 }
+
+function forgotPassword(){
+  // pré-preencher com email se já escreveu
+  const email = document.getElementById('l-email')?.value.trim();
+  const inp   = document.getElementById('forgot-email');
+  if(inp && email) inp.value = email;
+  openM('m-forgot');
+}
+
+function buildForgotWA(){
+  const email = document.getElementById('forgot-email')?.value.trim();
+  const msg   = encodeURIComponent('Olá! Esqueci a minha senha da plataforma Longitude Ágil. O meu email de acesso é: ' + (email || '(email não preenchido)') + '. Podem fazer o reset?');
+  document.getElementById('forgot-wa-btn').href = 'https://wa.me/351911580781?text=' + msg;
+}
+
 function demoLogin(r){ loginAs(r,{email:'demo@longitudeagil.pt', name: r==='admin'?'Administrador':'Cliente Demo', preco: 5.90}); }
 function loginAs(role, userData) {
   currentUser = userData || {};
