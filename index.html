@@ -1318,6 +1318,34 @@ tr:hover td{background:rgba(255,255,255,.02);}tr:last-child td{border-bottom:non
   </div>
 </div>
 
+<!-- Modal GLS — criar etiqueta -->
+<div class="modal-overlay" id="m-gls">
+  <div class="modal" style="max-width:500px;">
+    <div class="modal-header">
+      <div class="modal-title">📦 Criar Etiqueta GLS</div>
+      <button class="modal-close" onclick="closeM('m-gls')">✕</button>
+    </div>
+    <div style="background:rgba(34,197,94,.06);border:1px solid rgba(34,197,94,.2);border-radius:var(--r);padding:.8rem 1rem;margin-bottom:1.2rem;font-size:.82rem;color:var(--txt2);">
+      🚚 A etiqueta será gerada directamente na GLS e o PDF fica disponível para download.
+    </div>
+    <div class="form-group"><label class="form-label">Referência do envio</label><input class="form-input" id="gls-ref" readonly style="opacity:.6;"></div>
+    <div class="form-group"><label class="form-label">Nome do destinatário *</label><input class="form-input" id="gls-nome" placeholder="Nome completo"></div>
+    <div class="form-group"><label class="form-label">Morada de entrega *</label><input class="form-input" id="gls-morada" placeholder="Rua, nº, andar"></div>
+    <div class="form-grid-2">
+      <div class="form-group"><label class="form-label">Código Postal *</label><input class="form-input" id="gls-cp" placeholder="1234-567"></div>
+      <div class="form-group"><label class="form-label">Cidade *</label><input class="form-input" id="gls-cidade" placeholder="Lisboa"></div>
+    </div>
+    <div class="form-grid-2">
+      <div class="form-group"><label class="form-label">Telefone</label><input class="form-input" id="gls-tel" type="tel" placeholder="+351 9XX XXX XXX"></div>
+      <div class="form-group"><label class="form-label">Peso (kg)</label><input class="form-input" id="gls-peso" type="number" min="0.1" step="0.1" placeholder="1"></div>
+    </div>
+    <div style="display:flex;justify-content:flex-end;gap:.8rem;margin-top:1rem;">
+      <button class="btn btn-ghost" onclick="closeM('m-gls')">Cancelar</button>
+      <button class="btn btn-org" onclick="criarEtiquetaGLS()">📦 Criar Etiqueta GLS</button>
+    </div>
+  </div>
+</div>
+
 <!-- Modal: Aprovar Registo -->
 <div class="modal-overlay" id="m-approve-reg">
   <div class="modal" style="max-width:580px;">
@@ -1820,15 +1848,15 @@ function renderAdminShipments() {
   if(empty) empty.style.display = 'none';
   tbody.innerHTML = ships.map(s => `
     <tr>
-      <td><span class="ship-code">${s.ref}</span></td>
+      <td><span class="ship-code">${s.ref}</span>${s.glsRef ? `<br><span style="font-size:.7rem;color:var(--grn);">GLS: ${s.glsRef}</span>` : ''}</td>
       <td>${s.clientNome || s.clientEmail || '—'}</td>
       <td>${s.origem}</td>
       <td>${s.destino}</td>
       <td>${formatDate(s.createdAt)}</td>
       <td><span class="badge ${badgeClass(s.estado)}"><span class="dot"></span>${s.estado}</span></td>
       <td>${s.preco ? s.preco.toFixed(2)+'€' : '—'}</td>
-      <td>
-        <select class="form-select" style="padding:.25rem .5rem;font-size:.75rem;width:auto;" onchange="updateShipStatus('${s.ref}','${s.clientEmail||''}',this.value)">
+      <td style="display:flex;gap:.3rem;flex-wrap:wrap;align-items:center;">
+        <select class="form-select" style="padding:.25rem .5rem;font-size:.72rem;width:auto;" onchange="updateShipStatus('${s.ref}','${s.clientEmail||''}',this.value)">
           <option ${s.estado==='Pedido recebido'?'selected':''}>Pedido recebido</option>
           <option ${s.estado==='Em análise'?'selected':''}>Em análise</option>
           <option ${s.estado==='Recolha agendada'?'selected':''}>Recolha agendada</option>
@@ -1837,8 +1865,83 @@ function renderAdminShipments() {
           <option ${s.estado==='Entregue'?'selected':''}>Entregue</option>
           <option ${s.estado==='Cancelado'?'selected':''}>Cancelado</option>
         </select>
+        ${s.glsRef
+          ? `<button class="btn btn-ghost btn-sm" onclick="downloadLabel('${s.ref}')" title="Descarregar etiqueta GLS">🏷️</button>`
+          : `<button class="btn btn-org btn-sm" onclick="openGLSModal('${s.ref}','${s.destino||''}','${s.clientEmail||''}','${s.kg||1}')" title="Criar etiqueta GLS">📦 GLS</button>`
+        }
       </td>
     </tr>`).join('');
+}
+
+// ── GLS MODAL ──
+function openGLSModal(ref, destino, email, kg) {
+  window._glsCtx = { ref, destino, email, kg };
+  // Fill modal
+  document.getElementById('gls-ref').value    = ref;
+  document.getElementById('gls-destino').value = destino;
+  document.getElementById('gls-peso').value   = kg || 1;
+  openM('m-gls');
+}
+
+async function criarEtiquetaGLS() {
+  const token = localStorage.getItem('la_admin_token');
+  const nome  = document.getElementById('gls-nome').value.trim();
+  const morada = document.getElementById('gls-morada').value.trim();
+  const cp    = document.getElementById('gls-cp').value.trim();
+  const cidade = document.getElementById('gls-cidade').value.trim();
+  const tel   = document.getElementById('gls-tel').value.trim();
+  const peso  = document.getElementById('gls-peso').value;
+  const ref   = document.getElementById('gls-ref').value;
+
+  if(!nome || !morada || !cp || !cidade) { showT('error','Preencha todos os campos'); return; }
+
+  const btn = document.querySelector('#m-gls .btn-org');
+  if(btn){ btn.disabled=true; btn.textContent='⏳ A criar...'; }
+
+  try {
+    const res  = await fetch(BACKEND + '/api/gls/criar-envio', {
+      method:  'POST',
+      headers: { 'Content-Type':'application/json', 'Authorization':'Bearer '+token },
+      body:    JSON.stringify({ envioRef: ref, nome, morada, codigoPostal: cp, cidade, pais:'PT', telefone: tel, peso }),
+    });
+    const data = await res.json();
+    if(btn){ btn.disabled=false; btn.textContent='📦 Criar Etiqueta GLS'; }
+
+    if(!data.ok) { showT('error', 'Erro GLS: ' + data.error); return; }
+
+    closeM('m-gls');
+    showT('success', '✅ Etiqueta GLS criada! Ref: ' + data.glsRef);
+    renderAdminShipments();
+  } catch(e) {
+    if(btn){ btn.disabled=false; btn.textContent='📦 Criar Etiqueta GLS'; }
+    showT('error', 'Erro: ' + e.message);
+  }
+}
+
+async function downloadLabel(ref) {
+  const token = localStorage.getItem('la_admin_token');
+  try {
+    const res = await fetch(BACKEND + '/api/gls/label/' + ref, {
+      headers: { 'Authorization':'Bearer '+token }
+    });
+    if(!res.ok){ showT('error','Etiqueta não disponível'); return; }
+    const blob = await res.blob();
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href = url; a.download = 'etiqueta-' + ref + '.pdf';
+    a.click(); URL.revokeObjectURL(url);
+  } catch(e) {
+    showT('error', 'Erro ao descarregar: ' + e.message);
+  }
+}
+
+async function glsTrack(glsRef) {
+  try {
+    const res  = await fetch(BACKEND + '/api/gls/tracking/' + glsRef);
+    const data = await res.json();
+    if(!data.ok) return null;
+    return data.tracking;
+  } catch { return null; }
 }
 
 function renderAdminInvoices() {
@@ -2232,7 +2335,8 @@ function loginAs(role, userData) {
     localStorage.setItem('la_current_user', JSON.stringify({ ...userData, role:'client' }));
   }
   if(role === 'admin') {
-    // token já guardado em localStorage.setItem('la_admin_token')
+
+        
   }
   showT('success', role === 'admin' ? '🔑 Bem-vindo, Administrador!' : '👤 Bem-vindo, ' + (currentUser.name || 'Cliente') + '!');
   setTimeout(() => {
