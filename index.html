@@ -1022,14 +1022,19 @@ tr:hover td{background:rgba(255,255,255,.02);}tr:last-child td{border-bottom:non
     <div class="subpage" id="c-pricing">
       <div class="card" style="max-width:560px;">
         <h3 style="font-family:var(--fh);font-weight:700;margin-bottom:1.2rem;">💶 Os seus Preços</h3>
-        <div class="price-info-card" style="margin-bottom:1.2rem;"><div class="tag muted">Preço atual</div><div style="font-family:var(--fh);font-size:2.5rem;font-weight:900;color:var(--org);">5,90€<span style="font-size:1rem;color:var(--txt2);font-weight:400;">/envio</span></div><div class="small muted mt1">Escalão: 31–70 envios/mês</div></div>
-        <table><thead><tr><th>Volume</th><th>Preço</th><th>Estado</th></tr></thead><tbody>
-          <tr><td>1–10 envios</td><td>7,90€</td><td><span class="badge badge-gray">—</span></td></tr>
-          <tr><td>11–30 envios</td><td>6,90€</td><td><span class="badge badge-gray">—</span></td></tr>
-          <tr style="background:rgba(249,115,22,.05);"><td><strong>31–70 envios</strong></td><td><strong>5,90€</strong></td><td><span class="badge badge-org">✓ Atual</span></td></tr>
-          <tr><td>71–150 envios</td><td>4,90€</td><td><span class="badge badge-gray">Próximo →</span></td></tr>
-          <tr><td>150+ envios</td><td>Personalizado</td><td><span class="badge badge-gray">—</span></td></tr>
-        </tbody></table>
+        <div class="price-info-card" style="margin-bottom:1.2rem;">
+          <div class="tag muted">Preço base por envio</div>
+          <div style="font-family:var(--fh);font-size:2.5rem;font-weight:900;color:var(--org);" id="cp-base-display">—<span style="font-size:1rem;color:var(--txt2);font-weight:400;">/envio</span></div>
+          <div class="small muted mt1">Preço definido pela Longitude Ágil para o seu perfil</div>
+        </div>
+        <div id="cp-kg-section" style="display:none;">
+          <div style="font-weight:700;font-size:.82rem;text-transform:uppercase;letter-spacing:.06em;color:var(--txt2);margin-bottom:.8rem;">Preços por peso</div>
+          <table id="cp-kg-table"><thead><tr><th>Peso</th><th>Preço por envio</th></tr></thead>
+          <tbody id="cp-kg-rows"></tbody></table>
+        </div>
+        <div id="cp-no-tiers" class="small muted mt2" style="display:none;">
+          Preço único por envio independente do peso.
+        </div>
       </div>
     </div>
 
@@ -2337,6 +2342,32 @@ function cNav(id,el){
   if(el)el.classList.add('active');
   const t=document.getElementById('c-title');
   if(t&&cTitles[id])t.textContent=cTitles[id];
+  if(id==='c-pricing') renderClientPricing();
+}
+
+function renderClientPricing() {
+  const user = currentUser;
+  if(!user || !user.preco) return;
+  const baseEl = document.getElementById('cp-base-display');
+  if(baseEl) baseEl.innerHTML = parseFloat(user.preco).toFixed(2) + '€<span style="font-size:1rem;color:var(--txt2);font-weight:400;">/envio</span>';
+  const precosKg = user.precosKg || JSON.parse(localStorage.getItem('la_cprices_' + user.email) || '{}');
+  const tiers = [1,3,5,10,15,20,25,30,35,40].filter(kg => precosKg[kg] > 0);
+  const kgSection = document.getElementById('cp-kg-section');
+  const noTiers   = document.getElementById('cp-no-tiers');
+  const tbody     = document.getElementById('cp-kg-rows');
+  if(tiers.length > 0 && kgSection && tbody) {
+    kgSection.style.display = 'block';
+    if(noTiers) noTiers.style.display = 'none';
+    tbody.innerHTML = tiers.map(kg => `
+      <tr><td><strong>${kg} kg</strong></td>
+      <td><span style="color:var(--org);font-weight:700;">${parseFloat(precosKg[kg]).toFixed(2)}€</span></td></tr>
+    `).join('') + (precosKg.extra > 0 ? `
+      <tr><td style="color:var(--txt3);font-size:.85rem;">+kg adicional (acima 40kg)</td>
+      <td><span style="color:var(--txt2);font-weight:600;">${parseFloat(precosKg.extra).toFixed(2)}€/kg</span></td></tr>` : '');
+  } else {
+    if(kgSection) kgSection.style.display = 'none';
+    if(noTiers) noTiers.style.display = 'block';
+  }
 }
 
 // ══ ADMIN NAV ══
