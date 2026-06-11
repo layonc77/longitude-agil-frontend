@@ -1483,24 +1483,18 @@ tr:hover td{background:rgba(255,255,255,.02);}tr:last-child td{border-bottom:non
     <div class="modal-header"><div class="modal-title">💳 Pagamento do Envio</div><button class="modal-close" onclick="closeM('m-payment')">✕</button></div>
     <div id="m-payment-summary" style="background:var(--blk3);border:1px solid var(--bdr);border-radius:var(--r);padding:1.2rem;margin-bottom:1.5rem;">
       <div style="font-family:var(--fh);font-weight:700;margin-bottom:.8rem;">Resumo do Pedido</div>
-      <div style="display:flex;justify-content:space-between;font-size:.88rem;margin-bottom:.4rem;"><span class="muted">Serviço de envio local</span><span id="pay-price-line">5,90€</span></div>
-      <div id="pay-surcharge-line" class="hidden" style="display:flex;justify-content:space-between;font-size:.88rem;margin-bottom:.4rem;color:var(--yel);"><span>⚠️ Sobretaxa (peso/dimensão)</span><span id="pay-surcharge-val">a calcular</span></div>
+      <div style="display:flex;justify-content:space-between;font-size:.88rem;margin-bottom:.4rem;"><span class="muted">Serviço de envio</span><span id="pay-price-line">5,90€</span></div>
+      <div id="pay-surcharge-line" style="display:none;justify-content:space-between;font-size:.88rem;margin-bottom:.4rem;color:var(--yel);"><span>⚠️ Sobretaxa</span><span id="pay-surcharge-val">a calcular</span></div>
       <div style="border-top:1px solid var(--bdr);margin:.8rem 0;"></div>
       <div style="display:flex;justify-content:space-between;font-family:var(--fh);font-weight:700;font-size:1.1rem;"><span>Total</span><span id="pay-total" style="color:var(--org);">5,90€</span></div>
     </div>
-    <div style="background:rgba(249,115,22,.06);border:1px solid rgba(249,115,22,.2);border-radius:var(--r);padding:1rem;margin-bottom:1.5rem;font-size:.84rem;color:var(--txt2);line-height:1.6;">
-      🔒 Pagamento processado com segurança via <strong style="color:var(--txt);">Stripe</strong>. Os seus dados bancários nunca são guardados nos nossos servidores.
+    <div style="background:rgba(249,115,22,.06);border:1px solid rgba(249,115,22,.2);border-radius:var(--r);padding:.8rem 1rem;margin-bottom:1.2rem;font-size:.82rem;color:var(--txt2);">
+      🔒 Pagamento seguro via <strong style="color:var(--txt);">Stripe</strong> — cartão, Klarna, MB Way e mais
     </div>
-    <!-- Stripe Elements (real) -->
-    <div class="form-group">
-      <label class="form-label">Dados do cartão</label>
-      <div id="stripe-card-element"></div>
-      <div id="stripe-card-errors" style="color:var(--red);font-size:.8rem;margin-top:.4rem;"></div>
-      <div class="small muted mt1" style="display:flex;gap:.8rem;align-items:center;">
-        <span>🔐 SSL</span><span>💳 Visa · MC · Amex</span><span>🔒 3D Secure</span>
-      </div>
-    </div>
-    <div style="display:flex;justify-content:flex-end;gap:.8rem;margin-top:1.2rem;">
+    <!-- Stripe Payment Element (suporta Klarna, cartão, etc.) -->
+    <div id="stripe-payment-element" style="margin-bottom:1.2rem;"></div>
+    <div id="stripe-card-errors" style="color:var(--red);font-size:.82rem;margin-bottom:.8rem;"></div>
+    <div style="display:flex;justify-content:flex-end;gap:.8rem;margin-top:.5rem;">
       <button class="btn btn-ghost" onclick="closeM('m-payment')">Cancelar</button>
       <button class="btn btn-org btn-lg" id="pay-btn" onclick="processPayment()" style="min-width:160px;">
         <span id="pay-btn-text">Pagar <span id="pay-btn-amount">5,90€</span></span>
@@ -1800,9 +1794,9 @@ function submitShip() {
   document.getElementById('pay-btn-amount').textContent = ctx.total.toFixed(2) + '€';
 
   openM('m-payment');
+  // Inicializar Stripe Payment Element com o total correcto
+  setTimeout(() => initStripePayment(ctx.total), 100);
 }
-
-// ── APÓS PAGAMENTO — guardar envio ──
 function saveNewShipment(ref) {
   const ctx  = window._payCtx || {};
   const list = getShipments();
@@ -3142,45 +3136,7 @@ function checkSurcharge(kg,cm){
   return k>SURCHARGE_KG||d>SURCHARGE_M;
 }
 
-function submitShip(){
-  const orig  = document.getElementById('ns-orig').value;
-  const dest  = document.getElementById('ns-dest').value;
-  const dname = document.getElementById('ns-dname').value;
-  const data  = document.getElementById('ns-data').value;
-  if(!orig||!dest||!dname||!data){showT('error','Preencha todos os campos obrigatórios');return;}
-
-  const nums   = Array.from(document.querySelectorAll('#c-new-ship input[type=number]'));
-  const kg     = parseFloat(nums[0]&&nums[0].value)||0;
-  const cm     = parseFloat(nums[1]&&nums[1].value)||0;
-  const hasSur = checkSurcharge(kg,cm);
-
-  const base  = BASE_PRICE;
-  const total = hasSur ? base+SURCHARGE_FEE : base;
-
-  // Guardar contexto para o processPayment enviar ao backend
-  _payCtx = {
-    clientEmail:    'joao@exemplo.com', // em produção vem do utilizador autenticado
-    monthlyVolume:  35,                 // em produção vem do perfil do cliente
-    isBalcao:       false,
-    weightKg:       kg,
-    longestCm:      cm,
-    origem:         orig,
-    destino:        dest,
-    destinatario:   dname,
-    tipoMercadoria: document.querySelector('#c-new-ship .form-select')?.value||'',
-    data:           data,
-  };
-
-  // Preencher modal de pagamento
-  document.getElementById('pay-price-line').textContent = base.toFixed(2)+'€';
-  const sLine = document.getElementById('pay-surcharge-line');
-  sLine.style.display = hasSur ? 'flex' : 'none';
-  document.getElementById('pay-surcharge-val').textContent = 'a calcular';
-  document.getElementById('pay-total').textContent = total.toFixed(2)+'€';
-  document.getElementById('pay-btn-amount').textContent  = total.toFixed(2)+'€';
-
-  openM('m-payment');
-}
+// submitShip definido acima (versão correcta)
 
 // ══ STRIPE REAL INTEGRATION ══
 const STRIPE_PK  = 'pk_test_51S1SfFEOZsbZn2hBIG4gSIDjNQRwnnOxWbEfJ32nIaUlzTr9Rv6tLZNmcCu7XvY9mMSwIFyvAqs1EAG3sZIf3jOh00hSVt3TEm';
@@ -3189,108 +3145,103 @@ const BACKEND = window.location.hostname === 'localhost' || window.location.host
   : 'https://web-production-47960.up.railway.app';
 
 let stripe, cardElement, stripeReady=false;
-let _payCtx={}; // contexto do envio actual (preenchido em submitShip)
+let _payCtx={}; // contexto do envio actual
+let stripeElements = null; // Payment Element instance
 
-function initStripe(){
-  if(stripeReady||typeof Stripe==='undefined')return;
-  stripe=Stripe(STRIPE_PK);
-  const elements=stripe.elements({
-    appearance:{
-      theme:'night',
-      variables:{
-        colorPrimary:'#f97316',
-        colorBackground:'#1a1a1a',
-        colorText:'#f5f5f5',
-        colorDanger:'#ef4444',
-        fontFamily:'Figtree, sans-serif',
-        borderRadius:'8px',
-        spacingUnit:'4px',
+async function initStripePayment(total) {
+  if(typeof Stripe === 'undefined') { showT('error','Stripe não carregou. Refresque a página.'); return; }
+  if(!stripe) stripe = Stripe(STRIPE_PK);
+
+  // Limpar elemento anterior
+  const container = document.getElementById('stripe-payment-element');
+  if(container) container.innerHTML = '';
+  stripeReady = false;
+  stripeElements = null;
+
+  try {
+    // Criar PaymentIntent no backend
+    const ctx = window._payCtx || _payCtx;
+    const piRes = await fetch(BACKEND + '/api/create-payment-intent', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ...ctx, precoCustom: total }),
+    });
+    const piData = await piRes.json();
+    if(!piData.ok) throw new Error(piData.error || 'Erro ao criar pagamento');
+
+    // Criar Payment Element com clientSecret
+    stripeElements = stripe.elements({
+      clientSecret: piData.clientSecret,
+      appearance: {
+        theme: 'night',
+        variables: {
+          colorPrimary: '#f97316',
+          colorBackground: '#1a1a1a',
+          colorText: '#f5f5f5',
+          colorDanger: '#ef4444',
+          fontFamily: 'Figtree, sans-serif',
+          borderRadius: '8px',
+        }
       }
-    }
-  });
-  cardElement=elements.create('card',{
-    style:{
-      base:{color:'#f5f5f5',fontFamily:'Figtree, sans-serif',fontSize:'15px','::placeholder':{color:'#737373'}},
-      invalid:{color:'#ef4444'}
-    },
-    hidePostalCode:true
-  });
-  cardElement.mount('#stripe-card-element');
-  cardElement.on('change',e=>{
-    const err=document.getElementById('stripe-card-errors');
-    if(err)err.textContent=e.error?e.error.message:'';
-  });
-  stripeReady=true;
+    });
+
+    const paymentElement = stripeElements.create('payment', {
+      layout: 'tabs', // mostra tabs: Cartão, Klarna, etc.
+    });
+    paymentElement.mount('#stripe-payment-element');
+    stripeReady = true;
+    window._currentClientSecret = piData.clientSecret;
+
+  } catch(e) {
+    const container = document.getElementById('stripe-payment-element');
+    if(container) container.innerHTML = '<div style="color:var(--red);font-size:.85rem;padding:1rem;">❌ Erro ao carregar pagamento: ' + e.message + '</div>';
+    showT('error', e.message);
+  }
 }
 
 async function processPayment(){
-  if(!stripeReady||!cardElement){showT('error','A carregar Stripe… tente novamente em 2 segundos.');return;}
+  if(!stripeReady || !stripeElements) {
+    showT('error','A carregar método de pagamento… aguarde.');
+    return;
+  }
 
-  const btn=document.getElementById('pay-btn');
-  const txt=document.getElementById('pay-btn-text');
-  btn.disabled=true;
-  txt.innerHTML='<span style="animation:spin .8s linear infinite;display:inline-block;margin-right:.4rem;">⏳</span>A processar...';
+  const btn = document.getElementById('pay-btn');
+  const txt = document.getElementById('pay-btn-text');
+  const errEl = document.getElementById('stripe-card-errors');
+  btn.disabled = true;
+  txt.innerHTML = '⏳ A processar...';
+  if(errEl) errEl.textContent = '';
 
-  const errEl=document.getElementById('stripe-card-errors');
-  if(errEl)errEl.textContent='';
-
-  try{
-    // ── 1. Pedir PaymentIntent ao backend ──────────────────────
-    const piRes=await fetch(BACKEND+'/api/create-payment-intent',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify(_payCtx),
+  try {
+    const { error } = await stripe.confirmPayment({
+      elements: stripeElements,
+      confirmParams: {
+        return_url: window.location.href, // fallback para redirect payments
+      },
+      redirect: 'if_required', // só redireciona se necessário (ex: Klarna)
     });
-    const piData=await piRes.json();
 
-    if(!piData.ok){
-      throw new Error(piData.error||'Erro ao criar pagamento');
-    }
-
-    // ── 2. Confirmar pagamento com o cartão ────────────────────
-    const{error:confirmErr,paymentIntent}=await stripe.confirmCardPayment(
-      piData.clientSecret,
-      {payment_method:{card:cardElement}}
-    );
-
-    if(confirmErr){
-      if(errEl)errEl.textContent=confirmErr.message;
-      showT('error','Cartão recusado: '+confirmErr.message);
-      btn.disabled=false;
-      txt.innerHTML='Pagar '+document.getElementById('pay-total').textContent;
+    if(error) {
+      if(errEl) errEl.textContent = error.message;
+      showT('error', error.message);
+      btn.disabled = false;
+      txt.innerHTML = 'Pagar ' + document.getElementById('pay-total').textContent;
       return;
     }
 
-    // ── 3. Sucesso ─────────────────────────────────────────────
-    if(paymentIntent.status==='succeeded'){
-      btn.disabled=false;
-      txt.innerHTML='Pagar';
-      closeM('m-payment');
-      const ref='LA-'+new Date().getFullYear()+'-'+Math.floor(Math.random()*90000+10000);
-      document.getElementById('success-ref').textContent=ref;
-      saveNewShipment(ref);
-      openM('m-pay-success');
-      showT('success','✅ Pagamento confirmado! Ref: '+ref);
-    }
+    // Sucesso
+    btn.disabled = false;
+    closeM('m-payment');
+    const ref = 'LA-' + new Date().getFullYear() + '-' + Math.floor(Math.random()*90000+10000);
+    document.getElementById('success-ref').textContent = ref;
+    saveNewShipment(ref);
+    openM('m-pay-success');
+    showT('success', '✅ Pagamento confirmado! Ref: ' + ref);
 
-  }catch(err){
-    btn.disabled=false;
-    txt.innerHTML='Pagar';
-    // Se o backend não estiver a correr, fallback para demo
-    if(err.message&&(err.message.includes('fetch')||err.message.includes('Failed'))){
-      showT('info','⚠️ Backend offline — modo demo activado');
-      await new Promise(r=>setTimeout(r,1500));
-      btn.disabled=false;
-      txt.innerHTML='Pagar';
-      closeM('m-payment');
-      const ref='LA-DEMO-'+Math.floor(Math.random()*90000+10000);
-      document.getElementById('success-ref').textContent=ref;
-      saveNewShipment(ref);
-      openM('m-pay-success');
-    } else {
-      showT('error','Erro: '+err.message);
-      console.error('Stripe error:',err);
-    }
+  } catch(err) {
+    btn.disabled = false;
+    txt.innerHTML = 'Pagar';
+    showT('error', 'Erro: ' + err.message);
   }
 }
 
