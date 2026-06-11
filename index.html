@@ -1794,8 +1794,17 @@ function submitShip() {
   document.getElementById('pay-btn-amount').textContent = ctx.total.toFixed(2) + '€';
 
   openM('m-payment');
-  // Inicializar Stripe Payment Element com o total correcto
-  setTimeout(() => initStripePayment(ctx.total), 100);
+  // Mostrar loading e inicializar Stripe
+  const _pe = document.getElementById('stripe-payment-element');
+  if(_pe) _pe.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--txt3);">⏳ A carregar métodos de pagamento...</div>';
+  document.getElementById('pay-btn').disabled = true;
+  // Aguardar modal estar visível antes de montar o elemento
+  setTimeout(() => {
+    initStripePayment(ctx.total).then(() => {
+      const btn = document.getElementById('pay-btn');
+      if(btn) btn.disabled = false;
+    });
+  }, 400);
 }
 function saveNewShipment(ref) {
   const ctx  = window._payCtx || {};
@@ -3149,27 +3158,41 @@ let _payCtx={}; // contexto do envio actual
 let stripeElements = null; // Payment Element instance
 
 async function initStripePayment(total) {
-  if(typeof Stripe === 'undefined') { showT('error','Stripe não carregou. Refresque a página.'); return; }
+  if(typeof Stripe === 'undefined') {
+    showT('error','Stripe não carregou. Refresque a página.');
+    return;
+  }
   if(!stripe) stripe = Stripe(STRIPE_PK);
 
-  // Limpar elemento anterior
   const container = document.getElementById('stripe-payment-element');
-  if(container) container.innerHTML = '';
-  stripeReady = false;
-  stripeElements = null;
+  const errEl     = document.getElementById('stripe-card-errors');
+  stripeReady     = false;
+  stripeElements  = null;
 
   try {
-    // Criar PaymentIntent no backend
     const ctx = window._payCtx || _payCtx;
+    console.log('Criando PaymentIntent — total:', total, 'ctx:', ctx);
+
     const piRes = await fetch(BACKEND + '/api/create-payment-intent', {
-      method: 'POST',
+      method:  'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ...ctx, precoCustom: total }),
+      body:    JSON.stringify({
+        isBalcao:       ctx.isBalcao || false,
+        clientEmail:    ctx.clientEmail || currentUser?.email || '',
+        precoCustom:    total,
+        origem:         ctx.origem || '',
+        destino:        ctx.destino || '',
+        tipoMercadoria: ctx.tipoMercadoria || '',
+        data:           ctx.data || '',
+        destinatario:   ctx.destinatario || '',
+        weightKg:       ctx.kg || 0,
+      }),
     });
+
+    if(!piRes.ok) throw new Error('Erro HTTP ' + piRes.status);
     const piData = await piRes.json();
     if(!piData.ok) throw new Error(piData.error || 'Erro ao criar pagamento');
 
-    // Criar Payment Element com clientSecret
     stripeElements = stripe.elements({
       clientSecret: piData.clientSecret,
       appearance: {
@@ -3185,17 +3208,17 @@ async function initStripePayment(total) {
       }
     });
 
-    const paymentElement = stripeElements.create('payment', {
-      layout: 'tabs', // mostra tabs: Cartão, Klarna, etc.
-    });
+    if(container) container.innerHTML = '';
+    const paymentElement = stripeElements.create('payment', { layout: 'tabs' });
     paymentElement.mount('#stripe-payment-element');
     stripeReady = true;
     window._currentClientSecret = piData.clientSecret;
+    console.log('✅ Stripe Payment Element montado');
 
   } catch(e) {
-    const container = document.getElementById('stripe-payment-element');
-    if(container) container.innerHTML = '<div style="color:var(--red);font-size:.85rem;padding:1rem;">❌ Erro ao carregar pagamento: ' + e.message + '</div>';
-    showT('error', e.message);
+    console.error('initStripePayment error:', e.message);
+    if(container) container.innerHTML = '<div style="color:var(--red);font-size:.85rem;padding:1rem;background:rgba(239,68,68,.1);border-radius:var(--r);">❌ Erro ao carregar pagamento: ' + e.message + '</div>';
+    if(errEl) errEl.textContent = e.message;
   }
 }
 
