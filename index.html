@@ -3277,7 +3277,7 @@ function showFNames(input,listId){
 // ══ MODAL ══
 function openM(id){
   document.getElementById(id).classList.add('open');
-  if(id==='m-payment')setTimeout(initStripe,100);
+  // initStripePayment é chamado pelo submitShip com o total correcto
   if(id==='m-bc-payment')setTimeout(initBcStripe,100);
 }
 function closeM(id){document.getElementById(id).classList.remove('open');}
