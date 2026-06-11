@@ -3148,7 +3148,7 @@ function checkSurcharge(kg,cm){
 // submitShip definido acima (versão correcta)
 
 // ══ STRIPE REAL INTEGRATION ══
-const STRIPE_PK  = 'pk_live_51S1Sf9CjPNlH73twbSd5MZs9UmJ7TxninIpK4Nfk2InHX1wGCqHvuh7cYPhb0A7D7OeJbmRrDnU6prZMnaW8WA6K0050AecGRV';
+const STRIPE_PK  = 'pk_test_51S1SfFEOZsbZn2hBIG4gSIDjNQRwnnOxWbEfJ32nIaUlzTr9Rv6tLZNmcCu7XvY9mMSwIFyvAqs1EAG3sZIf3jOh00hSVt3TEm';
 const BACKEND = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
   ? 'http://localhost:4000'
   : 'https://web-production-47960.up.railway.app';
@@ -3310,6 +3310,25 @@ document.addEventListener('DOMContentLoaded',()=>{
 
   // ── AUTO-LOGIN: verificar token guardado ──
   loadAdminPricesOnInit();
+
+  // ── Verificar se voltou de redirect Stripe (ex: Klarna) ──
+  const _urlP   = new URLSearchParams(window.location.search);
+  const _piStat = _urlP.get('redirect_status');
+  if(_piStat) {
+    window.history.replaceState({}, '', window.location.pathname);
+    if(_piStat === 'succeeded') {
+      const ref = 'LA-' + new Date().getFullYear() + '-' + Math.floor(Math.random()*90000+10000);
+      setTimeout(() => {
+        const refEl = document.getElementById('success-ref');
+        if(refEl) refEl.textContent = ref;
+        saveNewShipment(ref);
+        openM('m-pay-success');
+        showT('success', '✅ Pagamento confirmado! Ref: ' + ref);
+      }, 1000);
+    } else {
+      setTimeout(() => showT('error', '❌ Pagamento não completado. Tente novamente.'), 800);
+    }
+  }
   const token = localStorage.getItem('la_admin_token');
   const savedUser = localStorage.getItem('la_current_user');
 
